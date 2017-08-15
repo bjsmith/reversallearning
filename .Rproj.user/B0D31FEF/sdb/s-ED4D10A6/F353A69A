@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "data {\n  int<lower=1> N;\n  int<lower=1> T;\n  int<lower=1, upper=T> Tsubj[N];\n  int<lower=1,upper=2> choice[N, T];\n  real rewlos[N, T];\n}\ntransformed data {\n  vector[2] initV;\n  initV  = rep_vector(0.0, 2);\n}\nparameters {\n  # Declare all parameters as vectors for vectorizing\n  # Hyper(group)-parameters  \n  vector[3] mu_p;  \n  vector<lower=0>[3] sigma;\n  \n  # Subject-level raw parameters (for Matt trick)\n  vector[N] Apun_pr;   # learning rate (punishment)\n  vector[N] Arew_pr;   # learning rate (reward)\n  vector[N] beta_pr;   # inverse temperature\n}\n\ntransformed parameters {\n  # Transform subject-level raw parameters \n  vector<lower=0,upper=1>[N] Apun;\n  vector<lower=0,upper=1>[N] Arew;\n  vector<lower=0,upper=10>[N] beta;\n  \n  for (i in 1:N) {\n    Apun[i]  = Phi_approx( mu_p[1] + sigma[1] * Apun_pr[i] );\n    Arew[i]  = Phi_approx( mu_p[2] + sigma[2] * Arew_pr[i] );\n    beta[i]  = Phi_approx( mu_p[3] + sigma[3] * beta_pr[i] ) * 10;\n  }\n}\n\nmodel {\n  # Hyperparameters\n  mu_p  ~ normal(0, 1); \n  sigma ~ cauchy(0, 5);  \n  \n  # individual parameters\n  Apun_pr ~ normal(0,1);\n  Arew_pr ~ normal(0,1);\n  beta_pr ~ normal(0,1);\n  \n  for (i in 1:N) {\n    # Define Values\n    vector[2] ev; # Expected value\n    real PE; # prediction error\n    \n    # Initialize values    \n    ev = initV; # initial ev values\n    \n    for (t in 1:(Tsubj[i]-1)) {\n      # Prediction Error\n      PE = rewlos[i,t] - ev[ choice[i,t]];\n      \n      # Update expected value of chosen stimulus\n      ev[ choice[i,t]] = ev[ choice[i,t]] + (Apun[i] * (1-rewlos[i,t])) * PE + (Arew[i] * (rewlos[i,t])) * PE;\n      \n      # Softmax choice\n      choice[i, t+1] ~ categorical_logit( ev * beta[i] );\n    }\n  }\n}\n\ngenerated quantities {\n  # For group level parameters \n  real<lower=0,upper=1> mu_Apun;\n  real<lower=0,upper=1> mu_Arew;\n  real<lower=-10,upper=10> mu_beta;\n  \n  # For log likelihood calculation\n  real log_lik[N];\n  \n  mu_Apun = Phi_approx(mu_p[1]);\n  mu_Arew = Phi_approx(mu_p[2]);\n  mu_beta = Phi_approx(mu_p[3]) * 10;\n  \n  { # local section, this saves time and space\n    for (i in 1:N) {\n      # Define values\n      vector[2] ev; # Expected value\n      real PE; # prediction error\n      \n      # Initialize values      \n      ev = initV; # initial ev values\n      log_lik[i] = 0;\n      \n      for (t in 1:(Tsubj[i]-1)) {\n        # Prediction Error\n        PE = rewlos[i,t] - ev[ choice[i,t]];\n        \n        # Update expected value of chosen stimulus\n        ev[ choice[i,t]] = ev[ choice[i,t]] + (Apun[i] * (1-rewlos[i,t])) * PE + (Arew[i] * (rewlos[i,t])) * PE;\n        \n        # Softmax choice\n        log_lik[i] = log_lik[i] + categorical_logit_lpmf( choice[i, t+1] | ev * beta[i]);\n      }\n    }\n  }\n}",
+    "created" : 1493749187393.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1646552976",
+    "id" : "F353A69A",
+    "lastKnownWriteTime" : 1493675346,
+    "last_content_update" : 1493675346,
+    "path" : "~/Google Drive/joint-modeling/reversal-learning/behavioral-analysis/rlp_hbayesDM_model.stan",
+    "project_path" : "rlp_hbayesDM_model.stan",
+    "properties" : {
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "stan"
+}

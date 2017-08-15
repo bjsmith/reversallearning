@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1502737592261.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1B670E32",
+    "lastKnownWriteTime" : 6,
+    "last_content_update" : 1502737592261,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "F5E0EF33",
+        "caption" : "accuracy.by.pres_seg",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=accuracy.by.pres_seg&cache_key=F5E0EF33",
+        "displayedObservations" : "26",
+        "environment" : "",
+        "object" : "accuracy.by.pres_seg",
+        "preview" : "0",
+        "totalObservations" : "26",
+        "variables" : "4"
+    },
+    "relative_order" : 10,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
