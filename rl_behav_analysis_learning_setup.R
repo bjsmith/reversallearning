@@ -5,7 +5,7 @@ require(data.table)
 #install.packages('ggplot2')
 require(ggplot2)
 #install.packages("tidyr")
-require('tidyr')
+require(tidyr)
 
 #install.packages("corrplot")
 require(corrplot)
@@ -37,9 +37,9 @@ for (condition in c(
     graph.title.condition.suffix<-"\n(Punishment trials)"
   }
   #get list of subjects
-  sub.rec.filenames.f1<-list.files(path="RL_behav/",pattern=filename.pattern,ignore.case=TRUE)
-  sub.rec.filenames.f2<-list.files(path="ReversalLearning/new",pattern=filename.pattern,ignore.case=TRUE)
-  sub.rec.filenames.f3<-list.files(path="ReversalLearning/results",pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f1<-list.files(path="../data/RL_behav/",pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f2<-list.files(path="../data/ReversalLearning/new",pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f3<-list.files(path="../data/ReversalLearning/results",pattern=filename.pattern,ignore.case=TRUE)
   get.sub.rl.data <- function(sub.filename,sub.folder){
     mat.data<-readMat(sub.filename)
     sub.data<-as.data.frame(mat.data$RL)
@@ -115,9 +115,9 @@ for (condition in c(
   }
   
   #res<-get.sub.rl.data(paste0("RL_behav/",sub.rec.filenames[1]))
-  rl.subjects.f1.list<-do.call("rbind",lapply(paste0("RL_behav/",sub.rec.filenames.f1),get.sub.rl.data,"RL_behav"))
-  rl.subjects.f2.list<-do.call("rbind",lapply(paste0("ReversalLearning/new/",sub.rec.filenames.f2),get.sub.rl.data,"ReversalLearning/new"))
-  rl.subjects.f3.list<-do.call("rbind",lapply(paste0("ReversalLearning/results/",sub.rec.filenames.f3),get.sub.rl.data,"ReversalLearning/results"))
+  rl.subjects.f1.list<-do.call("rbind",lapply(paste0("../data/RL_behav/",sub.rec.filenames.f1),get.sub.rl.data,"../data/RL_behav"))
+  rl.subjects.f2.list<-do.call("rbind",lapply(paste0("../data/ReversalLearning/new/",sub.rec.filenames.f2),get.sub.rl.data,"../data/ReversalLearning/new"))
+  rl.subjects.f3.list<-do.call("rbind",lapply(paste0("../data/ReversalLearning/results/",sub.rec.filenames.f3),get.sub.rl.data,"../data/ReversalLearning/results"))
   unique(rl.subjects.f1.list$subid)
   length(unique(rl.subjects.f1.list$subid))
   length(unique(rl.subjects.f2.list$subid))
@@ -160,8 +160,12 @@ break.labels=c("1\nPre-reversal",2:8,"1\nReversal",2:5)
 
 accuracy.by.pres_seg.subid<-rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,subid,Motivation)]
 
+accuracy.by.pres_seg.image<-
+  rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,Motivation,trial)]
+
 accuracy.by.pres_seg<-
   rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,Motivation)]
+
 
 #mean across subjects
 # accuracy.by.pres_seg.subid.summary<-accuracy.by.pres_seg.subid[

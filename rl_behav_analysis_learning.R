@@ -260,3 +260,33 @@ ggplot(or.progression,aes(y=estimate,x=index))+#geom_jitter(width = 0.4, height 
        y="OR improvement over previous timepoint")+
   geom_vline(aes(xintercept=9),linetype=2)
 
+
+
+#accuracy by image.
+library(ggplot2)
+
+accuracy.by.pres_seg.image.finalpc<-
+  accuracy.by.pres_seg.image[presentation_n_over_segments==4,.(final.prop.correct=prop.correct),.(trial,Motivation)]
+accuracy.by.pres_seg.image<-merge(accuracy.by.pres_seg.image,accuracy.by.pres_seg.image.finalpc,by=c("trial","Motivation"))
+
+library(ggplot2)
+main.prop.cor.ggplot<-
+  ggplot(accuracy.by.pres_seg.image[!is.na(presentation_n_over_segments)],
+         aes(x=presentation_n_over_segments,y=prop.correct,group=trial))+
+  geom_line(aes(colour=final.prop.correct),size=1.5,alpha=0.3)+ scale_colour_gradientn(colours=c("red","green","blue","violet"))+
+  #scale_x_continuous(breaks=-8:4,labels=break.labels)+
+  labs(#x="Presentation",
+    y="Proportion correct across all users by image",
+    title=paste0("proportion correct across all users by image\n from start to finish of reversal learning"))+
+  geom_line(data=accuracy.by.pres_seg.subid.summary,aes(x=presentation_n_over_segments,y=prop.correct.m,group=NULL))+
+  facet_grid(Motivation ~ .)+
+  #theme(strip.text.y=element_text(colour="orange"))+
+  reversal_learning_timeline_ggplot_commands+
+  geom_hline(data=accuracy.by.pres_seg.subid.summary[presentation_n_over_segments==5],
+             aes(yintercept = prop.correct.m),
+             linetype=2)+
+  geom_hline(data=accuracy.by.pres_seg.subid.summary[presentation_n_over_segments==13],
+             aes(yintercept = prop.correct.m),
+             linetype=2)
+
+main.prop.cor.ggplot
