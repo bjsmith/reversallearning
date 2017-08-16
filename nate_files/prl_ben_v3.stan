@@ -82,8 +82,8 @@ model {
 
 generated quantities {
   # For group level parameters
-  real<lower=0,upper=1> mu_alpha;
-  real<lower=0,upper=5> mu_beta;
+  real<lower=0,upper=1> mu_alpha[Gr_N];
+  real<lower=0,upper=5> mu_beta[Gr_N];
 
   # For log likelihood calculation
   real log_lik[N];
@@ -96,8 +96,11 @@ generated quantities {
     }
   }
 
-  mu_alpha  = Phi_approx(mu_p[1]);
-  mu_beta   = Phi_approx(mu_p[2]) * 5;
+  for (g in 1:Gr_N){#for each group
+    mu_alpha[g]  = Phi_approx(mu_p[1, g]);
+    mu_beta[g]   = Phi_approx(mu_p[2, g]) * 5;
+  }
+  
 
   { # local section, this saves time and space
     for (i in 1:N) {
