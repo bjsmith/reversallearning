@@ -1,11 +1,11 @@
 data {
-    int<lower=1> N;
-    int<lower=1> T;
-    int<lower=1,upper=T> Tsubj[N];
-    int<lower=1,upper=44> N_cues[N];
-    int<lower=0,upper=2> choice[N,T];
-    int<lower=0,upper=44> cue[N,T];
-    real outcome[N,T];
+  int<lower=1> N;
+  int<lower=1> T;
+  int<lower=1,upper=T> Tsubj[N];
+  int<lower=1,upper=36> N_cues[N];
+  int<lower=0,upper=2> choice[N,T];
+  int<lower=0,upper=36> cue[N,T];
+  real outcome[N,T];
 }
 transformed data {
 }
@@ -42,23 +42,21 @@ model {
 
   for (i in 1:N) {
     # Define values
-    vector[36] ev;
-    vector[36] PEnc; # fictitious prediction error (PE-non-chosen)
+    matrix[36,2] ev;
+    real PEnc; # fictitious prediction error (PE-non-chosen)
     real PE;         # prediction error
-    real ev_chosen;
-    real theta;
 
     # Initialize values
-    ev = rep_vector(0,36); # initial ev values
-    theta = pow(3, beta[i]) - 1;
+    ev[,1] = rep_vector(0, 36); # initial ev values
+    ev[,2] = rep_vector(0, 36); # initial ev values
 
     for (t in 1:(Tsubj[i])) {
       # compute action probabilities
-      choice[i,t] ~ bernoulli_logit( ev[cue[i,t]] * theta );
+      choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
 
       # value updating (learning)
       ev = ev * A[i];
-      ev[cue[i,t]] = ev[cue[i,t]] + outcome[i,t];
+      ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + outcome[i,t];
     }
   }
 }
@@ -70,6 +68,14 @@ generated quantities {
 
   # For log likelihood calculation
   real log_lik[N];
+  
+  # For posterior predictive check
+  real y_hat[N,T];
+  for (r in 1:N) {
+    for (c in 1:T) {
+      y_hat[r,c] = 0;
+    }
+  }
 
   mu_A  = Phi_approx(mu_p[1]);
   mu_beta   = Phi_approx(mu_p[2]) * 5;
@@ -77,24 +83,27 @@ generated quantities {
   { # local section, this saves time and space
     for (i in 1:N) {
       # Define values
-      vector[36] ev;
-      vector[36] PEnc; # fictitious prediction error (PE-non-chosen)
+      matrix[36,2] ev;
+      real PEnc; # fictitious prediction error (PE-non-chosen)
       real PE;         # prediction error
       real ev_chosen;
       real theta;
 
       # Initialize values
       log_lik[i] = 0;
-      ev = rep_vector(0,36); # initial ev values
-      theta = pow(3, beta[i]) - 1;
+      ev[,1] = rep_vector(0, 36); # initial ev values
+      ev[,2] = rep_vector(0, 36); # initial ev values
 
       for (t in 1:(Tsubj[i])) {
         # Iterate log-likelihood
-        log_lik[i] = log_lik[i] + bernoulli_logit_lpmf( choice[i,t] |  ev[cue[i,t]] * theta);
+        log_lik[i] = log_lik[i] + categorical_logit_lpmf( choice[i,t] |  to_vector(ev[cue[i,t],]) * beta[i] );
+  
+        # Posterior prediction
+        y_hat[i,t] = categorical_rng( softmax(to_vector(ev[cue[i,t],]) * beta[i]));
   
         # value updating (learning)
         ev = ev * A[i];
-        ev[cue[i,t]] = ev[cue[i,t]] + outcome[i,t];
+        ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + outcome[i,t];
       }
     }
   }
