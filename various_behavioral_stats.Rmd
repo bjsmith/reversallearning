@@ -1,0 +1,23 @@
+---
+title: "Various Behavioral Stats"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+complete.dt<-data.table(completelist)
+```
+
+## Overall descriptives
+
+All Trials:
+```{r AllPresentations}
+all.trials.record<-complete.dt[,.N,.(subid,runid,Motivation)][,.(Subjects=.N,TrialsPerSubject=mean(N)),.(Motivation,runid)]
+dilemma.trials.record<-complete.dt[Condition==1,.N,.(subid,runid,Motivation)][,.(Subjects=.N,TrialsPerSubject=mean(N)),.(Motivation,runid)]
+knitr::kable(merge(all.trials.record,dilemma.trials.record,by.x=c("Motivation","runid","Subjects"),by.y=c("Motivation","runid","Subjects"),
+                   suffixes = c(" All Trials", " Reversal Trials")))
+```
+
+
+
