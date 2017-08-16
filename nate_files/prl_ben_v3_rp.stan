@@ -23,19 +23,22 @@ parameters {
   #second dimension denotes groups.
 
   # Subject-level raw parameters (for Matt trick)
-  vector[N] alpha_pr;   # learning rate
+  vector[N] alpha_rew_pr;   # learning rate for rewards
+  vector[N] alpha_rpdiff_pr;   # difference in the learning rate for reward and punishment
   vector[N] beta_pr;  # inverse temperature
   
 }
 
 transformed parameters {
   # Transform subject-level raw parameters
-  vector<lower=0,upper=1>[N] alpha;
+  vector<lower=0,upper=1>[N] alpha_rew;
+  vector<lower=0,upper=1>[N] alpha_rpdiff;
   vector<lower=0,upper=5>[N] beta;
 
   for (i in 1:N) {
     g_i = TsubjGr[i];
-    alpha[i]  = Phi_approx( mu_p[1, g_i] + sigma[1, g_i] * alpha_pr[i] );
+    alpha_rew[i]  = Phi_approx( mu_p[1, g_i] + sigma[1, g_i] * alpha_rew_pr[i] );
+    //corresponding alpha_rpdiff
     beta[i]   = Phi_approx( mu_p[2, g_i] + sigma[2, g_i] * beta_pr[i] ) * 5;
   }
 }
@@ -46,7 +49,8 @@ model {
   sigma ~ cauchy(0, 1);
 
   # individual parameters
-  alpha_pr  ~ normal(0,1);
+  alpha_rew_pr  ~ normal(0,1);
+  alpha_rpdiff_pr  ~ normal(0,1);
   beta_pr   ~ normal(0,1);
 
   for (i in 1:N) {
@@ -74,6 +78,7 @@ model {
       ev_chosen = ev[cue[i,t],choice[i,t]];
 
       # value updating (learning)
+      #integrate 
       ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
       ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
     }
