@@ -16,17 +16,17 @@ parameters {
   vector<lower=0>[2] sigma;
 
   # Subject-level raw parameters (for Matt trick)
-  vector[N] A_pr;   # decay rate
+  vector[N] alpha_pr;   # learning rate
   vector[N] beta_pr;  # inverse temperature
 }
 
 transformed parameters {
   # Transform subject-level raw parameters
-  vector<lower=0,upper=1>[N] A;
+  vector<lower=0,upper=1>[N] alpha;
   vector<lower=0,upper=5>[N] beta;
 
   for (i in 1:N) {
-    A[i]  = Phi_approx( mu_p[1] + sigma[1] * A_pr[i] );
+    alpha[i]  = Phi_approx( mu_p[1] + sigma[1] * alpha_pr[i] );
     beta[i]   = Phi_approx( mu_p[2] + sigma[2] * beta_pr[i] ) * 5;
   }
 }
@@ -37,7 +37,7 @@ model {
   sigma ~ cauchy(0, 1);
 
   # individual parameters
-  A_pr  ~ normal(0,1);
+  alpha_pr  ~ normal(0,1);
   beta_pr   ~ normal(0,1);
 
   for (i in 1:N) {
@@ -49,6 +49,7 @@ model {
     # Initialize values
     ev[,1] = rep_vector(0, 36); # initial ev values
     ev[,2] = rep_vector(0, 36); # initial ev values
+    theta = pow(3, beta[i]) - 1;
 
     for (t in 1:(Tsubj[i])) {
       # compute action probabilities
@@ -56,14 +57,14 @@ model {
 
       # value updating (learning)
       ev = ev * A[i];
-      ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + outcome[i,t];
+      ev[cue[i,t]] = ev[cue[i,t]] + outcome[i,t];
     }
   }
 }
 
 generated quantities {
   # For group level parameters
-  real<lower=0,upper=1> mu_A;
+  real<lower=0,upper=1> mu_alpha;
   real<lower=0,upper=5> mu_beta;
 
   # For log likelihood calculation
@@ -77,7 +78,7 @@ generated quantities {
     }
   }
 
-  mu_A  = Phi_approx(mu_p[1]);
+  mu_alpha  = Phi_approx(mu_p[1]);
   mu_beta   = Phi_approx(mu_p[2]) * 5;
 
   { # local section, this saves time and space
@@ -93,17 +94,25 @@ generated quantities {
       log_lik[i] = 0;
       ev[,1] = rep_vector(0, 36); # initial ev values
       ev[,2] = rep_vector(0, 36); # initial ev values
+      theta = pow(3, beta[i]) - 1;
 
       for (t in 1:(Tsubj[i])) {
         # Iterate log-likelihood
-        log_lik[i] = log_lik[i] + categorical_logit_lpmf( choice[i,t] |  to_vector(ev[cue[i,t],]) * beta[i] );
-  
+        log_lik[i] = log_lik[i] + categorical_logit_lpmf( choice[i,t] |  to_vector(ev[cue[i,t],]) * beta[i]);
+        
         # Posterior prediction
         y_hat[i,t] = categorical_rng( softmax(to_vector(ev[cue[i,t],]) * beta[i]));
+
+        # prediction error
+        PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
+        PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
+  
+        # Store chosen EV for fictive updating
+        ev_chosen = ev[cue[i,t],choice[i,t]];
   
         # value updating (learning)
-        ev = ev * A[i];
-        ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + outcome[i,t];
+        ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
+        ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
       }
     }
   }
