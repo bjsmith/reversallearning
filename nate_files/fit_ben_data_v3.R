@@ -8,27 +8,8 @@ library(ggplot2)
 
 # Function to replace cue index with it's cumulative frequency
 freq_replace <- function(x,by_var=NULL) {
-  if (is.null(by_var)) {
-    new_x <- vector(length=length(x))
-    un_x <- unique(x)
-    for (i in un_x) {
-      idx <- which(x %in% un_x[i])
-      new_x[idx] <- seq_along(idx)
-    }
-  } else {
-    new_x <- NULL
-    for (n in unique(by_var)) {
-      tmp_x     <- x[by_var==n]
-      tmp_new_x <- vector(length=length(tmp_x))
-      tmp_un_x  <- unique(tmp_x)
-      for (i in tmp_un_x) {
-        idx <- which(tmp_x %in% i)
-        tmp_new_x[idx] <- seq_along(idx)
-      }
-      new_x <- c(new_x, tmp_new_x) 
-    }
-  }
-  return(new_x)
+  source("util/get_cue_index_from_cum_freq.R")
+  return(get_cue_index_from_cum_freq(x,by_var))
 }
 
 # Read in raw data
@@ -161,31 +142,4 @@ traceplot(fit3)
 stan_plot(fit7, "alpha", show_density = T)
 loo(extract(fit3)$log_lik)
 
-# Compute AUC
-parVals <- extract(fit3)
-pred <- reshape2::melt(apply(parVals$y_hat, c(2,3), mean))
-names(pred) <- c("subjID", "trial", "pred")
-new_pred <- pred[pred$pred!=0,]
-all_data <- cbind(rawdata, new_pred[,-1])
-all_data$round_pred <- round(all_data$pred)
-auc_dat <- all_data %>% group_by(subjID) %>% summarize(auc_score = as.numeric(roc(choice,round_pred)[["auc"]]))
-t.test(auc_dat$auc_score-.5)
-
-
-# Create cumulative frequency 
-all_data$cue_freq <- freq_replace(all_data$cue, by_var = all_data$subjID)
-
-# correct % of subject and model
-all_data$actual_correct <- ifelse(all_data$outcome==1, 1, 0)
-all_data$pred_correct <- ifelse((all_data$round_pred==all_data$choice & all_data$outcome==1) | (all_data$round_pred!=all_data$choice & all_data$outcome!=1), 1, 0)
-
-plot_data <- all_data %>% 
-  group_by(subjID,cue_freq) %>% 
-  summarize(actual_correct = mean(actual_correct),
-            pred_correct = mean(pred_correct))
-
-ggplot(plot_data, aes(x = cue_freq, y = actual_correct, group = subjID)) + 
-  geom_line() + 
-  geom_line(aes(y = pred_correct, color = I("red"))) + 
-  facet_wrap(c("subjID"))
-
+source("visualization/visualize_stan_model.R")

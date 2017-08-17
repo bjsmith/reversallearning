@@ -68,7 +68,7 @@ dataList <- list(
 # m3 <- stan_model("~/Box Sync/MIND_2017/Hackathon/Ben/prl_ben_decay.stan")
 # m4 <- stan_model("~/Box Sync/MIND_2017/Hackathon/Ben/prl_ben_v3.stan")
 base.model<- stan_model("stan/prl_ben_v3_orig.stan")
-fit4 <- vb(base.model, data = dataList, 
+fit <- vb(base.model, data = dataList, 
            pars = c("mu_alpha", "mu_beta", 
                     "sigma",
                     "alpha", "beta", 
@@ -76,7 +76,7 @@ fit4 <- vb(base.model, data = dataList,
            adapt_engaged = F, eta = 1)
 
 group.model<- stan_model("stan/prl_ben_v3_group.stan")
-fit4 <- vb(group.model, data = dataList, 
+fit.group <- vb(group.model, data = dataList, 
            pars = c("mu_alpha", "mu_beta", 
                     "sigma",
                     "alpha", "beta", 
@@ -84,7 +84,7 @@ fit4 <- vb(group.model, data = dataList,
            adapt_engaged = F, eta = 1)
 
 group.rp.model<- stan_model("stan/prl_ben_v3_group_rp.stan")
-fit4 <- vb(group.rp.model, data = dataList, 
+fit.group.rp <- vb(group.rp.model, data = dataList, 
            pars = c("mu_alpha", "mu_beta", 
                     "sigma",
                     "alpha", "beta", 
@@ -92,9 +92,9 @@ fit4 <- vb(group.rp.model, data = dataList,
            adapt_engaged = F, eta = 1)
 
 
-traceplot(fit4)
-stan_plot(fit4, "alpha", show_density = T)
-loo(extract(fit4)$log_lik)
+traceplot(fit)
+stan_plot(fit, "alpha", show_density = T)
+loo(extract(fit)$log_lik)
 
 parVals <- extract(fit4)
 

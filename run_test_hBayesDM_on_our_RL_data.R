@@ -26,6 +26,7 @@ rl.all.subjects.list.reward.complete<-rl.all.subjects.list.complete[Motivation==
 rl.all.subjects.list.punishment.complete<-rl.all.subjects.list.complete[Motivation=="punishment"]
 
 library(parallel)
+
 #prl_rp
 hbayesdmPackage.format<-data.frame(
   "subjID"=rl.all.subjects.list.reward.complete$subid,
@@ -44,7 +45,7 @@ hbayesdmPackage.format<-data.frame(
   "SubjectGroup"=as.numeric(rl.all.subjects.list.reward.complete$RiskLabel))
 filename<-"../data/all_subjs_datacomplete_punishment.txt"
 write.table(hbayesdmPackage.format,filename,row.names = FALSE)
-# 
+
 # hbayesdmPackage_image10.format<-data.frame(
 #   "subjID"=rl.all.subjects.list.reward.complete$subid,
 #   "choice"=rl.all.subjects.list.reward.complete$response_key,
