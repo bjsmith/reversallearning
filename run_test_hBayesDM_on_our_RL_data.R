@@ -32,7 +32,7 @@ hbayesdmPackage.format<-data.frame(
   "subjID"=rl.all.subjects.list.reward.complete$subid,
   "choice"=rl.all.subjects.list.reward.complete$response_key,
   "outcome"=rl.all.subjects.list.reward.complete$score,
-  "cue"=rl.all.subjects.list.reward.complete$trial,
+  "cue"=rl.all.subjects.list.reward.complete$image,
   "SubjectGroup"=as.numeric(rl.all.subjects.list.reward.complete$RiskLabel))
 filename<-"../data/all_subjs_datacomplete_reward.txt"
 write.table(hbayesdmPackage.format,filename,row.names = FALSE)
@@ -41,7 +41,7 @@ hbayesdmPackage.format<-data.frame(
   "subjID"=rl.all.subjects.list.punishment.complete$subid,
   "choice"=rl.all.subjects.list.punishment.complete$response_key,
   "outcome"=rl.all.subjects.list.punishment.complete$score,
-  "cue"=rl.all.subjects.list.punishment.complete$trial,
+  "cue"=rl.all.subjects.list.punishment.complete$image,
   "SubjectGroup"=as.numeric(rl.all.subjects.list.reward.complete$RiskLabel))
 filename<-"../data/all_subjs_datacomplete_punishment.txt"
 write.table(hbayesdmPackage.format,filename,row.names = FALSE)
