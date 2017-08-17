@@ -103,6 +103,8 @@ names(pred) <- c("subjID", "trial", "pred")
 
 new_pred <- pred[pred$pred!=0,]
 
+source("visualization/visualize_stan_model.R")
+visualize_stan_model(fit,rawdata.rewardonly)
 # all_data <- cbind(rawdata, new_pred)
 # all_data$round_pred <- round(all_data$pred)
 # 
