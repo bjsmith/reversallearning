@@ -10,10 +10,10 @@ colnames(rl.all.subjects.list)
 #this might be a big simultaneous equation - it's over-determined...well...we have different samples for each of the 
 length(table(rl.all.subjects.list[,subid]))
 class(rl.all.subjects.list)
-View(rl.all.subjects.list[subid==101 & trial==4])
+View(rl.all.subjects.list[subid==101 & image==4])
 View(rl.all.subjects.list[,.(Count=.N),by=.(subid,presentation_n)][,.(Mean=mean(Count),Max=max(Count)),subid])
 
-table(rl.all.subjects.list[subid==101,trial]
+table(rl.all.subjects.list[subid==101,image])
 
 delta_for_Q_a_t<-function(R_t, Q_at_a_t){
   #alpha=learning rate
