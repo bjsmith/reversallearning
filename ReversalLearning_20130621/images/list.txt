@@ -1,0 +1,174 @@
+Folder PATH listing
+Volume serial number is 56B0-29CE
+E:.
+©¦  list.cmd
+©¦  list.txt
+©¦  
+©À©¤1
+©¦  ©À©¤1
+©¦  ©¦  ©¦  abs82.jpg
+©¦  ©¦  ©¦  
+©¦  ©¦  ©À©¤1
+©¦  ©¦  ©¦      abs4.jpg
+©¦  ©¦  ©¦      abs40.jpg
+©¦  ©¦  ©¦      abs5.jpg
+©¦  ©¦  ©¦      abs6.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤2
+©¦  ©¦  ©¦      abs10.jpg
+©¦  ©¦  ©¦      abs19.jpg
+©¦  ©¦  ©¦      abs8.jpg
+©¦  ©¦  ©¦      abs9.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤3
+©¦  ©¦  ©¦      abs38.jpg
+©¦  ©¦  ©¦      abs43.jpg
+©¦  ©¦  ©¦      abs48.jpg
+©¦  ©¦  ©¦      abs64.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤4
+©¦  ©¦  ©¦      abs32.jpg
+©¦  ©¦  ©¦      abs61.jpg
+©¦  ©¦  ©¦      abs79.jpg
+©¦  ©¦  ©¦      abs99.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤5
+©¦  ©¦  ©¦      abs35.jpg
+©¦  ©¦  ©¦      abs53.jpg
+©¦  ©¦  ©¦      abs76.jpg
+©¦  ©¦  ©¦      abs92.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©¸©¤6
+©¦  ©¦          abs59.jpg
+©¦  ©¦          abs84.jpg
+©¦  ©¦          abs86.jpg
+©¦  ©¦          abs87.jpg
+©¦  ©¦          
+©¦  ©¸©¤2
+©¦      ©¦  abs28.jpg
+©¦      ©¦  
+©¦      ©À©¤1
+©¦      ©¦      abs74.jpg
+©¦      ©¦      abs75.jpg
+©¦      ©¦      abs94.jpg
+©¦      ©¦      abs95.jpg
+©¦      ©¦      
+©¦      ©À©¤2
+©¦      ©¦      abs73.jpg
+©¦      ©¦      abs90.jpg
+©¦      ©¦      abs91.jpg
+©¦      ©¦      abs98.jpg
+©¦      ©¦      
+©¦      ©À©¤3
+©¦      ©¦      abs41.jpg
+©¦      ©¦      abs42.jpg
+©¦      ©¦      abs69.jpg
+©¦      ©¦      abs72.jpg
+©¦      ©¦      
+©¦      ©À©¤4
+©¦      ©¦      abs77.jpg
+©¦      ©¦      abs78.jpg
+©¦      ©¦      abs85.jpg
+©¦      ©¦      abs88.jpg
+©¦      ©¦      
+©¦      ©À©¤5
+©¦      ©¦      abs100.jpg
+©¦      ©¦      abs27.jpg
+©¦      ©¦      abs62.jpg
+©¦      ©¦      abs80.jpg
+©¦      ©¦      
+©¦      ©¸©¤6
+©¦              abs22.jpg
+©¦              abs81.jpg
+©¦              abs89.jpg
+©¦              abs93.jpg
+©¦              
+©À©¤2
+©¦  ©À©¤1
+©¦  ©¦  ©¦  abs67.jpg
+©¦  ©¦  ©¦  
+©¦  ©¦  ©À©¤1
+©¦  ©¦  ©¦      abs14.jpg
+©¦  ©¦  ©¦      abs15.jpg
+©¦  ©¦  ©¦      abs39.jpg
+©¦  ©¦  ©¦      abs50.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤2
+©¦  ©¦  ©¦      abs33.jpg
+©¦  ©¦  ©¦      abs36.jpg
+©¦  ©¦  ©¦      abs63.jpg
+©¦  ©¦  ©¦      abs65.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤3
+©¦  ©¦  ©¦      abs1.jpg
+©¦  ©¦  ©¦      abs2.jpg
+©¦  ©¦  ©¦      abs46.jpg
+©¦  ©¦  ©¦      abs71.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤4
+©¦  ©¦  ©¦      abs37.jpg
+©¦  ©¦  ©¦      abs66.jpg
+©¦  ©¦  ©¦      abs68.jpg
+©¦  ©¦  ©¦      abs96.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©À©¤5
+©¦  ©¦  ©¦      abs18.jpg
+©¦  ©¦  ©¦      abs21.jpg
+©¦  ©¦  ©¦      abs30.jpg
+©¦  ©¦  ©¦      abs51.jpg
+©¦  ©¦  ©¦      
+©¦  ©¦  ©¸©¤6
+©¦  ©¦          abs16.jpg
+©¦  ©¦          abs17.jpg
+©¦  ©¦          abs20.jpg
+©¦  ©¦          abs55.jpg
+©¦  ©¦          
+©¦  ©¸©¤2
+©¦      ©¦  abs7.jpg
+©¦      ©¦  
+©¦      ©À©¤1
+©¦      ©¦      abs31.jpg
+©¦      ©¦      abs56.jpg
+©¦      ©¦      abs57.jpg
+©¦      ©¦      abs58.jpg
+©¦      ©¦      
+©¦      ©À©¤2
+©¦      ©¦      abs29.jpg
+©¦      ©¦      abs34.jpg
+©¦      ©¦      abs44.jpg
+©¦      ©¦      abs45.jpg
+©¦      ©¦      
+©¦      ©À©¤3
+©¦      ©¦      abs47.jpg
+©¦      ©¦      abs49.jpg
+©¦      ©¦      abs60.jpg
+©¦      ©¦      abs70.jpg
+©¦      ©¦      
+©¦      ©À©¤4
+©¦      ©¦      abs25.jpg
+©¦      ©¦      abs26.jpg
+©¦      ©¦      abs83.jpg
+©¦      ©¦      abs97.jpg
+©¦      ©¦      
+©¦      ©À©¤5
+©¦      ©¦      abs11.jpg
+©¦      ©¦      abs12.jpg
+©¦      ©¦      abs52.jpg
+©¦      ©¦      abs54.jpg
+©¦      ©¦      
+©¦      ©¸©¤6
+©¦              abs13.jpg
+©¦              abs23.jpg
+©¦              abs24.jpg
+©¦              abs3.jpg
+©¦              
+©¸©¤practice
+        abs1_practice.jpg
+        abs2_practice.jpg
+        abs3_practice.jpg
+        abs4_practice.jpg
+        abs5_practice.jpg
+        abs6_practice.jpg
+        abs7_practice.jpg
+        abs8_practice.jpg
+        

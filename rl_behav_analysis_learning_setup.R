@@ -44,7 +44,7 @@ for (condition in c(
     mat.data<-readMat(sub.filename)
     sub.data<-as.data.frame(mat.data$RL)
     colnames(sub.data)<-
-      c("ID","trial","cor_res","Condition","response_key","reaction_time",
+      c("ID","image","cor_res","Condition","response_key","reaction_time",
         "score","onset_time_designed","onset_time_actual",
         "reversal_trial","runid","blockid")
     
@@ -64,7 +64,7 @@ for (condition in c(
     #get order for 
     
     aggregate(sub.data$onset_time_actual,
-              by=list(sub.data$trial),
+              by=list(sub.data$image),
               order)
     
     sub.data.table<-data.table(sub.data)
@@ -72,15 +72,15 @@ for (condition in c(
       sub.data.table[onset_time_actual==0,onset_time_actual:=NA]
       warning(paste("an onset_time_actual of 0 was found for a subject with sub.filename",sub.filename,"\nThis is not necessarily a problem, but it does indicate some irregulary in that subject's data.\nThe onset times for those presentations havae been modified to be \"NA\"."))
     }
-    sub.data.table[,presentation_n:=.(order(onset_time_actual)),by=trial]
+    sub.data.table[,presentation_n:=.(order(onset_time_actual)),by=image]
     #set a presentation order relative to the reversal.
     #presentation 0 will be the first presentation after reversal
     #and other presentations will be numbered relative to that. 
     #get the minimum presentation_n_raw where reversal_trail==1, for each trial
     sub.data.table<-
       merge(sub.data.table,
-            sub.data.table[reversal_trial==1,.(first_reversal=min(presentation_n)),by=trial],
-            by="trial",all=TRUE)
+            sub.data.table[reversal_trial==1,.(first_reversal=min(presentation_n)),by=image],
+            by="image",all=TRUE)
     #some trials had NO reversals; their "reversal_trial" ID will be NA.
     #Those ARE appropriate for learning about reversal
     #but they would be INAPPROPRIATE to include in "reversal trial" graphs where we look at learning relative to reversal
@@ -161,7 +161,7 @@ break.labels=c("1\nPre-reversal",2:8,"1\nReversal",2:5)
 accuracy.by.pres_seg.subid<-rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,subid,Motivation)]
 
 accuracy.by.pres_seg.image<-
-  rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,Motivation,trial)]
+  rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,Motivation,image)]
 
 accuracy.by.pres_seg<-
   rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,Motivation)]

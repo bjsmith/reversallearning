@@ -8,6 +8,7 @@ library(ggplot2)
 
 # Function to replace cue index with it's cumulative frequency
 freq_replace <- function(x,by_var=NULL) {
+<<<<<<< HEAD
   if (is.null(by_var)) {
     new_x <- vector(length=length(x))
     un_x <- unique(x)
@@ -29,6 +30,10 @@ freq_replace <- function(x,by_var=NULL) {
     }
   }
   return(new_x)
+=======
+  source("util/get_cue_index_from_cum_freq.R")
+  return(get_cue_index_from_cum_freq(x,by_var))
+>>>>>>> 807984f32b4471d46c95926ab5efc376567a2c47
 }
 
 # Read in raw data
@@ -161,6 +166,7 @@ traceplot(fit3)
 stan_plot(fit7, "alpha", show_density = T)
 loo(extract(fit3)$log_lik)
 
+<<<<<<< HEAD
 # Compute AUC
 parVals <- extract(fit3)
 pred <- reshape2::melt(apply(parVals$y_hat, c(2,3), mean))
@@ -189,3 +195,6 @@ ggplot(plot_data, aes(x = cue_freq, y = actual_correct, group = subjID)) +
   geom_line(aes(y = pred_correct, color = I("red"))) + 
   facet_wrap(c("subjID"))
 
+=======
+source("visualization/visualize_stan_model.R")
+>>>>>>> 807984f32b4471d46c95926ab5efc376567a2c47

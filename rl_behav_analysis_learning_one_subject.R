@@ -7,7 +7,7 @@ library(ggplot2)
 mat.data<-readMat("RL_behav/rlp_sub102_run1_09-Mar_10-18.mat")
 sub.data<-as.data.frame(mat.data$RL)
 colnames(sub.data)<-
-  c("ID","trial","cor_res","Condition","response_key","reaction_time",
+  c("ID","image","cor_res","Condition","response_key","reaction_time",
     "score","onset_time_designed","onset_time_actual",
     "reversal_trial","runid","blockid")
 
@@ -27,12 +27,12 @@ colnames(sub.data)<-
 #get order for 
 
 aggregate(sub.data$onset_time_actual,
-          by=list(sub.data$trial),
+          by=list(sub.data$image),
           order)
 
 sub.data.table<-data.table(sub.data)
 
-sub.data.table[,presentation_n:=.(order(onset_time_actual)),by=trial]
+sub.data.table[,presentation_n:=.(order(onset_time_actual)),by=image]
 
 #now plot % correct scores for each presentation across trials
 sub.data.table[,correct:=.(score==1)]
