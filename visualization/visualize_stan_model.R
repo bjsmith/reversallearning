@@ -1,7 +1,10 @@
+source("util/get_cue_index_from_cum_freq.R")
 library(dplyr)
-visualize_stan_model <- function(fit,ds){
+#install.packages("pROC")
+library(pROC)
+visualize_stan_model <- function(modelfit,ds){
   # Compute AUC
-  parVals <- extract(fit)
+  parVals <- rstan::extract(modelfit)
   pred <- reshape2::melt(apply(parVals$y_hat, c(2,3), mean))
   names(pred) <- c("subid", "trial", "pred")
   new_pred <- pred[pred$pred!=0,]
@@ -12,11 +15,16 @@ visualize_stan_model <- function(fit,ds){
   
   
   # Create cumulative frequency 
-  all_data$cue_freq <- freq_replace(all_data$cue, by_var = all_data$subid)
+  all_data$cue_freq <- get_cue_index_from_cum_freq(all_data$cue, by_var = all_data$subid)
   
   # correct % of subject and model
   all_data$actual_correct <- ifelse(all_data$outcome==1, 1, 0)
-  all_data$pred_correct <- ifelse((all_data$round_pred==all_data$choice & all_data$outcome==1) | (all_data$round_pred!=all_data$choice & all_data$outcome!=1), 1, 0)
+  all_data$pred_correct <- ifelse(
+    (all_data$round_pred==all_data$choice & all_data$outcome==1) 
+    | (all_data$round_pred!=all_data$choice & all_data$outcome!=1)
+    #if the rounded prediction is equal to 
+    ,1, 0)
+  
   
   plot_data <- all_data %>% 
     group_by(subid,cue_freq) %>% 
