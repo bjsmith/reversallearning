@@ -11,6 +11,7 @@ from nltools.datasets import fetch_pain
 import numpy
 import pandas
 from nltools.data import Brain_Data
+from nltools.file_reader import onsets_to_dm
 
 #could do it here or could grab a set of raw (per-study) images from neurosynth
 #and repeatedly 
@@ -80,5 +81,17 @@ msm_dat = pd.DataFrame(data=
                     {'PredictedPain':msm_predicted_pain,
                      'Timepoint':msmrl1.X['TimePoint']})
 
+    
 with sns.plotting_context(context='paper',font_scale=2):
     sns.factorplot(data=msm_dat,x='Timepoint',y='PredictedPain')
+    
+
+#file should have headers: Stim,Onset,Duration
+#Onset and Duration should both be set in seconds.
+onsets=onsets_to_dm(
+        '/Users/benjaminsmith/Documents/MIND/data/reversallearning/test_onsetfile.txt',
+             TR=2,
+             runLength=180)
+onsets.sampling_rate=2
+#I believe there is a bug in the code here which means we have to set Sampling Rate twice.
+onsets.convolve()
