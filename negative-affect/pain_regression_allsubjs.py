@@ -73,7 +73,7 @@ class RLPain:
                     onset_file=self.onset_dir + '/runfiledetail20170820T012610_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
                     if (os.path.isfile(onset_file)):
                         print ('we have a match!')
-                        print("done the regressing :-)")
+                        #print("done the regressing :-)")
 
 
                         msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
