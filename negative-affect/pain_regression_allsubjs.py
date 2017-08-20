@@ -34,7 +34,7 @@ class RLPain:
         self.decoder_file = ''
         self.stats=None
 
-    def compile_pain_decoder(self,pain_dir=None)
+    def compile_pain_decoder(self,pain_dir=None):
         print("compiling pain dir")
 
         if os.path.isfile(self.decoder_file):
