@@ -12,7 +12,8 @@ for (sid in unique(rl.all.subjects.list$subid)){
       
       run.ds<-rl.all.subjects.list[subid==sid & Motivation==m & 
                                    runid==r]
-      runfiletext<-apply(run.ds[order(onset_time_actual)],1,function(r){
+      runfiletext<-paste0(c("Stim,Onset,Duration\n",
+        apply(run.ds[order(onset_time_actual)],1,function(r){
         #right, we have the right scope.
         #let's record PRESENTATION and FEEDBACK 
         #stim_dur=1; (or as long as the user took to respond, whichever is less)
@@ -94,7 +95,7 @@ for (sid in unique(rl.all.subjects.list$subid)){
                   ,collapse = ","),"\n"))
         }
         return(presentation_lines)
-      })
+      })))
       write( paste0(runfiletext,collapse=""),file=
               paste0(
         "../data/runfiles/",

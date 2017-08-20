@@ -6,16 +6,21 @@ Created on Thu Aug 17 16:51:53 2017
 @author: benjaminsmith
 """
 
-
+from ggplot import *
 from nltools.datasets import fetch_pain
-import numpy
+import numpy as np
 import pandas
 from nltools.data import Brain_Data
 from nltools.file_reader import onsets_to_dm
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 #could do it here or could grab a set of raw (per-study) images from neurosynth
 #and repeatedly 
 pdata = fetch_pain()
+
+pdata = Brain_Data(pdata)
 
 print(len(pdata))
 
@@ -49,9 +54,7 @@ stats = data_train.predict(algorithm='ridge',plot=False)
 
 
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
+
 
 #test
 predicted_pain=data_test.similarity(stats['weight_map'],'dot_product') + stats['intercept']
@@ -70,9 +73,33 @@ with sns.plotting_context(context='paper',font_scale=2):
 #ideally a linear repeated-measures model or something
 #but Luke 
 
+#sub113
+sub113_onset_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles/runfilepunishmentcompare20170819T170218_s113_punishment_r1.txt'
+msmrl1=Brain_Data('/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed/sub113/ReversalLearningPunishrun1.nii.gz')
+type(msmrl1)
+msmrl1.shape()
 
-msmrl1=Brain_Data('/Users/benjaminsmith/Documents/MIND/data/reversallearning/ReversalLearningPunishrun1.nii.gz')
 
+datamean=np.mean(msmrl1.data,axis=1)
+
+with sns.plotting_context(context='paper',font_scale=2):
+    sns.factorplot(data=pd.DataFrame(data=
+                    {'ImageMean':datamean,
+                     'Timepoint':range(1,361)})
+    ,x='Timepoint',y='ImageMean')
+    
+
+msmrl1_demeaned=msmrl1-datamean
+datamean.shape()
+msmrl1.shape()
+data_demeaned_mean=np.mean(msmrl1.data,axis=1)
+with sns.plotting_context(context='paper',font_scale=2):
+    sns.factorplot(data=pd.DataFrame(data=
+                    {'ImageMean':data_demeaned_mean,
+                     'Timepoint':range(1,361)})
+    ,x='Timepoint',y='ImageMean')
+datamean
+meanres.X
 msmrl1.X["TimePoint"]=range(1,len(msmrl1)+1)
 msmrl1.X=pd.DataFrame(data={'TimePoint':range(1,len(msmrl1)+1)})
 
@@ -81,17 +108,66 @@ msm_dat = pd.DataFrame(data=
                     {'PredictedPain':msm_predicted_pain,
                      'Timepoint':msmrl1.X['TimePoint']})
 
+
+#this is not ideal at all but...
+msmrl1_detrended=msmrl1.detrend()
+
+
+data_detrended_mean=np.mean(msmrl1_detrended.data,axis=1)
+with sns.plotting_context(context='paper',font_scale=2):
+    sns.factorplot(data=pd.DataFrame(data=
+                    {'ImageMean':data_detrended_mean,
+                     'Timepoint':range(1,361)})
+    ,x='Timepoint',y='ImageMean')
     
 with sns.plotting_context(context='paper',font_scale=2):
     sns.factorplot(data=msm_dat,x='Timepoint',y='PredictedPain')
     
 
+msm_predicted_pain=msmrl1_detrended.similarity(stats['weight_map'],'correlation')# + stats['intercept']
+msm_dat = pd.DataFrame(data=
+                    {'PredictedPain':msm_predicted_pain,
+                     'Timepoint':msmrl1_detrended.X['TimePoint']})
+with sns.plotting_context(context='paper',font_scale=2):
+    sns.factorplot(data=msm_dat
+    ,x='Timepoint',y='PredictedPain')
+    
+
 #file should have headers: Stim,Onset,Duration
 #Onset and Duration should both be set in seconds.
 onsets=onsets_to_dm(
-        '/Users/benjaminsmith/Documents/MIND/data/reversallearning/test_onsetfile.txt',
+        sub113_onset_file,
              TR=2,
-             runLength=180)
+             runLength=msmrl1.shape()[0]
+)
 onsets.sampling_rate=2
 #I believe there is a bug in the code here which means we have to set Sampling Rate twice.
-onsets.convolve()
+onsets_convolved=onsets.convolve()
+
+list(onsets_convolved)
+
+#graph the pain activity against the pain regressor
+msm_dat = pd.DataFrame(data=
+                    {'PredictedPain':msm_predicted_pain,
+                     'Timepoint':msmrl1_detrended.X['TimePoint']})
+with sns.plotting_context(context='paper',font_scale=2):
+    sns.factorplot(data=msm_dat
+    ,x='Timepoint',y='PredictedPain')
+    
+    
+msmrl1_detrended
+    
+np.corrcoef(onsets_convolved["AllS_error_Fdbk_alli_c0"],
+            msm_predicted_pain
+            )
+
+np.corrcoef(onsets_convolved["AllS_correct_Fdbk_alli_c0"],
+            msm_predicted_pain
+            )
+
+with sns.plotting_context(context='paper',font_scale=2):
+    sns.factorplot(data=pd.DataFrame(data=
+                    {'PredictedPain':msm_predicted_pain,
+                     'Timepoint':msmrl1_detrended.X['TimePoint'],
+                     'AllS_error_Fdbk_alli_c0':onsets_convolved["AllS_correct_Fdbk_alli_c0"]
+                     }),x='Timepoint',y=['PredictedPain','AllS_error_Fdbk_alli_c0'])
