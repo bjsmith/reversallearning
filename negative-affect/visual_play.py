@@ -8,7 +8,7 @@ rlp.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/b
 rlp.compile_pain_decoder()
 
 sid=113
-rid=1
+rid=2
 
 nifti_file = rlp.fMRI_dir + '/sub' + str(sid) + 'ReversalLearningPunishrun' + str(rid)
 
@@ -19,7 +19,7 @@ nifti_file = rlp.fMRI_dir + '/sub' + str(sid) + 'ReversalLearningPunishrun' + st
 
 #detailed
 
-onset_file = rlp.onset_dir + '/runfiledetail20170820T001729_s' + str(sid) + '_punishment_r' + str(
+onset_file = rlp.onset_dir + '/runfiledetail20170820T012610_s' + str(sid) + '_punishment_r' + str(
     rid) + '.txt'
 predicted_pain_detailed = rlp.get_trialtype_pain_regressors(nifti_file, onset_file)
 
@@ -51,6 +51,11 @@ onsets_convolved['linearterm'] = range(1, 361)
 onsets_convolved['quadraticterm'] = [pow(x, 2) for x in onsets_convolved['linearterm']]
 onsets_convolved['cubicterm'] = [pow(x, 3) for x in onsets_convolved['linearterm']]
 onsets_convolved['ones'] = [1] * 360
+for c in onsets_convolved.columns:
+    if sum(onsets_convolved.ix[:, c]) <= 0:
+        print(c)
+        del onsets_convolved[c]
+
 msmrl1.X = onsets_convolved
 print("convolved onsets; regressing...")
 # regress

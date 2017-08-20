@@ -122,7 +122,7 @@ write_nltools_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=for
                   revtrialcode,
                   behaviorcode,
                   stimtype,
-                  #paste0("i",r[["image"]]),#image
+                  paste0("i",r[["image"]]),#image
                   segmentNum)
                 ,collapse="_"))
             presentation_lines=paste0(c(

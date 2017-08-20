@@ -70,7 +70,7 @@ class RLPain:
                 if os.path.isfile(nifti_file+'.nii.gz'):
                     print(self.fMRI_dir)
                     #got an nii.gz, check tosee if there's also a onset file for this.
-                    onset_file=self.onset_dir + '/runfiledetail20170820T001729_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
+                    onset_file=self.onset_dir + '/runfiledetail20170820T012610_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
                     if (os.path.isfile(onset_file)):
                         print ('we have a match!')
                         print("done the regressing :-)")
@@ -83,13 +83,15 @@ class RLPain:
                                   'w') as csvfile:
                             w = csv.DictWriter(csvfile, msm_predicted_pain_dict.keys())
                             w.writeheader()
-                            for key, value in msm_predicted_pain_dict.items():
-                                w.writerow([key, value])
+                            w.writerow(msm_predicted_pain_dict)
+
+                            #for key, value in msm_predicted_pain_dict.items():
+                            #    w.writerow([key, value])
 
              #               if (header_written==False):
              #                   w.writeheader()
              #                   header_written=True
-                            w.writerow(msm_predicted_pain_dict)
+
                         #attach the subject and run ID to the output and concatenate.
         #if(csvfile is not None):
         #    csvfile.close(self)
@@ -139,7 +141,13 @@ class RLPain:
         #process the onset files
         #
         onsets.sampling_rate=2
+
         onsets_convolved=onsets.convolve()
+
+        for c in onsets_convolved.columns:
+            if sum(onsets_convolved.ix[:, c]) <= 0:
+                print('deleting '+ str(c))
+                del onsets_convolved[c]
 
         onsets_convolved['linearterm']=range(1,361)
         onsets_convolved['quadraticterm']=[pow(x,2) for x in onsets_convolved['linearterm']]
