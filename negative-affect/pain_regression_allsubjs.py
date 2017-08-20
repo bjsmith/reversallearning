@@ -34,20 +34,23 @@ class RLPain:
         self.decoder_file = ''
         self.stats=None
 
-    def compile_pain_decoder(self):
+    def compile_pain_decoder(self,pain_dir=None)
         print("compiling pain dir")
 
         if os.path.isfile(self.decoder_file):
             print("pain data pre-saved, loading...")
-            stats = pickle.load(open(self.decoder_file,"rb"))
+            stats = pickle.load(open(self.decoder_file, "rb"))
 
-             #pdata = Brain_Data(self.decoder_file)
+            # pdata = Brain_Data(self.decoder_file)
         else:
             print("pain data doesn't exist, getting...")
-            pdata = fetch_pain()
+            if (pain_dir is None):
+                pdata = fetch_pain()
+            else:
+                pdata = fetch_pain(pain_dir)
             pdata.Y = pdata.X["PainLevel"]
             stats = pdata.predict(algorithm='ridge', plot=False)
-            with open(self.decoder_file,"wb") as f:
+            with open(self.decoder_file, "wb") as f:
                 pickle.dump(stats, f, pickle.HIGHEST_PROTOCOL)
 
         print ("pain data loaded.")
