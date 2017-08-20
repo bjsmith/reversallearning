@@ -1,5 +1,7 @@
 source("write_nltools_stim_fileset.R")
-write_nltools_stim_fileset(rl.all.subjects.list[Motivation=="punishment"],filePrefix="detail")
+write_nltools_stim_fileset(rl.all.subjects.list[Motivation=="punishment"],filePrefix="detail",
+                           combinePresentationFeedback=TRUE,
+                           minTrialTime=2)
 
 
 # View(rl.all.subjects.list[subid==153,])
