@@ -1,0 +1,48 @@
+---
+title: "Reversal learning data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("display_setup.R")
+
+```
+
+## Reversal learning data
+
+Our reversal learning data contains data about a fairly large number of subjects.
+
+Here you can see their behavior over time.
+```{r plotlydemo}
+library(plotly)
+
+main.prop.cor.ggplot<-
+  ggplot(accuracy.by.pres_seg.subid[!is.na(presentation_n_over_segments)],
+       aes(x=presentation_n_over_segments,y=prop.correct,group=subid))+
+  geom_line(aes(colour=final.prop.correct),size=1.5,alpha=0.3)+ scale_colour_gradientn(colours=c("red","green","blue","violet"))+
+  #scale_x_continuous(breaks=-8:4,labels=break.labels)+
+  labs(#x="Presentation",
+    y="Proportion correct across all images by user",
+    title=paste0("proportion correct across all images by user\n from start to finish of reversal learning"))+
+  geom_smooth(group=1,color="black",span=1)+
+  #geom_line(data=accuracy.by.pres_seg.subid.summary,aes(x=presentation_n_over_segments,y=prop.correct.m,group=NULL))+
+      facet_grid(Motivation ~ .)+
+  geom_vline(aes(xintercept=8),linetype=2)+geom_vline(aes(xintercept=13),linetype=2)+
+  #theme(strip.text.y=element_text(colour="orange"))+
+  reversal_learning_timeline_ggplot_commands+
+  geom_hline(data=accuracy.by.pres_seg.subid.summary[presentation_n_over_segments==5],
+             aes(yintercept = prop.correct.m),
+             linetype=2)+
+  geom_hline(data=accuracy.by.pres_seg.subid.summary[presentation_n_over_segments==13],
+             aes(yintercept = prop.correct.m),
+             linetype=2)
+
+ggplotly(main.prop.cor.ggplot)
+
+```
+
+
+```{r plotlyshinydemo}
+source("shiny_graph_backend.R")
+```
