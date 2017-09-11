@@ -5,8 +5,5 @@
 .DS_Store
 Icon\r
 Icon?
-<<<<<<< Updated upstream
-=======
 .*
 !/.gitignore
->>>>>>> Stashed changes
