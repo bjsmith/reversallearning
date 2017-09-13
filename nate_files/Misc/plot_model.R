@@ -1,5 +1,5 @@
 plot_model <- function(x, single = T, compute_auc = T) {
-  parVals <- extract(x$fit)
+  parVals <- rstan::extract(x$fit)
   
   for_plot <- NULL
   for_plot$subjID <- reshape2::melt(apply(parVals$p_subjID, c(2,3), mean, na.rm=T))[,3]
@@ -48,6 +48,7 @@ plot_model <- function(x, single = T, compute_auc = T) {
   if (compute_auc) {
     auc_dat <- x$plot_object %>% group_by(subjID) %>% 
       summarize(auc_score = as.numeric(roc(choice,y_hat)[["auc"]]))
+    print("Estimated area under the curve:")
     print(t.test(auc_dat$auc_score, mu = 0.5))
   }
   return(p)

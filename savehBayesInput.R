@@ -1,3 +1,4 @@
+#this file is written to generate hierarchical bayesian data from the learning setup.
 source("get_risk_group.R")
 
 #install.packages("hBayesDM")

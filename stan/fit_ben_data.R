@@ -107,10 +107,10 @@ fit4_mc <- sampling(m4, data = dataList,
 
 traceplot(fit6)
 stan_plot(fit6, "alpha", show_density = T)
-loo(extract(fit4_mc)$log_lik)
+loo(rstan::extract(fit4_mc)$log_lik)
 
 # Compute AUC
-parVals <- extract(fit6)
+parVals <- rstan::extract(fit6)
 pred <- reshape2::melt(apply(parVals$y_hat, c(2,3), mean))
 names(pred) <- c("subjID", "trial", "pred")
 new_pred <- pred[pred$pred!=0,]

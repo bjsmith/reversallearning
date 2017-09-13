@@ -1,0 +1,88 @@
+---
+title: "run single and multigroup double update models"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(rstan)
+library(ggplot2)
+```
+
+# doubble update model, single groups
+
+
+First, we want to try fitting the risky meth group. After that we can try fitting the risky non-meth group.
+
+So far these are constrained to one run only each. The extra run would add extra complications. We need to add one additional complication at a time!
+```{r double_update_risky_meth_group}
+source("fitGroupsV3OnegroupRun1.R")
+fit<-fitGroupsV3OnegroupRun1(run=1,fit_meth_group = T,fit_risky_group = T)
+```
+
+
+```{r simple_decay_risky_meth_group}
+source("fitGroupsV3OnegroupRun1.R")
+
+fit<-fitGroupsV3OnegroupRun1(run=1,fit_meth_group = F,fit_risky_group = T)
+
+#try to get some info about the fit.
+
+```
+
+
+
+
+
+```{r double_update_risky_nonmeth_group, echo=TRUE}
+
+source("fitGroupsV3OnegroupRun1.R")
+
+fit<-lookupOrRunFit(run=1,fit_meth_group = F,fit_risky_group = T,model_to_use="double_update")
+
+#try to get some info about the fit.
+#mu_p[1] is estimated mean alpha [learning rate] across subjects
+#mu_p[2] is estimated mean beta [inverse temperature]
+#sigma[1] is estimated variance alpha
+#sigma[2] is estimated variance beta
+#Accessing the contents of a stanfit object
+#https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html
+
+fit.extracted<-rstan::extract(fit$fit)
+
+learning.rate.estimate<-data.table(mean=fit.extracted$mu_p[,1],
+                                   variance=fit.extracted$sigma[,1])
+inverse.temperature.estimate<-data.table(mean=fit.extracted$mu_p[,2],
+                                   variance=fit.extracted$sigma[,2])
+ggplot(learning.rate.estimate,aes(x=mean,y=variance))+geom_point()
+ggplot(inverse.temperature.estimate,aes(x=mean,y=variance))+geom_point()
+```
+
+Apparently we have negative learning rates and inverse temperatures here.
+
+What about run 1, meth group?
+```{r double_update_risky_nonmeth_group, echo=TRUE}
+
+source("fitGroupsV3OnegroupRun1.R")
+
+fit<-lookupOrRunFit(run=1,fit_meth_group = T,fit_risky_group = T,model_to_use="double_update")
+
+#try to get some info about the fit.
+#mu_p[1] is estimated mean alpha [learning rate] across subjects
+#mu_p[2] is estimated mean beta [inverse temperature]
+#sigma[1] is estimated variance alpha
+#sigma[2] is estimated variance beta
+#Accessing the contents of a stanfit object
+#https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html
+
+fit.extracted<-rstan::extract(fit$fit)
+
+learning.rate.estimate<-data.table(mean=fit.extracted$mu_p[,1],
+                                   variance=fit.extracted$sigma[,1])
+inverse.temperature.estimate<-data.table(mean=fit.extracted$mu_p[,2],
+                                   variance=fit.extracted$sigma[,2])
+ggplot(learning.rate.estimate,aes(x=mean,y=variance))+geom_point()
+ggplot(inverse.temperature.estimate,aes(x=mean,y=variance))+geom_point()
+
+```

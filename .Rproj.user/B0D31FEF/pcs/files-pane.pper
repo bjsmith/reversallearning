@@ -1,9 +1,13 @@
 {
-    "path" : "~/GDrive/joint-modeling/reversal-learning/behavioral-analysis/reversallearning/stan",
+    "path" : "~/GDrive/joint-modeling/reversal-learning/behavioral-analysis/reversallearning/nate_files",
     "sortOrder" : [
         {
             "ascending" : true,
             "columnIndex" : 2
+        },
+        {
+            "ascending" : false,
+            "columnIndex" : 4
         }
     ]
 }
