@@ -64,7 +64,7 @@ model {
     matrix[36,2] ev;
     real PEnc; # fictitious prediction error (PE-non-chosen)
     real PE;         # prediction error
-    real ev_chosen;
+    #real ev_chosen;
     #real theta;
 
     # Initialize values
@@ -142,7 +142,7 @@ generated quantities {
         PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
   
         # Store chosen EV for fictive updating
-        ev_chosen = ev[cue[i,t],choice[i,t]];
+        #ev_chosen = ev[cue[i,t],choice[i,t]];
   
         # value updating (learning)
         ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
