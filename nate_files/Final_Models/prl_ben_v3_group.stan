@@ -81,8 +81,9 @@ model {
       	PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
       	PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
 
-     	# Store chosen EV for fictive updating
-      	ev_chosen = ev[cue[i,t],choice[i,t]];
+     	  # Store chosen EV for fictive updating
+      	#ev_chosen = ev[cue[i,t],choice[i,t]];
+      	#we don't actually need this.
 
       	# value updating (learning)
       	ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
