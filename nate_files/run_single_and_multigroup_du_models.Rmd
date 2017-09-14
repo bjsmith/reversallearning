@@ -107,3 +107,6 @@ ggplot(learning.rate.estimate,aes(x=mean,y=variance))+geom_point()
 ggplot(inverse.temperature.estimate,aes(x=mean,y=variance))+geom_point()
 
 ```
+
+OK, so we are getting convergence problems here. Nathan expects that when we try to estimate two independent groups at once.
+So 

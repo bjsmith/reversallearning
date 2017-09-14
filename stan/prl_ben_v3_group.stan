@@ -48,15 +48,12 @@ transformed parameters {
 model {
   
   # Hyperparameters
-  #for (i_p in 1:2){
-  #  for (i_g in 1:Gr_N){
-  #    mu_p[i_p,i_g]  ~ normal(0, 1); #original just sampled without the loop
-  #    sigma[i_p,i_g] ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
-  #  }
-  #}
-  mu_p ~ normal(0, 1); #original just sampled without the loop
-  sigma ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
-
+  for (i_p in 1:2){
+    for (i_g in 1:Gr_N){
+      mu_p[i_p,i_g]  ~ normal(0, 1); #original just sampled without the loop
+      sigma[i_p,i_g] ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
+    }
+  }
   
   # individual parameters
   alpha_pr  ~ normal(0,1);
