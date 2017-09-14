@@ -97,10 +97,23 @@ fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_
               "switch_model", "double_update", "switch_decay", "switch_lr_double_update")
   
   # Read in raw data
-  if(!(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1)){
-    print("values other than reversal learning punishment not supported!")
+  if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
+    rawdata <- read.table("../../data/all_subjs_datacomplete_punishment.txt", header=T)
+  }else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
+    rawdata <- read.table("../../data/all_subjs_datacomplete_reward.txt", header=T)
+  }else if (rp==c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT) & length(rp)==2){
+    rawdata <- read.table("../../data/all_subjs_datacomplete_reward_and_punishment.txt", header=T)
+  }else{
+    print("unrecognized reward-punishment flag!")
   }
-  rawdata <- read.table("Data/all_subjs_datacomplete_punishment_rm153.txt", header = T)
+  if(model_rp_separately){
+    stop("we don't yet support modelling R and P separately")
+  }else{
+    print("modeling reward and punishment together, if they are both here. nothing to see here; carry on!")
+  }
+  #we gotta get the data for reversal learning reward.
+  
+  # /all_subjs_datacomplete_punishment_rm153.txt", header = T) #do we have to remove subject 153???
   names(rawdata)[1] <- c("subjID")
   
   # Separate groups (Risky Meth == 3, Risky No Meth == 2, Safe Meth == 4, Safe No Meth == 1)

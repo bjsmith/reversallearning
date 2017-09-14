@@ -45,6 +45,9 @@ write.table(rl.all.subjects.list.reward,filename,row.names = FALSE)
 filename<-"../data/all_subjs_datacomplete_punishment.txt"
 write.table(rl.all.subjects.list.punishment,filename,row.names = FALSE)
 
+filename<-"../data/all_subjs_datacomplete_reward_and_punishment.txt"
+write.table(rl.all.subjects.list.complete,filename,row.names = FALSE)
+
 #matrix of posterior estimates
 
 #subject*trial*expected_value
