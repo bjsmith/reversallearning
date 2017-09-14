@@ -7,11 +7,6 @@ data {
   int<lower=1,upper=36> N_cues[N];
   int<lower=0,upper=2> choice[N,T];
   int<lower=0,upper=36> cue[N,T];
-  int trial[N,T];
-  int cue_pos[N,T];
-  int subjid[N,T];
-  int cor_resp[N,T];
-  int cue_freq[N,T];
   real outcome[N,T];
 }
 transformed data {
@@ -48,15 +43,12 @@ transformed parameters {
 model {
   
   # Hyperparameters
-  #for (i_p in 1:2){
-  #  for (i_g in 1:Gr_N){
-  #    mu_p[i_p,i_g]  ~ normal(0, 1); #original just sampled without the loop
-  #    sigma[i_p,i_g] ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
-  #  }
-  #}
-  mu_p ~ normal(0, 1); #original just sampled without the loop
-  sigma ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
-
+  for (i_p in 1:2){
+    for (i_g in 1:Gr_N){
+      mu_p[i_p,i_g]  ~ normal(0, 1);
+      sigma[i_p,i_g] ~ cauchy(0, 1);
+    }
+  }
   
   # individual parameters
   alpha_pr  ~ normal(0,1);
@@ -68,29 +60,27 @@ model {
     real PEnc; # fictitious prediction error (PE-non-chosen)
     real PE;         # prediction error
     real ev_chosen;
-    #real theta;
+    real theta;
 
     # Initialize values
     ev[,1] = rep_vector(0, 36); # initial ev values
     ev[,2] = rep_vector(0, 36); # initial ev values
-    #theta = pow(3, beta[i]) - 1;
+    theta = pow(3, beta[i]) - 1;
 
     for (t in 1:(Tsubj[i])) {
       # compute action probabilities
-      if (choice[i,t]!=0) {
-	    choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
-	
-   	   	# prediction error
-      	PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
-      	PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
+      choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
 
-     	# Store chosen EV for fictive updating
-      	ev_chosen = ev[cue[i,t],choice[i,t]];
+      # prediction error
+      PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
+      PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
 
-      	# value updating (learning)
-      	ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
-      	ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
-      }
+      # Store chosen EV for fictive updating
+      ev_chosen = ev[cue[i,t],choice[i,t]];
+
+      # value updating (learning)
+      ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
+      ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
     }
   }
 }
@@ -123,14 +113,14 @@ generated quantities {
       matrix[36,2] ev;
       real PEnc; # fictitious prediction error (PE-non-chosen)
       real PE;         # prediction error
-      #real ev_chosen;
-      #real theta;
+      real ev_chosen;
+      real theta;
 
       # Initialize values
       log_lik[i] = 0;
       ev[,1] = rep_vector(0, 36); # initial ev values
       ev[,2] = rep_vector(0, 36); # initial ev values
-      #theta = pow(3, beta[i]) - 1;
+      theta = pow(3, beta[i]) - 1;
 
       for (t in 1:(Tsubj[i])) {
         # Iterate log-likelihood

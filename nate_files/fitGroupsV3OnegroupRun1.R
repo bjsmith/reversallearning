@@ -3,15 +3,15 @@ library(loo)
 library(dplyr)
 library(pROC)
 library(ggplot2)
-
+library(data.table)
 get_fit_desc<-function(use_model,descr,dataset="rew1_pun-1"){
   return(paste0("Fits/", use_model, "_", descr,"_",dataset, ".RData"))
 }
 
-lookupOrRunFit<-function(run=1,fit_meth_group=T,fit_risky_group=T,model_to_use="simple_decay_pain"){
+lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",includeSubjGroup){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
-  group.description<-get_group_description(fit_meth_group,fit_risky_group)
+  group.description<-get_group_description(groups_to_fit)
   fit.fileid<-get_fit_desc(model_to_use,group.description$descr)
   if (file.exists(fit.fileid)){
     print("this has already been fit! Loading...")
@@ -20,36 +20,48 @@ lookupOrRunFit<-function(run=1,fit_meth_group=T,fit_risky_group=T,model_to_use="
     return(fit_data)
   }else{
     print("This has not been previously fit. Running full model...")
-    fit<-fitGroupsV3OnegroupRun1(run,fit_meth_group,fit_risky_group,model_to_use)
+    fit<-fitGroupsV3OnegroupRun1(run,groups_to_fit,model_to_use,includeSubjGroup)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
 }
 
-get_group_description<-function(fit_meth_group,fit_risky_group){
+get_group_description<-function(groups_to_fit){
   # Separate groups (Risky Meth == 3, Risky No Meth == 2, Safe Meth == 4, Safe No Meth == 1)
-  
-  meth <- fit_meth_group  # Meth T/F
-  risk <- fit_risky_group  # Risky sex T/F
-  
-  if (meth & risk) {
-    group <- 3
-    descr <- "Risky_Meth"
-  } else if (!meth & risk) {
-    group <- 2
-    descr <- "Risky_NoMeth"
-  } else if (!meth & !risk) {
-    group <- 1
-    descr <- "Safe_NoMeth"
-  } else {
-    group <- 4
-    descr <- "Safe_Meth"
+  group<-groups_to_fit
+  if (length(groups_to_fit)==1){
+    if (groups_to_fit==2){
+      descr <- "Risky_NoMeth"
+    }else if (groups_to_fit==3){
+      descr <- "Risky_Meth"
+    }
+  } else if (length(setdiff(groups_to_fit,c(2,3)))==0 & length(setdiff(c(2,3),groups_to_fit))==0){
+      descr <- "RiskyMethAndNonMeth"
+  }else{
+    stop("Unsupported group combination. Please try again!")
   }
   return(list(group=group,descr=descr))
+  # meth <- fit_meth_group  # Meth T/F
+  # risk <- fit_risky_group  # Risky sex T/F
+  # 
+  # 
+  # if (meth & risk) {
+  #   group <- 3
+  #   descr <- "Risky_Meth"
+  # } else if (!meth & risk) {
+  #   group <- 2
+  #   descr <- "Risky_NoMeth"
+  # } else if (!meth & !risk) {
+  #   group <- 1
+  #   descr <- "Safe_NoMeth"
+  # } else {
+  #   group <- 4
+  #   descr <- "Safe_Meth"
+  # }
+  # return(list(group=group,descr=descr))
 }
 
-fitGroupsV3OnegroupRun1 <- function(run=1,fit_meth_group=T,fit_risky_group=T,model_to_use="simple_decay_pain"){
-    
+fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_pain",includeSubjGroup){
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
   source("Misc/freq_replace.R")
@@ -70,16 +82,17 @@ fitGroupsV3OnegroupRun1 <- function(run=1,fit_meth_group=T,fit_risky_group=T,mod
   names(rawdata)[1] <- c("subjID")
   
   # Separate groups (Risky Meth == 3, Risky No Meth == 2, Safe Meth == 4, Safe No Meth == 1)
-  group.description<-get_group_description(fit_meth_group,fit_risky_group)
-  rawdata <- subset(rawdata, cue != 0 & RiskCat == group.description$group & runid == run)
+  group.description<-get_group_description(groups_to_fit)
+  rawdata <- subset(rawdata, cue != 0 & RiskCat %in% group.description$group & runid == run)
   
   # Create cue frequency
   rawdata$cue_freq <- freq_replace(rawdata$cue, by_var = rawdata$subjID)
-  
+  rawdata.dt<-data.table(rawdata)
   # Individual Subjects
   subjList  <- unique(rawdata[,"subjID"])  # list of subjects x blocks
   numSubjs  <- length(subjList)  # number of subjects
   Tsubj     <- as.vector( rep( 0, numSubjs ) ) # number of trials for each subject
+  subjGroup   <- as.vector( rep( 0, numSubjs ) ) #subject group
   N_cues    <- as.vector( rep( 0, numSubjs ) ) # number of trials for each subject
   pain_diff <- as.vector( rep( NA, numSubjs ) ) # number of trials for each subject
   
@@ -87,6 +100,12 @@ fitGroupsV3OnegroupRun1 <- function(run=1,fit_meth_group=T,fit_risky_group=T,mod
     curSubj   <- subjList[ i ]
     Tsubj[i]  <- sum( rawdata$subjID == curSubj )  # Tsubj[N]
     N_cues[i] <- length(unique(rawdata$cue))
+    #classify the subject's group.
+    curSubjRiskCat<-rawdata.dt[subjID==curSubj,RiskCat]
+    if(!all(curSubjRiskCat[1]==curSubjRiskCat)){
+      stop("error: this subject has different rounds listed with different risk categories,but subject risk category is subjectwise so this makes no sense.")
+    }
+    subjGroup[i] <- curSubjRiskCat[1]
   }
   
   # Setting maxTrials
@@ -153,6 +172,12 @@ fitGroupsV3OnegroupRun1 <- function(run=1,fit_meth_group=T,fit_risky_group=T,mod
     pain = pain,
     numPars  = 2
   )
+  
+  #add group to the data list, only if we specified that it should be added.
+  if(includeSubjGroup){
+    dataList[["subjGr"]]   = subjGroup
+    dataList[["Gr_N"]] = length(unique(subjGroup))
+  }
   
   m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
   
