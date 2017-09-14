@@ -109,4 +109,32 @@ ggplot(inverse.temperature.estimate,aes(x=mean,y=variance))+geom_point()
 ```
 
 OK, so we are getting convergence problems here. Nathan expects that when we try to estimate two independent groups at once.
-So 
+So perhaps we should do each group separately? If we're doing that, then the next logical step is to take the double update model and try to add separate reward and punishment learning rates :-)
+
+```{r double_update_risky_nometh_single_group_reward_and_punishment, echo=TRUE}
+
+source("fitGroupsV3OnegroupRun1.R")
+
+#risky nometh
+fit<-lookupOrRunFit(run=1,2, model_to_use="double_update_rp",includeSubjGroup = FALSE)
+
+#risky meth....
+
+#try to get some info about the fit.
+#mu_p[1] is estimated mean alpha [learning rate] across subjects
+#mu_p[2] is estimated mean beta [inverse temperature]
+#sigma[1] is estimated variance alpha
+#sigma[2] is estimated variance beta
+#Accessing the contents of a stanfit object
+#https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html
+
+fit.extracted<-rstan::extract(fit$fit)
+
+learning.rate.estimate<-data.table(mean=fit.extracted$mu_alpha,
+                                   variance=fit.extracted$sigma[,1])
+inverse.temperature.estimate<-data.table(mean=fit.extracted$mu_beta,
+                                   variance=fit.extracted$sigma[,2])
+ggplot(learning.rate.estimate,aes(x=mean,y=variance))+geom_point()
+ggplot(inverse.temperature.estimate,aes(x=mean,y=variance))+geom_point()
+
+```

@@ -4,15 +4,37 @@ library(dplyr)
 library(pROC)
 library(ggplot2)
 library(data.table)
-get_fit_desc<-function(use_model,descr,dataset="rew1_pun-1"){
-  return(paste0("Fits/", use_model, "_", descr,"_",dataset, ".RData"))
+
+REVERSAL_LEARNING_REWARD=1
+REVERSAL_LEARNING_PUNISHMENT=2
+
+
+get_fit_desc<-function(use_model,descr,dataset="rew1_pun-1",rp=c(2),model_rp_separately=TRUE){
+    if (1 %in% rp & 2 %in% c(rp)){
+    #both reward and punishment
+    if(model_rp_separately){
+      model_separately_string="separate"
+    }else{
+      model_separately_string="together"
+    }
+    return(paste0("Fits/", use_model, "_", descr,"_",dataset, "_", "rewpun_",model_separately_string,".RData"))
+  }else if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
+    #the default, 
+    return(paste0("Fits/", use_model, "_", descr,"_",dataset, ".RData"))
+  }
+  else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
+    #must be rp==REVERSAL_LEARNING_REWARD
+    return(paste0("Fits/", use_model, "_", descr,"_",dataset, "_", "REWARD.RData"))
+  }else{
+    stop("unrecognized rewardpunishment parameter")
+  }
 }
 
-lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",includeSubjGroup){
+lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",includeSubjGroup,rp=c(2),model_rp_separately=TRUE){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
-  fit.fileid<-get_fit_desc(model_to_use,group.description$descr)
+  fit.fileid<-get_fit_desc(model_to_use,group.description$descr,rp,model_rp_separately=TRUE)
   if (file.exists(fit.fileid)){
     print("this has already been fit! Loading...")
     load(fit.fileid)
@@ -20,7 +42,7 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",in
     return(fit_data)
   }else{
     print("This has not been previously fit. Running full model...")
-    fit<-fitGroupsV3OnegroupRun1(run,groups_to_fit,model_to_use,includeSubjGroup)
+    fit<-fitGroupsV3OnegroupRun1(run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -61,7 +83,7 @@ get_group_description<-function(groups_to_fit){
   # return(list(group=group,descr=descr))
 }
 
-fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_pain",includeSubjGroup){
+fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_pain",includeSubjGroup,rp,model_rp_separately){
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
   source("Misc/freq_replace.R")
@@ -73,11 +95,11 @@ fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_
   # Which model to use?
   models <- c("simple_delta", "simple_delta_bias", "switch_lr", "simple_decay", 
               "switch_model", "double_update", "switch_decay", "switch_lr_double_update")
-
-  # Which run? 
-  run <- 1
   
   # Read in raw data
+  if(!(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1)){
+    print("values other than reversal learning punishment not supported!")
+  }
   rawdata <- read.table("Data/all_subjs_datacomplete_punishment_rm153.txt", header = T)
   names(rawdata)[1] <- c("subjID")
   

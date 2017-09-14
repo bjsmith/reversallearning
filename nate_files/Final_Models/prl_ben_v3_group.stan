@@ -19,13 +19,16 @@ transformed data {
 parameters {
 # Declare all parameters as vectors for vectorizing
   # Hyper(group)-parameters
-  real mu_p[2, Gr_N];
-  #first dimension denotes parameters
-  #second dimension denotes groups.
+  #real mu_p[Gr_N,2];
+  #FIRST  dimension denotes groups.
+  #SECOND dimension denotes parameters
+  vector[2] mu_p[Gr_N];
   
-  real<lower=0> sigma[2, Gr_N];
-  #first dimension denotes parameters
-  #second dimension denotes groups.
+  
+  #real<lower=0> sigma[Gr_N,2];
+  #first dimension denotes groups.
+  #second dimension denotes parameters
+  vector<lower=0>[2] sigma[Gr_N];
 
   # Subject-level raw parameters (for Matt trick)
   vector[N] alpha_pr;   # learning rate
@@ -40,20 +43,24 @@ transformed parameters {
 
   for (i in 1:N) {
     int g_i = subjGr[i]; #the SubjectGroup index for this subject.
-    alpha[i]  = Phi_approx( mu_p[1, g_i] + sigma[1, g_i] * alpha_pr[i] );
-    beta[i]   = Phi_approx( mu_p[2, g_i] + sigma[2, g_i] * beta_pr[i] ) * 5;
+    alpha[i]  = Phi_approx( mu_p[g_i, 1] + sigma[g_i, 1] * alpha_pr[i] );
+    beta[i]   = Phi_approx( mu_p[g_i, 2] + sigma[g_i, 2] * beta_pr[i] ) * 5;
   }
 }
 
 model {
   
   # Hyperparameters
-  for (i_p in 1:2){
+  // for (i_p in 1:2){
+  //   for (i_g in 1:Gr_N){
+  //     mu_p[i_p,i_g]  ~ normal(0, 1); #original just sampled without the loop
+  //     sigma[i_p,i_g] ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
+  //   }
+  // }
     for (i_g in 1:Gr_N){
-      mu_p[i_p,i_g]  ~ normal(0, 1); #original just sampled without the loop
-      sigma[i_p,i_g] ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
+      mu_p[i_g]  ~ normal(0, 1); #original just sampled without the loop
+      sigma[i_g] ~ cauchy(0, 5); #but with 2D array I don't think that is possible.
     }
-  }
   
   # individual parameters
   alpha_pr  ~ normal(0,1);
@@ -75,7 +82,7 @@ model {
     for (t in 1:(Tsubj[i])) {
       # compute action probabilities
       if (choice[i,t]!=0) {
-	    choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
+	      choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
 	
    	   	# prediction error
       	PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
@@ -110,8 +117,8 @@ generated quantities {
   }
 
   for (g in 1:Gr_N){#for each group
-    mu_alpha[g]  = Phi_approx(mu_p[1, g]);
-    mu_beta[g]   = Phi_approx(mu_p[2, g]) * 5;
+    mu_alpha[g]  = Phi_approx(mu_p[g, 1]);
+    mu_beta[g]   = Phi_approx(mu_p[g, 2]) * 5;
   }
   
 
