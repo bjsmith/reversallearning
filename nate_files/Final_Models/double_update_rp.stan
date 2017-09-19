@@ -1,17 +1,20 @@
 data {
   int<lower=1> N;#subject N
   int<lower=1> T; #Trial T
-  int<lower=1,upper=T> Tsubj[N];
+  int<lower=1,upper=T> Tsubj[N]; #count of trials for each subject.
   int<lower=1,upper=72> N_cues[N];
   int<lower=0,upper=2> choice[N,T];
   int<lower=0,upper=72> cue[N,T];
+#zeros appear in the trial variable where there was no actual event to pay attention to.
+#I am not sure why this is a problem, though.
+#I don't think there are any zeros past the TSubj limit, and this stan script doesn't use any past that point either.
   int trial[N,T];
   int cue_pos[N,T];
   int subjid[N,T];
   int cor_resp[N,T];
   int cue_freq[N,T];
   real outcome[N,T];
-  int<lower=1,upper=2> outcome_type[N,T];
+  int<lower=0,upper=2> outcome_type[N,T]; #zero outcome types are outcome types where there is no choice.
   #OUTCOME_TYPE_REW = 1; #can't actually define them here but we can emember what they are.
   #OUTCOME_TYPE_PUN = 2;
 }
@@ -79,16 +82,19 @@ model {
     for (t in 1:(Tsubj[i])) {
       # compute action probabilities
       if (choice[i,t]!=0) {
+        vector[N] alpha=rep_vector(0,N);
+        vector[N] beta=rep_vector(0,N);
         if(outcome_type[i,t]==1){
-          vector[N] alpha=alpha_rew;
-          vector[N] beta=beta_rew;
+          alpha=alpha_rew;
+          beta=beta_rew;
         }else if(outcome_type[i,t]==2){
-          vector[N] alpha=alpha_pun;
-          vector[N] beta=beta_pun;
+          alpha=alpha_pun;
+          beta=beta_pun;
         }else{
-          print("invalid outcome_type! stop.")
-          outcome_type[i,t]=1/0
+          reject("invalid outcome_type for i ",i," and t", t,". Dividing by zero to halt")
+          #outcome_type[i,t]=1/0
         }
+        #print("i ",i,"; and t ", t)
         choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
         # prediction error
         PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
@@ -126,6 +132,15 @@ generated quantities {
   real p_choice[N,T];
   real p_outcome[N,T];
   
+  #we have to initialize these values, becasue we are getting an error otherwise.
+  p_trial = rep_array(0,N,T);
+  p_subjID = rep_array(0,N,T);
+  p_cor_res = rep_array(0,N,T);
+  p_cue_pos = rep_array(0,N,T);
+  p_outcome = rep_array(0,N,T);
+  p_choice = rep_array(0,N,T);
+  p_cue_freq = rep_array(0,N,T);
+
   for (r in 1:N) {
     for (c in 1:T) {
       y_hat[r,c] = 0;
@@ -150,8 +165,10 @@ generated quantities {
       log_lik[i] = 0;
       ev[,1] = rep_vector(0, 72); # initial ev values
       ev[,2] = rep_vector(0, 72); # initial ev values
+      
 
-      for (t in 1:(Tsubj[i])) {
+
+      for (t in 1:(Tsubj[i])) {#loops through all the trials for each subject.
         p_trial[i,t] = trial[i,t];
         p_subjID[i,t] = subjid[i,t];
         p_cor_res[i,t] = cor_resp[i,t];
@@ -160,15 +177,17 @@ generated quantities {
         p_choice[i,t] = choice[i,t];
         p_cue_freq[i,t] = cue_freq[i,t];
         if (choice[i,t]!=0) {
+          vector[N] alpha=rep_vector(0,N);
+          vector[N] beta=rep_vector(0,N);
           if(outcome_type[i,t]==1){
-            vector<lower=0,upper=1>[N] alpha=alpha_rew
-            vector<lower=0,upper=5>[N] beta=beta_rew;
+            alpha=alpha_rew;
+            beta=beta_rew;
           }else if(outcome_type[i,t]==2){
-            vector<lower=0,upper=1>[N] alpha=alpha_pun
-            vector<lower=0,upper=5>[N] beta=beta_pun;
+            alpha=alpha_pun;
+            beta=beta_pun;
           }else{
-            print("invalid outcome_type. Dividing by zero to halt")
-            outcome_type[i,t]=1/0
+            reject("invalid outcome_type for i ",i," and t", t,". Dividing by zero to halt")
+            #outcome_type[i,t]=1/0
           }
           # Iterate log-likelihood
           log_lik[i] = log_lik[i] + categorical_logit_lpmf( choice[i,t] |  to_vector(ev[cue[i,t],]) * beta[i]);

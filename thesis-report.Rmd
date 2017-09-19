@@ -1,0 +1,37 @@
+---
+title: "reversal-learning-report"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Report on Double Update Behavioral Model
+
+In order to generate a summary I worked with Nate Haines at OSU using his Double Update model to model our reversal learning data.
+
+What are the key questions we want to know for our reversal learning data which might be helpful to apply in Brandon's model?
+
+ * Behavioral questions
+  + Do Risky Meth and Risky No Meth groups differ in their inverse temperature and learning rate?
+  + Which functional and structural brain signals should we look at, and integrate, in order to help optimize the model?
+  + Does pain data function as a useful predictor?
+  + Do Safe No Meth and Risky No Meth groups differ in *their* inverse temperature and learning rate?
+ * Neurology questions
+  + Which functional and structural brain signals should we look at, and integrate, in order to help optimize the model?
+  + Does pain data function as a useful predictor?
+ 
+Measures we need while answering these questions: 
+ * Bayesian diagnostics
+ * HDI measures of each posterior prediction
+ * Posterior predictions of the typical values for subjects in each group
+ * Estimates of learning rates and inverse temperatures for each subject.
+ 
+# Group differences
+
+First, I want to take a look at basic group differences. This section covers meth vs. no Meth, Sexually Risky vs. Nonrisky, and looking at two measures within the double update model: learning rate and inverse temperature.
+
+## Meth use differences
+
+The first question is: how do Meth and No Meth risky subjects differ?

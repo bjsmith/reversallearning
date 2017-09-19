@@ -116,7 +116,9 @@ So perhaps we should do each group separately? If we're doing that, then the nex
 source("fitGroupsV3OnegroupRun1.R")
 
 #risky nometh
-fit<-lookupOrRunFit(run=1,2, model_to_use="double_update_rp",includeSubjGroup = FALSE)
+fit<-lookupOrRunFit(run=1,groups_to_fit=2, model_to_use="double_update_rp",includeSubjGroup = FALSE,
+                    rp=c(1,2),model_rp_separately=TRUE,include_pain=FALSE)
+
 
 #risky meth....
 
@@ -128,13 +130,157 @@ fit<-lookupOrRunFit(run=1,2, model_to_use="double_update_rp",includeSubjGroup = 
 #Accessing the contents of a stanfit object
 #https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html
 
-fit.extracted<-rstan::extract(fit$fit)
+fit.RiskyNoMeth.extracted<-rstan::extract(fit$fit)
 
-learning.rate.estimate<-data.table(mean=fit.extracted$mu_alpha,
-                                   variance=fit.extracted$sigma[,1])
-inverse.temperature.estimate<-data.table(mean=fit.extracted$mu_beta,
-                                   variance=fit.extracted$sigma[,2])
-ggplot(learning.rate.estimate,aes(x=mean,y=variance))+geom_point()
-ggplot(inverse.temperature.estimate,aes(x=mean,y=variance))+geom_point()
+learning.rate.estimate.g2<-rbind(data.table(mean=fit.extracted$mu_alpha_rew,
+                                   variance=fit.extracted$sigma[,1,1],mode="reward",Group="RiskyNoMeth"),
+                              data.table(mean=fit.extracted$mu_alpha_pun,
+                                   variance=fit.extracted$sigma[,2,1],mode="punishment",Group="RiskyNoMeth"))
+
+inverse.temperature.estimate.g2<-rbind(data.table(mean=fit.extracted$mu_beta_rew,
+                                   variance=fit.extracted$sigma[,1,2],mode="reward",Group="RiskyNoMeth"),
+                              data.table(mean=fit.extracted$mu_beta_pun,
+                                   variance=fit.extracted$sigma[,2,2],mode="punishment",Group="RiskyNoMeth"))
+
+fit.RiskyMeth<-lookupOrRunFit(run=1,groups_to_fit=3, model_to_use="double_update_rp",includeSubjGroup = FALSE,
+                    rp=c(1,2),model_rp_separately=TRUE,include_pain=FALSE)
+
+fit.RiskyMeth.extracted<-rstan::extract(fit.RiskyMeth$fit)
+
+learning.rate.estimate<-rbind(learning.rate.estimate.g2,data.table(mean=fit.RiskyMeth.extracted$mu_alpha_rew,
+                                   variance=fit.RiskyMeth.extracted$sigma[,1,1],mode="reward",Group="RiskyMeth"),
+                              data.table(mean=fit.RiskyMeth.extracted$mu_alpha_pun,
+                                   variance=fit.RiskyMeth.extracted$sigma[,2,1],mode="punishment",Group="RiskyMeth"))
+
+inverse.temperature.estimate<-rbind(inverse.temperature.estimate.g2,data.table(mean=fit.RiskyMeth.extracted$mu_beta_rew,
+                                   variance=fit.RiskyMeth.extracted$sigma[,1,2],mode="reward",Group="RiskyMeth"),
+                              data.table(mean=fit.RiskyMeth.extracted$mu_beta_pun,
+                                   variance=fit.RiskyMeth.extracted$sigma[,2,2],mode="punishment",Group="RiskyMeth"))
+
+ggplot(learning.rate.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
+  facet_grid(.~mode)+
+  labs(title="Estimated group-level learning rate and variance for reward and punishment\n(Run 1)")
+
+ggplot(inverse.temperature.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
+  facet_grid(.~mode)+
+  labs(title="Estimated group-level inverse temperature and variance for reward and punishment\n(Run 1")
+
+#what would a confidence interval of these look like? We have 1000 samples, so we should calculate, for 1000 samples, what the 95% confidence interval is for the mean and variance parameters.
+
+#it's arbitrary, but we can just combine for each sample in group 1 with each sample in group 2
+#that would give us the confidence interval of the mean and variance parameter. I then need to think carefully about how these should be represented as confidence intervals of the population.
+#so first: for mu_alpha_rew
+group1.mu<-fit.RiskyNoMeth.extracted$mu_alpha_rew
+group2.mu<-fit.RiskyMeth.extracted$mu_alpha_rew
+mu.diff<-group2.mu-group1.mu#so in all possible samples the difference in groups in mean alpha parameters exists
+#but what about the variance parameter? 
+#We know that these two particular groups always differ, but does that really tell us that across the population, this is the same?
+#What we have is samples representing the probability space of a normal distribution.
+#We need to iterate through each sample and find out, for each sample, do the distributions differ 95% of the time?
+#I might need to re-read the chapter from Kruschke to get a good intuition here because I don't know whether:
+# - we can just take a difference in the group mean parameter to mean a population difference definitely exists...
+# - or whether we need to do random sampling from the 1000 sample distributions or
+# - whether we can use an analytical approach on the 1000 sample distributions
+```
+
+#Multiple runs
+
+We have expanded the stan model to handle both reward and punishment parameters. But currently the model only handles one run.
+We can expand the model to calculate for an arbitrary number of runs. We add a "run multiplier" parameter for each subject-level parameter and run.
+The run multiplier is set to 1 for the first run, and can vary freely for subsequent runs.
+There is an independent run multiplier parameter for each subject, for reward and punishment trials, for each parameter (alpha and beta) and each run after the first run.
+At the group level, the run multiplier (except for the first) for each subject comes from a population of run multipliers.
+There is a mean and variance of the population of run multipliers, just as there is for the population of alphas and betas.
+Although our data only has up to two runs per subject, this does handle an arbitrary number of runs. However, there may be problems dealing with subjects who have fewer than the normal number of runs, and we might have to record the number of runs per subject in order to take that into acccount.
+
+The model is run as follows:
+
+```{r double_update_reward_and_punishment_multiple runs, echo=TRUE}
+
+source("fitGroupsV3Onegroup.R")
+
+learningRateTable<-function(f){rbind(
+  data.table(
+  mean=f$mu_alpha_rew,
+  variance=f$sigma[,1,2],mode="reward",Group="RiskyMeth"),
+  data.table(mean=f$mu_alpha_pun,
+             variance=f$sigma[,2,2],
+             mode="punishment",Group="RiskyMeth"))
+}
+
+inverseTemperatureTable<-function(f){rbind(
+  data.table(
+  mean=f$mu_beta_rew,
+  variance=f$sigma[,1,2],mode="reward",Group="RiskyMeth"),
+  data.table(mean=f$mu_beta_pun,
+             variance=f$sigma[,2,2],
+             mode="punishment",Group="RiskyMeth"))
+}
+
+fit.RiskyNoMeth<-lookupOrRunFit(
+  run=c(1,2),groups_to_fit=2, model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
+  rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
+  model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
+
+fit.RiskyNoMeth.ex<-rstan::extract(fit.RiskyNoMeth$fit)
+rm(fit.RiskyNoMeth)#these are large files; let's not keep them in memory where unnecessary.
+
+learning.rate.estimate.g2<-learningRateTable(fit.RiskyNoMeth.ex)
+
+inverse.temperature.estimate.g2<-inverseTemperatureTable(fit.RiskyNoMeth.ex)
+
+
+fit.RiskyMeth<-lookupOrRunFit(run=c(1,2),groups_to_fit=3, model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
+                    rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
+                    model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
+
+fit.RiskyMeth.ex<-rstan::extract(fit.RiskyMeth$fit)
+
+rm(fit.RiskyMeth)#these are large files; let's not keep them in memory where unnecessary.
+
+learning.rate.estimate.g3<-learningRateTable(fit.RiskyNoMeth.ex)
+inverse.temperature.estimate.g3<-inverseTemperatureTable(fit.RiskyNoMeth.ex)
+
+
+learning.rate.estimate<-rbind(learning.rate.estimate.g2,learning.rate.estimate.g3)
+inverse.temperature.estimate<-rbind(inverse.temperature.estimate.g2,inverse.temperature.estimate.g3)
+
+ggplot(learning.rate.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
+  facet_grid(.~mode)+
+  labs(title="Posterior group-level learning rate and variance for reward and punishment\n(Both Runs)")
+
+ggplot(inverse.temperature.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
+  facet_grid(.~mode)+
+  labs(title="Posterior group-level inverse temperature and variance for reward and punishment\n(Both Runs)")
+
+
 
 ```
+
+So - we see pretty clear patterns here. Subjects appear to learn faster for Reward than Punishment, at least the RiskyMeth group, and faster for the RiskyNoMeth group than the RiskyMeth group.
+
+However, variance is reasonably high, so although one group clearly has a lower average than the other, there is a lot of overlap between the groups.
+
+Looking at the inverse temperature parameter, RiskyMeth subjects definitely have higher inverse temperatures. For both groups, inverse temperature is higher for reward than punishment. A higher inverse temperature indicates *more* consistency among responses - in other words, RiskyMeth subjects appear to be more *consistent* in their responses than RiskyNonMeth subjects.
+
+Let's take a look at:
+ * Whether subjects change their learning rate or inverse temperature from one run to the next.
+ * Calculate HDIs for these averages
+ * Get posterior predictions per subject
+ * Describe the odds of an individual subject in the first group having a higher or lower learning rate 
+ than an individual subject in the second goup.
+ 
+ 
+## 
+```{r learning_rate_change runs, echo=TRUE}
+
+source("fitGroupsV3Onegroup.R")
+ 
+HDIofMCMC(fit.RiskyNoMeth.extracted$mu_alpha_rew)
+HDIofMCMC(fit.RiskyNoMeth.extracted$mu_beta_rew)
+
+ggplot(fit.extracted$mu_alpha_rew)+geom_histogram(bins=10)
+```
+
+
+

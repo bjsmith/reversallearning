@@ -9,32 +9,50 @@ REVERSAL_LEARNING_REWARD=1
 REVERSAL_LEARNING_PUNISHMENT=2
 
 
-get_fit_desc<-function(use_model,descr,dataset="rew1_pun-1",rp=c(2),model_rp_separately=TRUE){
-    if (1 %in% rp & 2 %in% c(rp)){
+get_fit_desc<-function(use_model,descr,run,rp=c(2),model_rp_separately=TRUE,use_pain=FALSE){
+  fit_desc<-""
+  if (1 %in% rp & 2 %in% c(rp)){
     #both reward and punishment
     if(model_rp_separately){
       model_separately_string="separate"
     }else{
       model_separately_string="together"
     }
-    return(paste0("Fits/", use_model, "_", descr,"_",dataset, "_", "rewpun_",model_separately_string,".RData"))
+    fit_desc<-paste0(fit_desc,"Fits/", use_model, "_", descr, "_", "rewpun_",model_separately_string)
+    
   }else if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
     #the default, 
-    return(paste0("Fits/", use_model, "_", descr,"_",dataset, ".RData"))
+    fit_desc<-paste0(fit_desc,"Fits/", use_model, "_", descr)
   }
   else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
     #must be rp==REVERSAL_LEARNING_REWARD
-    return(paste0("Fits/", use_model, "_", descr,"_",dataset, "_", "REWARD.RData"))
+    fit_desc<-paste0(fit_desc,"Fits/", use_model, "_", descr, "_", "REWARD")
   }else{
     stop("unrecognized rewardpunishment parameter")
   }
+  
+  fit_desc<-paste0(fit_desc,"_run",paste0(run,collapse = ""))
+  
+  if(use_pain){
+    fit_desc<-paste0(fit_desc,"_with_pain_data")
+  }
+  
+  fit_desc<-paste0(fit_desc,".RData")
+  return(fit_desc)
 }
 
-lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",includeSubjGroup,rp=c(2),model_rp_separately=TRUE){
+lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
+                         includeSubjGroup,rp=c(2),model_rp_separately=TRUE,
+                         include_pain=FALSE){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
-  fit.fileid<-get_fit_desc(model_to_use,group.description$descr,rp,model_rp_separately=TRUE)
+  fit.fileid<-get_fit_desc(use_model=model_to_use,
+                           group.description$descr,
+                           run,
+                           rp=rp,
+                           model_rp_separately=model_rp_separately,
+                           use_pain=include_pain)
   if (file.exists(fit.fileid)){
     print("this has already been fit! Loading...")
     load(fit.fileid)
@@ -42,7 +60,7 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",in
     return(fit_data)
   }else{
     print("This has not been previously fit. Running full model...")
-    fit<-fitGroupsV3OnegroupRun1(run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately)
+    fit<-fitGroupsV3OnegroupRun1(run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately,include_pain)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -83,34 +101,40 @@ get_group_description<-function(groups_to_fit){
   # return(list(group=group,descr=descr))
 }
 
-fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_pain",includeSubjGroup,rp,model_rp_separately){
+fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_pain",
+                                    includeSubjGroup,rp,model_rp_separately,
+                                    include_pain){
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
   source("Misc/freq_replace.R")
   source("Misc/plot_model.R")
   
   # Use pain as outcome?
-  pain_outcome <- F
+  pain_outcome <- include_pain
   
   # Which model to use?
   models <- c("simple_delta", "simple_delta_bias", "switch_lr", "simple_decay", 
               "switch_model", "double_update", "switch_decay", "switch_lr_double_update")
   
   # Read in raw data
-  if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
-    rawdata <- read.table("../../data/all_subjs_datacomplete_punishment.txt", header=T)
-  }else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
-    rawdata <- read.table("../../data/all_subjs_datacomplete_reward.txt", header=T)
+  if (length(rp)==1){
+    if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
+      rawdata <- read.table("../../data/all_subjs_datacomplete_punishment.txt", header=T)
+    }else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
+      rawdata <- read.table("../../data/all_subjs_datacomplete_reward.txt", header=T)
+    }
   }else if (rp==c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT) & length(rp)==2){
     rawdata <- read.table("../../data/all_subjs_datacomplete_reward_and_punishment.txt", header=T)
   }else{
     print("unrecognized reward-punishment flag!")
   }
-  if(model_rp_separately){
-    stop("we don't yet support modelling R and P separately")
-  }else{
-    print("modeling reward and punishment together, if they are both here. nothing to see here; carry on!")
-  }
+  #remove subject 153
+  
+  # if(model_rp_separately){
+  #   stop("we don't yet support modelling R and P separately")
+  # }else{
+  #   print("modeling reward and punishment together, if they are both here. nothing to see here; carry on!")
+  # }
   #we gotta get the data for reversal learning reward.
   
   # /all_subjs_datacomplete_punishment_rm153.txt", header = T) #do we have to remove subject 153???
@@ -148,6 +172,7 @@ fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_
   
   choice   <- array(0, c(numSubjs, maxTrials) )
   outcome  <- array(0, c(numSubjs, maxTrials) )
+  outcome_type <- array(0, c(numSubjs, maxTrials) )
   cue      <- array(0, c(numSubjs, maxTrials) )
   cue_freq <- array(0, c(numSubjs, maxTrials) )
   reversal <- array(0, c(numSubjs, maxTrials) )
@@ -159,7 +184,7 @@ fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_
   
   subj_ids_have <- as.numeric(gsub(x = list.files("Data/Pain_Betas"), pattern = "_.*_*.csv", replacement = ""))
   
-  for (i in 1:numSubjs) {
+for (i in 1:numSubjs) {
     curSubj      <- subjList[i]
     useTrials    <- Tsubj[i]
     if (curSubj %in% subj_ids_have) {
@@ -174,15 +199,25 @@ fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_
     }
     cue[i, 1:useTrials]     <- as.numeric(as.factor(tmp$cue))
     cue_freq[i, 1:useTrials] <- tmp$cue_freq
+    outcome_type[i, 1:useTrials] <- as.integer(tmp$Motivation=="punishment")+1
     reversal[i, 1:useTrials] <- as.numeric(tmp$reversal_trial)
     cue_pos[i, 1:useTrials] <- tmp$presentation_n_after_reversal
     trial[i, 1:useTrials] <- as.numeric(as.factor(tmp$onset_time_actual))
+    if(any(trial[i, 1:useTrials]==0)){
+      print("there's an 0 trial value.")
+    }
     subjid[i, 1:useTrials] <- tmp$subjID
     cor_resp[i, 1:useTrials] <- tmp$cor_res
-    if (curSubj %in% subj_ids_have) {
-      tmp_noPlace <- tmp_brain[,!grepl(pattern = "placeholder", x = names(tmp_brain))][1:useTrials]
-      pain[i, 1:useTrials] <- scale(as.numeric(tmp_brain[,!grepl(pattern = "placeholder", x = names(tmp_brain))])[1:useTrials])
-      pain_diff[i] <- mean(as.numeric(tmp_noPlace[,grepl(pattern = "error", x = names(tmp_noPlace))])[1:useTrials], na.rm = T) - mean(as.numeric(tmp_noPlace[,grepl(pattern = "correct", x = names(tmp_noPlace))])[1:useTrials], na.rm = T)
+    if (curSubj %in% subj_ids_have) {#pain data
+      punishmentTrialsCount<-sum(outcome_type[i,1:useTrials]==REVERSAL_LEARNING_PUNISHMENT)
+      punishmentTrialsId<-which(outcome_type[i,1:useTrials]==REVERSAL_LEARNING_PUNISHMENT)
+      tmp_noPlace <- tmp_brain[,!grepl(pattern = "placeholder", x = names(tmp_brain))][1:punishmentTrialsCount]#excluding 'placeholder' trials...
+      pain[i, punishmentTrialsId] <- scale(as.numeric(tmp_brain[,!grepl(pattern = "placeholder", x = names(tmp_brain))])[1:punishmentTrialsCount])
+        #get the array of pain measurements to pass in
+      pain_diff[i] <- 
+        mean(as.numeric(tmp_noPlace[,grepl(pattern = "error", x = names(tmp_noPlace))])[1:punishmentTrialsCount], na.rm = T) - 
+        mean(as.numeric(tmp_noPlace[,grepl(pattern = "correct", x = names(tmp_noPlace))])[1:punishmentTrialsCount], na.rm = T)
+        
     } else {
       pain_diff[i] <- NA
     }
@@ -204,14 +239,21 @@ fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_
     cue_pos = cue_pos,
     cor_resp = cor_resp,
     subjid = subjid,
-    pain = pain,
     numPars  = 2
   )
+  if(include_pain){
+    dataList[["pain"]]   = pain
+  }
   
   #add group to the data list, only if we specified that it should be added.
   if(includeSubjGroup){
     dataList[["subjGr"]]   = subjGroup
     dataList[["Gr_N"]] = length(unique(subjGroup))
+  }
+  
+  if(model_rp_separately){
+    dataList[["outcome_type"]] = outcome_type
+    #plot_ly(melt(outcome),type="heatmap")
   }
   
   m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
@@ -244,7 +286,20 @@ fitGroupsV3OnegroupRun1 <- function(run=1,groups_to_fit,use_model="simple_decay_
   for_plot$pred_correct <- ifelse((for_plot$y_hat==for_plot$choice & for_plot$outcome==1) | (for_plot$y_hat!=for_plot$choice & for_plot$outcome!=1), 1, 0)
   
   fit_data <- list(fit = fit, plot_object = for_plot)
-  plot_model(fit_data)
-  save(fit_data, file = get_fit_desc(use_model,group.description$descr))
+  #next line might fail. Be careful
+  tryCatch({
+    plot_model(fit_data)
+    },
+    error=function(e){
+      print("couldn't plot the data because there were more than two levels in \"response\". You might wanna see what's going on there.")
+      }
+  )
+  
+  save(fit_data, file = get_fit_desc(use_model=use_model,
+                                     group.description$descr,
+                                     run,
+                                     rp=rp,
+                                     model_rp_separately=model_rp_separately,
+                                     use_pain=include_pain))
   return(fit_data)
 }

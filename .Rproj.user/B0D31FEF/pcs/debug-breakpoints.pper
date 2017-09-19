@@ -1,6 +1,36 @@
 {
     "debugBreakpointsState" : {
         "breakpoints" : [
+            {
+                "editor_line_number" : 56,
+                "editor_state" : 1,
+                "function_name" : "lookupOrRunFit",
+                "function_steps" : "4",
+                "id" : 0,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 56,
+                "needs_updated_steps" : false,
+                "package_name" : "",
+                "path" : "~/GDrive/joint-modeling/reversal-learning/behavioral-analysis/reversallearning/nate_files/fitGroupsV3OnegroupRun1.R",
+                "state" : 1,
+                "type" : 0
+            },
+            {
+                "editor_line_number" : 40,
+                "editor_state" : 1,
+                "function_name" : "get_fit_desc",
+                "function_steps" : "6",
+                "id" : 3,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 40,
+                "needs_updated_steps" : false,
+                "package_name" : "",
+                "path" : "~/GDrive/joint-modeling/reversal-learning/behavioral-analysis/reversallearning/nate_files/fitGroupsV3OnegroupRun1.R",
+                "state" : 1,
+                "type" : 0
+            }
         ]
     }
 }
