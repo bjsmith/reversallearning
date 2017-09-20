@@ -9,7 +9,7 @@ REVERSAL_LEARNING_REWARD=1
 REVERSAL_LEARNING_PUNISHMENT=2
 
 
-get_fit_desc<-function(use_model,descr,run,rp=c(2),model_rp_separately=TRUE,model_runs_separately=FALSE,use_pain=FALSE){
+get_fit_desc<-function(use_model,descr,run,rp=c(2),model_rp_separately=TRUE,model_runs_separately=FALSE,use_pain=FALSE,fastDebug=FALSE){
   fit_desc<-""
   if (1 %in% rp & 2 %in% c(rp)){
     #both reward and punishment
@@ -39,13 +39,16 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),model_rp_separately=TRUE,mode
   if(model_runs_separately){
     fit_desc<-paste0(fit_desc,"_model_distinct_runs")
   }
+  if(fastDebug){
+    fit_desc<-paste0(fit_desc,"_fastDebug")
+  }
   fit_desc<-paste0(fit_desc,".RData")
   return(fit_desc)
 }
 
 lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          includeSubjGroup,rp=c(2),model_rp_separately=TRUE,model_runs_separately=FALSE,
-                         include_pain=FALSE){
+                         include_pain=FALSE,fastDebug=FALSE){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -55,7 +58,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            rp=rp,
                            model_rp_separately=model_rp_separately,
                            model_runs_separately=model_runs_separately,
-                           use_pain=include_pain)
+                           use_pain=include_pain,
+                           fastDebug = fastDebug)
   if (file.exists(fit.fileid)){
     print("this has already been fit! Loading...")
     load(fit.fileid)
@@ -64,7 +68,7 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
   }else{
     print("This has not been previously fit. Running full model...")
     fit<-fitGroupsV3Onegroup(run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-                             include_pain)
+                             include_pain,fastDebug=fastDebug)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -104,11 +108,9 @@ get_group_description<-function(groups_to_fit){
   # }
   # return(list(group=group,descr=descr))
 }
-# (run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-#   include_pain)
 fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                                     includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-                                    include_pain,fastDebug=F){
+                                    include_pain,fastDebug=FALSE){
   use_model<-model_to_use
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
@@ -306,6 +308,7 @@ for (i in 1:numSubjs) {
   }
   cat("Building model...")
   m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
+  model_text<-paste0(readLines(paste0("Final_Models/", use_model,".stan")),collapse="\n")
   print("model built.")
   
   cat("Fitting model...")
@@ -343,7 +346,7 @@ for (i in 1:numSubjs) {
   for_plot$actual_correct <- ifelse(for_plot$outcome==1, 1, 0)
   for_plot$pred_correct <- ifelse((for_plot$y_hat==for_plot$choice & for_plot$outcome==1) | (for_plot$y_hat!=for_plot$choice & for_plot$outcome!=1), 1, 0)
   
-  fit_data <- list(fit = fit, plot_object = for_plot)
+  fit_data <- list(fit = fit, plot_object = for_plot,model_text=model_text)
   
   save(fit_data, file = get_fit_desc(use_model=use_model,
                                      group.description$descr,
@@ -351,7 +354,8 @@ for (i in 1:numSubjs) {
                                      rp=rp,
                                      model_rp_separately=model_rp_separately,
                                      model_runs_separately=model_runs_separately,
-                                     use_pain=include_pain))
+                                     use_pain=include_pain,
+                                     fastDebug=fastDebug))
   
   #next line might fail. Be careful
   tryCatch({

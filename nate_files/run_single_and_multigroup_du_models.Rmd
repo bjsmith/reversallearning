@@ -199,22 +199,26 @@ The model is run as follows:
 
 source("fitGroupsV3Onegroup.R")
 
-learningRateTable<-function(f){rbind(
+learningRateTable<-function(f,group_name){rbind(
   data.table(
   mean=f$mu_alpha_rew,
-  variance=f$sigma[,1,2],mode="reward",Group="RiskyMeth"),
-  data.table(mean=f$mu_alpha_pun,
-             variance=f$sigma[,2,2],
-             mode="punishment",Group="RiskyMeth"))
+  variance=f$sigma[,1,1],mode="reward",Group=group_name),
+  data.table(
+    mean=f$mu_alpha_pun,
+    variance=f$sigma[,2,1],
+    mode="punishment",Group=group_name))
 }
 
-inverseTemperatureTable<-function(f){rbind(
+
+inverseTemperatureTable<-function(f,group_name){rbind(
   data.table(
   mean=f$mu_beta_rew,
-  variance=f$sigma[,1,2],mode="reward",Group="RiskyMeth"),
-  data.table(mean=f$mu_beta_pun,
-             variance=f$sigma[,2,2],
-             mode="punishment",Group="RiskyMeth"))
+  variance=f$sigma[,1,2],
+  mode="reward",Group=group_name),
+  data.table(
+    mean=f$mu_beta_pun,
+    variance=f$sigma[,2,2],
+    mode="punishment",Group=group_name))
 }
 
 fit.RiskyNoMeth<-lookupOrRunFit(
@@ -222,31 +226,35 @@ fit.RiskyNoMeth<-lookupOrRunFit(
   rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
   model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
 
+# load("Fits/double_update_rp_repeated_runs_Risky_NoMeth_rewpun_separate_run12_model_distinct_runs_good_1.RData")
+# goodfit<-fit_data
+# load("Fits/double_update_rp_repeated_runs_Risky_NoMeth_rewpun_separate_run12_model_distinct_runs_bad_1.RData")
+# badfit<-fit_data
 fit.RiskyNoMeth.ex<-rstan::extract(fit.RiskyNoMeth$fit)
 rm(fit.RiskyNoMeth)#these are large files; let's not keep them in memory where unnecessary.
 
-learning.rate.estimate.g2<-learningRateTable(fit.RiskyNoMeth.ex)
+learning.rate.estimate.g2<-learningRateTable(fit.RiskyNoMeth.ex,"RiskyNoMeth")
 
-inverse.temperature.estimate.g2<-inverseTemperatureTable(fit.RiskyNoMeth.ex)
+inverse.temperature.estimate.g2<-inverseTemperatureTable(fit.RiskyNoMeth.ex,"RiskyNoMeth")
 
-
-fit.RiskyMeth<-lookupOrRunFit(run=c(1,2),groups_to_fit=3, model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
-                    rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
-                    model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
+fit.RiskyMeth<-lookupOrRunFit(run=c(1,2),groups_to_fit=3, 
+                              model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
+                              rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
+                              model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
 
 fit.RiskyMeth.ex<-rstan::extract(fit.RiskyMeth$fit)
 
 rm(fit.RiskyMeth)#these are large files; let's not keep them in memory where unnecessary.
 
-learning.rate.estimate.g3<-learningRateTable(fit.RiskyNoMeth.ex)
-inverse.temperature.estimate.g3<-inverseTemperatureTable(fit.RiskyNoMeth.ex)
+learning.rate.estimate.g3<-learningRateTable(fit.RiskyMeth.ex,"RiskyMeth")
+inverse.temperature.estimate.g3<-inverseTemperatureTable(fit.RiskyMeth.ex,"RiskyMeth")
 
 
 learning.rate.estimate<-rbind(learning.rate.estimate.g2,learning.rate.estimate.g3)
 inverse.temperature.estimate<-rbind(inverse.temperature.estimate.g2,inverse.temperature.estimate.g3)
 
-ggplot(learning.rate.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
-  facet_grid(.~mode)+
+ggplot(learning.rate.estimate.g2,aes(x=mean,y=variance,colour=Group))+geom_point()+
+  facet_grid(.~mode+Group)+
   labs(title="Posterior group-level learning rate and variance for reward and punishment\n(Both Runs)")
 
 ggplot(inverse.temperature.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
@@ -272,15 +280,31 @@ Let's take a look at:
  
  
 ## 
-```{r learning_rate_change runs, echo=TRUE}
+```{r learning_rate_change_runs, echo=TRUE}
 
 source("fitGroupsV3Onegroup.R")
  
 HDIofMCMC(fit.RiskyNoMeth.extracted$mu_alpha_rew)
 HDIofMCMC(fit.RiskyNoMeth.extracted$mu_beta_rew)
-
+dim(fit.RiskyNoMeth.ex$alpha_rew_pr_run_multiplier)
+dim(fit.RiskyNoMeth.ex$alpha_rew_run_multiplier)
+dim(fit.RiskyNoMeth.ex$mu_p_rm)
+dim(fit.RiskyNoMeth.ex$mu_alpha_rew_run_multiplier)
 ggplot(fit.extracted$mu_alpha_rew)+geom_histogram(bins=10)
+
+runMultiplierTable<-function(f,group_name){rbind(
+  data.table(
+  mean=f$mu_alpha_rew_run_multiplier,
+  variance=f$sigma[,1,2],mode="reward",Group=group_name,
+  run=),
+  data.table(mean=f$mu_alpha_pun,
+             variance=f$sigma[,2,2],
+             mode="punishment",Group=group_name))
+}
+
 ```
 
 
 
+```{r calc_hdi, echo=TRUE}
+```
