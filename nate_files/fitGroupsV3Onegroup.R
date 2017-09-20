@@ -4,13 +4,21 @@ library(dplyr)
 library(pROC)
 library(ggplot2)
 library(data.table)
+if(length(grep("nate_files",getwd()))>0){
+  source("../util/apply_local_settings.R")
+}else{
+  source("util/apply_local_settings.R")
+}
 
 REVERSAL_LEARNING_REWARD=1
 REVERSAL_LEARNING_PUNISHMENT=2
 
 
-get_fit_desc<-function(use_model,descr,run,rp=c(2),model_rp_separately=TRUE,model_runs_separately=FALSE,use_pain=FALSE,fastDebug=FALSE){
+get_fit_desc<-function(use_model,descr,run,rp=c(2),
+                       model_rp_separately=TRUE,model_runs_separately=FALSE,
+                       use_pain=FALSE,fastDebug=FALSE){
   fit_desc<-""
+  dd<-localsettings$data.dir
   if (1 %in% rp & 2 %in% c(rp)){
     #both reward and punishment
     if(model_rp_separately){
@@ -18,15 +26,15 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),model_rp_separately=TRUE,mode
     }else{
       model_separately_string="together"
     }
-    fit_desc<-paste0(fit_desc,"Fits/", use_model, "_", descr, "_", "rewpun_",model_separately_string)
+    fit_desc<-paste0(fit_desc,dd,"Fits/", use_model, "_", descr, "_", "rewpun_",model_separately_string)
     
   }else if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
     #the default, 
-    fit_desc<-paste0(fit_desc,"Fits/", use_model, "_", descr)
+    fit_desc<-paste0(fit_desc,dd,"Fits/", use_model, "_", descr)
   }
   else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
     #must be rp==REVERSAL_LEARNING_REWARD
-    fit_desc<-paste0(fit_desc,"Fits/", use_model, "_", descr, "_", "REWARD")
+    fit_desc<-paste0(fit_desc,dd,"Fits/", use_model, "_", descr, "_", "REWARD")
   }else{
     stop("unrecognized rewardpunishment parameter")
   }

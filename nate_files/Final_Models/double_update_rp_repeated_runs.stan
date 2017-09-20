@@ -87,7 +87,6 @@ transformed parameters {
 }
 
 model {
-  
   real alpha_s;
   real beta_s;
   real alpha_pr_run_multiplier_s;
@@ -100,11 +99,10 @@ model {
     sigma[ot] ~ cauchy(0, 5);
     
     for (r in 1:(R-1)){
-      mu_p_rm[ot,r]  ~ normal(1, 1);
+      mu_p_rm[ot,r]  ~ normal(0, 1);
       sigma_rm[ot,r] ~ cauchy(0, 5);
     }
   }
-  
   
   # individual parameters
   alpha_rew_pr  ~ normal(0,1);
@@ -116,10 +114,10 @@ model {
   #an array of run modifiers. The first element has modifiers for run2;  the second for run 3, and so on; all relative to run 1
   #of course in this dataset we only have two runs, but the design here will be extensible for more than two runs :-)
   for (r in 1:(R-1)){
-    alpha_rew_pr_run_multiplier[r]  ~ normal(1,1);
-    alpha_pun_pr_run_multiplier[r]  ~ normal(1,1);
-    beta_rew_pr_run_multiplier[r]   ~ normal(1,1);
-    beta_pun_pr_run_multiplier[r]   ~ normal(1,1);
+    alpha_rew_pr_run_multiplier[r]  ~ normal(0,1);
+    alpha_pun_pr_run_multiplier[r]  ~ normal(0,1);
+    beta_rew_pr_run_multiplier[r]   ~ normal(0,1);
+    beta_pun_pr_run_multiplier[r]   ~ normal(0,1);
   }
   
   
@@ -141,8 +139,8 @@ model {
       if (choice[s,t]!=0) {
         alpha_s=0;
         beta_s=0;
-        alpha_pr_run_multiplier_s=1;
-        beta_pr_run_multiplier_s=1;
+        alpha_pr_run_multiplier_s=0;
+        beta_pr_run_multiplier_s=0;
         
         if(outcome_type[s,t]==OT_REW){
           alpha_s=alpha_rew[s];
@@ -163,14 +161,14 @@ model {
           #outcome_type[s,t]=1/0
         }
         #print("s ",s,"; and t ", t)
-        choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta_s*beta_pr_run_multiplier_s );
+        choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta_s*(beta_pr_run_multiplier_s+1) );
         # prediction error
         PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
         PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
   
         # value updating (learning)
-        ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s * PEnc * alpha_pr_run_multiplier_s;
-        ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s * PE * alpha_pr_run_multiplier_s;
+        ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s * PEnc * (alpha_pr_run_multiplier_s+1);
+        ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s * PE * (alpha_pr_run_multiplier_s+1);
       }
     }
   }
@@ -238,8 +236,8 @@ generated quantities {
 
     real alpha_s=0;
     real beta_s=0;
-    real alpha_run_multiplier_s=1;
-    real beta_run_multiplier_s=1;
+    real alpha_run_multiplier_s=0;
+    real beta_run_multiplier_s=0;
     matrix[100,2] ev;#one row for each of the two options for each choice.
     
     for (s in 1:N) {
@@ -265,8 +263,8 @@ generated quantities {
         if (choice[s,t]!=0) {
           alpha_s=0;
           beta_s=0;
-          alpha_run_multiplier_s=1;
-          beta_run_multiplier_s=1;
+          alpha_run_multiplier_s=0;
+          beta_run_multiplier_s=0;
           if(outcome_type[s,t]==OT_REW){
             alpha_s=alpha_rew[s];
             beta_s=beta_rew[s];
@@ -286,18 +284,18 @@ generated quantities {
             #outcome_type[s,t]=1/0
           }
           # Iterate log-likelihood
-          log_lik[s] = log_lik[s] + categorical_logit_lpmf( choice[s,t] |  to_vector(ev[cue[s,t],]) * beta_s*beta_run_multiplier_s);
+          log_lik[s] = log_lik[s] + categorical_logit_lpmf( choice[s,t] |  to_vector(ev[cue[s,t],]) * beta_s*(beta_run_multiplier_s+1));
           
           # Posterior prediction
-          y_hat[s,t] = categorical_rng( softmax(to_vector(ev[cue[s,t],]) * beta_s*beta_run_multiplier_s));
+          y_hat[s,t] = categorical_rng( softmax(to_vector(ev[cue[s,t],]) * beta_s*(beta_run_multiplier_s+1)));
           
           # prediction error
           PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
           PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
     
           # value updating (learning)
-          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s*alpha_run_multiplier_s * PEnc;
-          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s*alpha_run_multiplier_s * PE;
+          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s*(alpha_run_multiplier_s+1) * PEnc;
+          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s*(alpha_run_multiplier_s+1) * PE;
         }
       }
     }
