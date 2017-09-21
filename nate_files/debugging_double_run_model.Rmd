@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("fitGroupsV3Onegroup.R")
 ```
 
 ## Grabbing the data from the fuller model

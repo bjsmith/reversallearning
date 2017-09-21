@@ -61,10 +61,10 @@ transformed parameters {
   vector<lower=0,upper=5>[N] beta_rew;
   vector<lower=0,upper=5>[N] beta_pun;
 
-  vector<lower=0,upper=1>[N] alpha_rew_rm[R-1];
-  vector<lower=0,upper=1>[N] alpha_pun_rm[R-1];
-  vector<lower=0,upper=5>[N] beta_rew_rm[R-1];
-  vector<lower=0,upper=5>[N] beta_pun_rm[R-1];
+  vector<lower=0>[N] alpha_rew_rm[R-1];
+  vector<lower=0>[N] alpha_pun_rm[R-1];
+  vector<lower=0>[N] beta_rew_rm[R-1];
+  vector<lower=0>[N] beta_pun_rm[R-1];
 
 
   for (s in 1:N) {

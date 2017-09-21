@@ -6,8 +6,10 @@ library(ggplot2)
 library(data.table)
 if(length(grep("nate_files",getwd()))>0){
   source("../util/apply_local_settings.R")
+  apply_local_settings("../")
 }else{
   source("util/apply_local_settings.R")
+  apply_local_settings()
 }
 
 REVERSAL_LEARNING_REWARD=1
@@ -315,8 +317,21 @@ for (i in 1:numSubjs) {
     dataList[["R"]] = numRuns
   }
   cat("Building model...")
-  m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
   model_text<-paste0(readLines(paste0("Final_Models/", use_model,".stan")),collapse="\n")
+  #check if a model under the name exists under "compiled models"
+  precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", use_model)
+  if (file.exists(paste0(precompiled.location,".stan"))){
+    print("A model with this name already exists. Checking to see if if it's identical to model being currently run...")
+    m.precompiled.text<-paste0(readLines(paste0(precompiled.location,".stan")),collapse="\n")
+    if(model_text==m.precompiled.text){
+      print("Models match, loading precompiled model...")
+      load(paste0(precompiled.location,".RData"))
+    }
+  }
+  #if it does, check to see if the text is exactly the same
+  #if it is, use the pre-compiled model.
+  m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
+  
   print("model built.")
   
   cat("Fitting model...")
