@@ -15,8 +15,6 @@ data {
   int<lower=0,upper=2> outcome_type[N,T];
   #zero outcome types are outcome types where there is no choice.
   #e.g., at the end of a trial
-  
-    
   int<lower=0> run_id[N,T];
   #RUN1=1;
   #RUN2=2;
@@ -50,10 +48,10 @@ parameters {
   vector[N] alpha_pun_pr;   # learning rate for punishment
   vector[N] beta_rew_pr;  # inverse temperature
   vector[N] beta_pun_pr;  # inverse temperature
-  vector[N] alpha_rew_pr_run_multiplier[R-1]; 
-  vector[N] alpha_pun_pr_run_multiplier[R-1];
-  vector[N] beta_rew_pr_run_multiplier[R-1];
-  vector[N] beta_pun_pr_run_multiplier[R-1];
+  vector[N] alpha_rew_pr_rm[R-1]; 
+  vector[N] alpha_pun_pr_rm[R-1];
+  vector[N] beta_rew_pr_rm[R-1];
+  vector[N] beta_pun_pr_rm[R-1];
 }
 
 transformed parameters {
@@ -63,10 +61,10 @@ transformed parameters {
   vector<lower=0,upper=5>[N] beta_rew;
   vector<lower=0,upper=5>[N] beta_pun;
 
-  vector<lower=0,upper=1>[N] alpha_rew_run_multiplier[R-1];
-  vector<lower=0,upper=1>[N] alpha_pun_run_multiplier[R-1];
-  vector<lower=0,upper=5>[N] beta_rew_run_multiplier[R-1];
-  vector<lower=0,upper=5>[N] beta_pun_run_multiplier[R-1];
+  vector<lower=0,upper=1>[N] alpha_rew_rm[R-1];
+  vector<lower=0,upper=1>[N] alpha_pun_rm[R-1];
+  vector<lower=0,upper=5>[N] beta_rew_rm[R-1];
+  vector<lower=0,upper=5>[N] beta_pun_rm[R-1];
 
 
   for (s in 1:N) {
@@ -77,11 +75,11 @@ transformed parameters {
     beta_pun[s]   = Phi_approx( mu_p[OT_PUN, 2] + sigma[OT_PUN, 2] * beta_pun_pr[s] ) * 5;
     #I am not sure we need to transform the multipliers? They stand on their own, perhaps...
     for (r in 1:(R-1)){
-      alpha_rew_run_multiplier[r,s]  = Phi_approx( mu_p_rm[OT_REW, r, 1] + sigma_rm[OT_REW, r, 1] * alpha_rew_pr_run_multiplier[r,s] );
-      beta_rew_run_multiplier[r,s]   = Phi_approx( mu_p_rm[OT_REW, r, 2] + sigma_rm[OT_REW, r, 2] * beta_rew_pr_run_multiplier[r,s] ) * 5;
+      alpha_rew_rm[r,s]  = 2^( mu_p_rm[OT_REW, r, 1] + sigma_rm[OT_REW, r, 1] * alpha_rew_pr_rm[r,s] );
+      beta_rew_rm[r,s]   = 2^( mu_p_rm[OT_REW, r, 2] + sigma_rm[OT_REW, r, 2] * beta_rew_pr_rm[r,s] ) * 5;
       
-      alpha_pun_run_multiplier[r,s]  = Phi_approx( mu_p_rm[OT_PUN, r, 1] + sigma_rm[OT_PUN, r, 1] * alpha_pun_pr_run_multiplier[r,s] );
-      beta_pun_run_multiplier[r,s]   = Phi_approx( mu_p_rm[OT_PUN, r, 2] + sigma_rm[OT_PUN, r, 2] * beta_pun_pr_run_multiplier[r,s] ) * 5;    
+      alpha_pun_rm[r,s]  = 2^( mu_p_rm[OT_PUN, r, 1] + sigma_rm[OT_PUN, r, 1] * alpha_pun_pr_rm[r,s] );
+      beta_pun_rm[r,s]   = 2^( mu_p_rm[OT_PUN, r, 2] + sigma_rm[OT_PUN, r, 2] * beta_pun_pr_rm[r,s] ) * 5;    
     }
   }
 }
@@ -89,8 +87,8 @@ transformed parameters {
 model {
   real alpha_s;
   real beta_s;
-  real alpha_pr_run_multiplier_s;
-  real beta_pr_run_multiplier_s;
+  real alpha_rm_s;
+  real beta_rm_s;
   matrix[100,2] ev; 
   
   # Hyperparameters
@@ -110,16 +108,17 @@ model {
   beta_rew_pr   ~ normal(0,1);
   beta_pun_pr   ~ normal(0,1);
 
-  #these are set with mean of 1 because I am treating them as *multipliers*
+  #These are exponents to a multiplier with base 2. 
+  #Designed so that we are modeling run2 with equally likelihood of being twice or half the length of run 1. 
+  #Possibly normal here is too presumptive of equal performance in each run, but we'll see.
   #an array of run modifiers. The first element has modifiers for run2;  the second for run 3, and so on; all relative to run 1
   #of course in this dataset we only have two runs, but the design here will be extensible for more than two runs :-)
   for (r in 1:(R-1)){
-    alpha_rew_pr_run_multiplier[r]  ~ normal(0,1);
-    alpha_pun_pr_run_multiplier[r]  ~ normal(0,1);
-    beta_rew_pr_run_multiplier[r]   ~ normal(0,1);
-    beta_pun_pr_run_multiplier[r]   ~ normal(0,1);
+    alpha_rew_pr_rm[r]  ~ normal(0,1);
+    alpha_pun_pr_rm[r]  ~ normal(0,1);
+    beta_rew_pr_rm[r]   ~ normal(0,1);
+    beta_pun_pr_rm[r]   ~ normal(0,1);
   }
-  
   
   for (s in 1:N) {
     # Define values
@@ -139,36 +138,36 @@ model {
       if (choice[s,t]!=0) {
         alpha_s=0;
         beta_s=0;
-        alpha_pr_run_multiplier_s=0;
-        beta_pr_run_multiplier_s=0;
+        alpha_rm_s=0;
+        beta_rm_s=0;
         
         if(outcome_type[s,t]==OT_REW){
           alpha_s=alpha_rew[s];
           beta_s=beta_rew[s];
           if(run_id[s,t]>1){#only run if run_id is greater than 1; otherwise we fix the multiplier to 1, by default.
-            alpha_pr_run_multiplier_s=alpha_rew_pr_run_multiplier[run_id[s,t]-1,s];
-            beta_pr_run_multiplier_s=beta_rew_pr_run_multiplier[run_id[s,t]-1,s];
+            alpha_rm_s=alpha_rew_rm[run_id[s,t]-1,s];
+            beta_rm_s=beta_rew_rm[run_id[s,t]-1,s];
           }
         }else if(outcome_type[s,t]==OT_PUN){
           alpha_s=alpha_pun[s];
           beta_s=beta_pun[s];
           if(run_id[s,t]>1){#only run if run_id is greater than 1; otherwise we fix the multiplier to 1, by default.
-            alpha_pr_run_multiplier_s=alpha_pun_pr_run_multiplier[run_id[s,t]-1,s];
-            beta_pr_run_multiplier_s=beta_pun_pr_run_multiplier[run_id[s,t]-1,s];
+            alpha_rm_s=alpha_pun_rm[run_id[s,t]-1,s];
+            beta_rm_s=beta_pun_rm[run_id[s,t]-1,s];
           }
         }else{
           reject("invalid outcome_type for s ",s," and t", t,". Dividing by zero to halt")
           #outcome_type[s,t]=1/0
         }
         #print("s ",s,"; and t ", t)
-        choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta_s*(beta_pr_run_multiplier_s+1) );
+        choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta_s*beta_rm_s );
         # prediction error
         PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
         PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
   
         # value updating (learning)
-        ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s * PEnc * (alpha_pr_run_multiplier_s+1);
-        ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s * PE * (alpha_pr_run_multiplier_s+1);
+        ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s * PEnc * alpha_rm_s;
+        ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s * PE * alpha_rm_s;
       }
     }
   }
@@ -180,10 +179,10 @@ generated quantities {
   real<lower=0,upper=5> mu_beta_rew;
   real<lower=0,upper=1> mu_alpha_pun;
   real<lower=0,upper=5> mu_beta_pun;
-  vector[R-1] mu_alpha_rew_run_multiplier; 
-  vector[R-1] mu_alpha_pun_run_multiplier;
-  vector[R-1] mu_beta_rew_run_multiplier;
-  vector[R-1] mu_beta_pun_run_multiplier;
+  vector[R-1] mu_alpha_rew_rm; 
+  vector[R-1] mu_alpha_pun_rm;
+  vector[R-1] mu_beta_rew_rm;
+  vector[R-1] mu_beta_pun_rm;
   
   # For log likelihood calculation
   real log_lik[N];
@@ -220,10 +219,10 @@ generated quantities {
   mu_beta_pun   = Phi_approx(mu_p[OT_PUN, 2]) * 5;
   
   for (r in 1:(R-1)){
-    mu_alpha_rew_run_multiplier[r] = Phi_approx(mu_p_rm[OT_REW,r,1]);
-    mu_beta_rew_run_multiplier[r] = Phi_approx(mu_p_rm[OT_REW,r,2]) * 5;#not sure why we're multiplying by 5 here. 
-    mu_alpha_pun_run_multiplier[r] = Phi_approx(mu_p_rm[OT_PUN,r,1]);
-    mu_beta_pun_run_multiplier[r] = Phi_approx(mu_p_rm[OT_PUN,r,2])*5;
+    mu_alpha_rew_rm[r] = Phi_approx(mu_p_rm[OT_REW,r,1]);
+    mu_beta_rew_rm[r] = Phi_approx(mu_p_rm[OT_REW,r,2]) * 5;#not sure why we're multiplying by 5 here. 
+    mu_alpha_pun_rm[r] = Phi_approx(mu_p_rm[OT_PUN,r,1]);
+    mu_beta_pun_rm[r] = Phi_approx(mu_p_rm[OT_PUN,r,2])*5;
   }
   
   { # local section, this saves time and space
@@ -232,12 +231,13 @@ generated quantities {
     #-reward and punishment tasks?
     #in other words, no cue is used across more than one run or RP. Therefore we can store EVs in this manner, without separately specifying which 
     #run or task they pertain to, so long as we have the cue.
-    #declare here, this *might* save time?
 
-    real alpha_s=0;
-    real beta_s=0;
-    real alpha_run_multiplier_s=0;
-    real beta_run_multiplier_s=0;
+    
+    real alpha_s;
+    real beta_s;
+    #set these to 0 by default. They will take on some other value if we are not looking at Run 1.
+    real alpha_rm_s=0;
+    real beta_rm_s=0;
     matrix[100,2] ev;#one row for each of the two options for each choice.
     
     for (s in 1:N) {
@@ -263,39 +263,39 @@ generated quantities {
         if (choice[s,t]!=0) {
           alpha_s=0;
           beta_s=0;
-          alpha_run_multiplier_s=0;
-          beta_run_multiplier_s=0;
+          alpha_rm_s=0;
+          beta_rm_s=0;
           if(outcome_type[s,t]==OT_REW){
             alpha_s=alpha_rew[s];
             beta_s=beta_rew[s];
-            if(run_id[s,t]>1){#only run if run_id is greater than 1; otherwise we leave the multiplier to default to 1.
-              alpha_run_multiplier_s=alpha_rew_run_multiplier[run_id[s,t]-1,s];
-              beta_run_multiplier_s=beta_rew_run_multiplier[run_id[s,t]-1,s];
+            if(run_id[s,t]>1){#only run if run_id is greater than 1; otherwise we leave the multiplier to default to 0 (1 is automatically added when it is calculated).
+              alpha_rm_s=alpha_rew_rm[run_id[s,t]-1,s];
+              beta_rm_s=beta_rew_rm[run_id[s,t]-1,s];
             }
           }else if(outcome_type[s,t]==OT_PUN){
             alpha_s=alpha_pun[s];
             beta_s=beta_pun[s];
             if(run_id[s,t]>1){#only run if run_id is greater than 1; otherwise we leave the multiplier to default to 1.
-              alpha_run_multiplier_s=alpha_pun_run_multiplier[run_id[s,t]-1,s];
-              beta_run_multiplier_s=beta_pun_run_multiplier[run_id[s,t]-1,s];
+              alpha_rm_s=alpha_pun_rm[run_id[s,t]-1,s];
+              beta_rm_s=beta_pun_rm[run_id[s,t]-1,s];
             }
           }else{
             reject("invalid outcome_type for s ",s," and t", t,". Dividing by zero to halt")
             #outcome_type[s,t]=1/0
           }
           # Iterate log-likelihood
-          log_lik[s] = log_lik[s] + categorical_logit_lpmf( choice[s,t] |  to_vector(ev[cue[s,t],]) * beta_s*(beta_run_multiplier_s+1));
+          log_lik[s] = log_lik[s] + categorical_logit_lpmf( choice[s,t] |  to_vector(ev[cue[s,t],]) * beta_s*beta_rm_s);
           
           # Posterior prediction
-          y_hat[s,t] = categorical_rng( softmax(to_vector(ev[cue[s,t],]) * beta_s*(beta_run_multiplier_s+1)));
+          y_hat[s,t] = categorical_rng( softmax(to_vector(ev[cue[s,t],]) * beta_s*beta_rm_s));
           
           # prediction error
           PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
           PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
     
           # value updating (learning)
-          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s*(alpha_run_multiplier_s+1) * PEnc;
-          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s*(alpha_run_multiplier_s+1) * PE;
+          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s*alpha_rm_s * PEnc;
+          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s*alpha_rm_s * PE;
         }
       }
     }

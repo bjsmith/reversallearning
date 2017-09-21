@@ -215,6 +215,7 @@ inverseTemperatureTable<-function(f,group_name){rbind(
     mode="punishment",Group=group_name))
 }
 
+
 fit.RiskyNoMeth<-lookupOrRunFit(
   run=c(1,2),groups_to_fit=2, model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
   rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
@@ -247,6 +248,8 @@ inverse.temperature.estimate.g3<-inverseTemperatureTable(fit.RiskyMeth.ex,"Risky
 learning.rate.estimate<-rbind(learning.rate.estimate.g2,learning.rate.estimate.g3)
 inverse.temperature.estimate<-rbind(inverse.temperature.estimate.g2,inverse.temperature.estimate.g3)
 
+
+
 ggplot(learning.rate.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
   facet_grid(.~mode)+
   labs(title="Posterior group-level learning rate and variance for reward and punishment\n(Both Runs)")
@@ -256,8 +259,41 @@ ggplot(inverse.temperature.estimate,aes(x=mean,y=variance,colour=Group))+geom_po
   labs(title="Posterior group-level inverse temperature and variance for reward and punishment\n(Both Runs)")
 
 
+```
+We can present these in a slightly more principled way, too - it might be a bit weird to plot variance against mean as above. So let's plot variance as error bars.
+```{r double_update_reward_and_punishment_multipleruns_errorbars, echo=TRUE}
+
+lritTable<-function(f,group_name){rbind(
+  data.table(
+  alpha_mean=f$mu_alpha_rew,
+  alpha_variance=f$sigma[,1,1],
+  beta_mean=f$mu_beta_rew,
+  beta_variance=f$sigma[,1,2],
+  mode="reward",Group=group_name),
+  data.table(
+    alpha_mean=f$mu_alpha_pun,
+    alpha_variance=f$sigma[,2,1],
+    beta_mean=f$mu_beta_pun,
+    beta_variance=f$sigma[,2,2],
+    mode="punishment",Group=group_name))
+}
+lrit.estimate<-rbind(lritTable(fit.RiskyNoMeth.ex,"RiskyNoMeth"),lritTable(fit.RiskyMeth.ex,"RiskyMeth"))
+colnames(lrit.estimate)
+ggplot(lrit.estimate,aes(x=alpha_mean,y=beta_mean,colour=Group))+
+  geom_errorbarh(aes(
+    xmin=alpha_mean-alpha_variance, xmax=alpha_mean+alpha_variance,
+    
+    ), width=.1,alpha=0.01)+
+  geom_errorbar(aes(
+    ymin=beta_mean-beta_variance, ymax=beta_mean+beta_variance,
+    
+    ), width=.1,alpha=0.01)+
+  geom_point()+
+  facet_grid(.~mode)+
+  labs(title="Posterior group-level learning rate and inverse temperature\nfor reward and punishment (Both Runs)")
 
 ```
+
 
 So - we see pretty clear patterns here. Subjects appear to learn faster for Reward than Punishment, at least the RiskyMeth group, and faster for the RiskyNoMeth group than the RiskyMeth group.
 
@@ -281,68 +317,19 @@ Let's take a look at:
  * Calculate HDIs for these averages
  * Get posterior predictions per subject
  * Describe the odds of an individual subject in the first group having a higher or lower learning rate 
- than an individual subject in the second goup.
+ than an individual subject in the second goup. This would probably involve modifying the model's generated quantities to generate a sample of subjects.
  
  
 #Learning rate ratios 
-```{r learning_rate_change_runs, echo=TRUE}
 
-source("fitGroupsV3Onegroup.R")
- 
-dim(fit.RiskyNoMeth.ex$alpha_rew_pr_run_multiplier)
-dim(fit.RiskyNoMeth.ex$alpha_rew_run_multiplier)
-dim(fit.RiskyNoMeth.ex$mu_p_rm)
-dim(fit.RiskyNoMeth.ex$mu_alpha_rew_run_multiplier)
-ggplot(fit.extracted$mu_alpha_rew)+geom_histogram(bins=10)
-dim(fit.RiskyNoMeth.ex$mu_alpha_rew)
-dim(fit.RiskyNoMeth.ex$sigma_rm)
-runMultiplierTable<-function(f,group_name){rbind(
-  data.table(
-  mean=f$mu_alpha_rew_run_multiplier[,1],
-  variance=f$sigma_rm[,1,1,1],
-  mode="reward",Group=group_name),
-  data.table(
-    mean=f$mu_alpha_pun_run_multiplier[,1],
-    variance=f$sigma_rm[,2,1,1],
-    mode="punishment",Group=group_name))
-}
-runMultiplierBetaTable<-function(f,group_name){rbind(
-  data.table(
-  mean=f$mu_beta_rew_run_multiplier[,1],
-  variance=f$sigma_rm[,1,1,2],
-  mode="reward",Group=group_name),
-  data.table(
-    mean=f$mu_beta_pun_run_multiplier[,1],
-    variance=f$sigma_rm[,2,1,2],
-    mode="punishment",Group=group_name))
-}
+For learning rate ratios, see debugging_double_run_model.Rmd
 
-dim(fit.RiskyNoMeth.ex$mu_alpha_rew_run_multiplier)
-alpha.runMultiplier.g2<-runMultiplierTable(fit.RiskyNoMeth.ex,"RiskyNoMeth")
-alpha.runMultiplier.g3<-runMultiplierTable(fit.RiskyMeth.ex,"RiskyMeth")
-alpha.runMultiplier<-rbind(alpha.runMultiplier.g2,alpha.runMultiplier.g3)
-ggplot(alpha.runMultiplier,aes(x=mean,y=variance,colour=Group))+geom_point(alpha=0.5)+
-  facet_grid(.~mode)+
-  labs(title="Posterior group-level Run2/Run1\n learning rate ratio and variance for reward and punishment\n(Both Runs)")
-
-
-
-
-```
-
-```{r learning_rate_change_runs_beta, echo=TRUE}
-beta.runMultiplier.g2<-runMultiplierBetaTable(fit.RiskyNoMeth.ex,"RiskyNoMeth")
-beta.runMultiplier.g3<-runMultiplierBetaTable(fit.RiskyMeth.ex,"RiskyMeth")
-beta.runMultiplier<-rbind(beta.runMultiplier.g2,beta.runMultiplier.g3)
-ggplot(beta.runMultiplier,aes(x=mean,y=variance,colour=Group))+geom_point(alpha=0.5)+
-  facet_grid(.~mode)+
-  labs(title="Posterior group-level Run2/Run1 inverse temperature ratio and variance for reward and punishment\n(Both Runs)")
-
-```
-These don't seem particularly informative and I suspect there is an error with the way they ahve been calculated. In particular, ratios for "alpha" (learning rate) and "beta" (inverse temperature) seem identical. There's got ot be something wrong here.
-
+#HDIs
 ```{r calc_hdi, echo=TRUE}
-HDIofMCMC(fit.RiskyNoMeth.extracted$mu_alpha_rew)
-HDIofMCMC(fit.RiskyNoMeth.extracted$mu_beta_rew)
+library(hBayesDM)
+HDIofMCMC(fit.RiskyMeth.ex$mu_alpha_pun_run_multiplier[,1])
+HDIofMCMC(fit.RiskyNoMeth.ex$mu_alpha_pun_run_multiplier[,1])
 
+HDIofMCMC(fit.RiskyNoMeth.extracted$mu_beta_rew)
+HDIofMCMC(fit.RiskyNoMeth.extracted$mu_alpha_rew)
 ```
