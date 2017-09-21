@@ -320,17 +320,24 @@ for (i in 1:numSubjs) {
   model_text<-paste0(readLines(paste0("Final_Models/", use_model,".stan")),collapse="\n")
   #check if a model under the name exists under "compiled models"
   precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", use_model)
+  model.loaded<-FALSE
   if (file.exists(paste0(precompiled.location,".stan"))){
     print("A model with this name already exists. Checking to see if if it's identical to model being currently run...")
     m.precompiled.text<-paste0(readLines(paste0(precompiled.location,".stan")),collapse="\n")
     if(model_text==m.precompiled.text){
       print("Models match, loading precompiled model...")
       load(paste0(precompiled.location,".RData"))
+      model.loaded<-TRUE
     }
   }
-  #if it does, check to see if the text is exactly the same
-  #if it is, use the pre-compiled model.
-  m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
+  if(model.loaded==FALSE){
+    #if it does, check to see if the text is exactly the same
+    #if it is, use the pre-compiled model.
+    m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
+    save(m1,file=paste0(precompiled.location,".RData"))
+    file.copy(paste0(paste0("Final_Models/", use_model,".stan"),precompiled.location,".stan"),overwrite=TRUE)
+  }
+  
   
   print("model built.")
   

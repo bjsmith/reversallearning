@@ -84,7 +84,9 @@ ggplot(beta.runMultiplier,aes(x=mean,y=variance,colour=Group))+geom_point(alpha=
   labs(title="Posterior group-level Run2/Run1 inverse temperature ratio and variance for reward and punishment\n(Both Runs)")
 
 ```
+
 These don't seem particularly informative and I suspect there is an error with the way they ahve been calculated. In particular, ratios for "alpha" (learning rate) and "beta" (inverse temperature) seem identical. There's got ot be something wrong here. Let's take a look at a small dataset.
+
 ```{r ReducedDataset}
 
 fit.RiskyNoMeth.fast<-lookupOrRunFit(
