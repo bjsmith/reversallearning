@@ -303,12 +303,13 @@ Looking at the inverse temperature parameter, RiskyMeth subjects definitely have
 
 ## Speed
 Can we speed this up at all? This takes a look at a model where reward and punishment have been vectorized. Hopefully, this will make things faster.
-```{r double_update_reward_and_punishment_multiple_speed_improvement, echo=TRUE}
 
-fit.RiskyMeth<-lookupOrRunFit(run=c(1,2),groups_to_fit=3, 
-                              model_to_use="double_update_rpo_repeated_runs",includeSubjGroup = FALSE,
-                              rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
-                              model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
+```{r Vectorized}
+#first iteration.
+fit.RiskyNoMeth.fast<-lookupOrRunFit(
+  run=c(1,2),groups_to_fit=2, model_to_use="double_update_rpo_repeated_runs",includeSubjGroup = FALSE,
+  rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
+  model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,fastDebug = FALSE)
 ```
 
 

@@ -92,9 +92,61 @@ These don't seem particularly informative and I suspect there is an error with t
 fit.RiskyNoMeth.fast<-lookupOrRunFit(
   run=c(1,2),groups_to_fit=2, model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
   rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
-  model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,fastDebug = TRUE)
+  model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
 
 fit.RiskyNoMeth.fast.ex<-rstan::extract(fit.RiskyNoMeth.fast$fit)
 rm(fit.RiskyNoMeth.fast)#these are large files; let's not keep them in memory where unnecessary.
+
+dim(fit.RiskyNoMeth.fast.ex$mu_alpha_rew)
+dim(fit.RiskyNoMeth.fast.ex$mu_alpha_pun)
+dim(fit.RiskyNoMeth.fast.ex$mu_beta_rew)
+dim(fit.RiskyNoMeth.fast.ex$mu_beta_pun)
+
+
+runMultiplierTable<-function(f,group_name){rbind(
+  data.table(
+    mean=f$mu_alpha_rew[,1],
+    variance=f$sigma_rm[,1,1,1],
+    mode="reward",Group=group_name
+    ),
+  data.table(
+    mean=f$mu_alpha_pun_run_multiplier[,1],
+    variance=f$sigma_rm[,2,1,1],
+    mode="punishment",Group=group_name))
+}
+
+hist(fit.RiskyNoMeth.fast.ex$mu_alpha_rew[,1])
+hist(fit.RiskyNoMeth.fast.ex$mu_alpha_rew[,2])
+hist(fit.RiskyNoMeth.fast.ex$mu_alpha_pun[,1])
+hist(fit.RiskyNoMeth.fast.ex$mu_alpha_pun[,2])
+
+hist(fit.RiskyNoMeth.fast.ex$mu_beta_rew[,1])
+hist(fit.RiskyNoMeth.fast.ex$mu_beta_rew[,2])
+hist(fit.RiskyNoMeth.fast.ex$mu_beta_pun[,1])
+hist(fit.RiskyNoMeth.fast.ex$mu_beta_pun[,2])
+
+t.test(
+  fit.RiskyNoMeth.fast.ex$mu_alpha_rew[,1],
+  fit.RiskyNoMeth.fast.ex$mu_alpha_rew[,2]
+  )
+#learning rate seems to improve from round 1 to round 2
+
+t.test(
+  fit.RiskyNoMeth.fast.ex$mu_alpha_pun[,1],
+  fit.RiskyNoMeth.fast.ex$mu_alpha_pun[,2]
+  )
+#for reward and punishment
+
+t.test(
+  fit.RiskyNoMeth.fast.ex$mu_beta_rew[,1],
+  fit.RiskyNoMeth.fast.ex$mu_beta_rew[,2]
+  )
+t.test(
+  fit.RiskyNoMeth.fast.ex$mu_beta_pun[,1],
+  fit.RiskyNoMeth.fast.ex$mu_beta_pun[,2]
+  )
+
+
+runMultiplierTable(fit.RiskyNoMeth.fast.ex)
 
 ```

@@ -331,6 +331,7 @@ for (i in 1:numSubjs) {
     }
   }
   if(model.loaded==FALSE){
+    print("No pre-compiled model exists. Compiling...")
     #if it does, check to see if the text is exactly the same
     #if it is, use the pre-compiled model.
     m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
