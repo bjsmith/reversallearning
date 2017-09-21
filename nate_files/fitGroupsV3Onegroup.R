@@ -335,7 +335,7 @@ for (i in 1:numSubjs) {
     #if it is, use the pre-compiled model.
     m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
     save(m1,file=paste0(precompiled.location,".RData"))
-    file.copy(paste0(paste0("Final_Models/", use_model,".stan"),precompiled.location,".stan"),overwrite=TRUE)
+    file.copy(paste0("Final_Models/", use_model,".stan"),paste0(precompiled.location,".stan"),overwrite=TRUE)
   }
   
   
