@@ -123,52 +123,32 @@ model {
   for (r in 1:(R-1)){
     alpha_pr_rm[r,,1]  ~ normal(0,1);
     alpha_pr_rm[r,,2]  ~ normal(0,1);
-    #alpha_pun_pr_rm[r]  ~ normal(0,1);
     beta_pr_rm[r,,1]   ~ normal(0,1);
     beta_pr_rm[r,,2]   ~ normal(0,1);
-    #beta_pun_pr_rm[r]   ~ normal(0,1);
   }
   
   for (s in 1:N) {
     # Define values
-    
-      #matrix dim 1 represents iterations of each trial (reward or punishment)
-      #matrix dim 2 represents the choice [left or right] that each value represents.
+    #matrix dim 1 represents iterations of each trial (reward or punishment)
+    #matrix dim 2 represents the choice [left or right] that each value represents.
     real PEnc; # fictitious prediction error (PE-non-chosen)
     real PE;         # prediction error
     
     # Initialize values
-      #ev[,1] = rep_vector(0, 100); # initial ev values
-      #ev[,2] = rep_vector(0, 100); # initial ev values
-      ev = rep_matrix(0, 100, 2); # initial ev values
+    ev = rep_matrix(0, 100, 2); # initial ev values
     
     for (t in 1:(Tsubj[s])) {
       # compute action probabilities
       if (choice[s,t]!=0) {
-        // alpha_s=0;
-        // beta_s=0;
-        // alpha_rm_s=0;
-        // beta_rm_s=0;
-        alpha_s=alpha[s,run_id[s,t],outcome_type[s,t]];
-        beta_s=beta[s,run_id[s,t],outcome_type[s,t]];
-/*        if(outcome_type[s,t]==OT_REW){
-          alpha_s=alpha_rew[s,run_id[s,t]];
-          beta_s=beta_rew[s,run_id[s,t]];
-        }else if(outcome_type[s,t]==OT_PUN){
-          alpha_s=alpha_pun[s,run_id[s,t]];
-          beta_s=beta_pun[s,run_id[s,t]];
-        }else{
-          reject("invalid outcome_type for s ",s," and t", t,". Dividing by zero to halt")
-        }
-*/        #print("s ",s,"; and t ", t)
-        choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta_s );
+        #print("s ",s,"; and t ", t)
+        choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta[s,run_id[s,t],outcome_type[s,t]] );
         # prediction error
         PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
         PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
   
         # value updating (learning)
-        ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s * PEnc;
-        ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s * PE;
+        ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha[s,run_id[s,t],outcome_type[s,t]] * PEnc;
+        ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha[s,run_id[s,t],outcome_type[s,t]] * PE;
       }
     }
   }
@@ -232,11 +212,11 @@ generated quantities {
     #-reward and punishment tasks?
     #in other words, no cue is used across more than one run or RP. Therefore we can store EVs in this manner, without separately specifying which 
     #run or task they pertain to, so long as we have the cue.
-    real alpha_s;
-    real beta_s;
-    #set these to 0 by default. They will take on some other value if we are not looking at Run 1.
-    real alpha_rm_s=0;
-    real beta_rm_s=0;
+    // real alpha_s;
+    // real beta_s;
+    // #set these to 0 by default. They will take on some other value if we are not looking at Run 1.
+    // real alpha_rm_s=0;
+    // real beta_rm_s=0;
     matrix[100,2] ev;#one row for each of the two options for each choice.
     
     for (s in 1:N) {
@@ -248,7 +228,6 @@ generated quantities {
       # Initialize values
       log_lik[s] = 0;
       ev = rep_matrix(0, 100, 2); # initial ev values
-      #ev[,2] = rep_vector(0, 100); # initial ev values
       
       for (t in 1:(Tsubj[s])) {#loops through all the trials for each subject.
         p_trial[s,t] = trial[s,t];
@@ -259,31 +238,19 @@ generated quantities {
         p_choice[s,t] = choice[s,t];
         p_cue_freq[s,t] = cue_freq[s,t];
         if (choice[s,t]!=0) {
-          alpha_s=alpha[s,run_id[s,t],outcome_type[s,t]];
-          beta_s=beta[s,run_id[s,t],outcome_type[s,t]];
-          // if(outcome_type[s,t]==OT_REW){
-          //   
-          // }else if(outcome_type[s,t]==OT_PUN){
-          //   alpha_s=alpha_pun[s,run_id[s,t]];
-          //   beta_s=beta_pun[s,run_id[s,t]];
-          // }else{
-          //   reject("invalid outcome_type for s ",s," and t", t,". Dividing by zero to halt")
-          //   #outcome_type[s,t]=1/0
-          // }
           # Iterate log-likelihood
-          #print(beta_rm_s)
-          log_lik[s] = log_lik[s] + categorical_logit_lpmf( choice[s,t] |  to_vector(ev[cue[s,t],]) * beta_s);
+          log_lik[s] = log_lik[s] + categorical_logit_lpmf( choice[s,t] |  to_vector(ev[cue[s,t],]) * beta[s,run_id[s,t],outcome_type[s,t]]);
           
           # Posterior prediction
-          y_hat[s,t] = categorical_rng( softmax(to_vector(ev[cue[s,t],]) * beta_s));
+          y_hat[s,t] = categorical_rng( softmax(to_vector(ev[cue[s,t],]) * beta[s,run_id[s,t],outcome_type[s,t]]));
           
           # prediction error
           PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
           PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
     
           # value updating (learning)
-          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_s * PEnc;
-          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_s * PE;
+          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha[s,run_id[s,t],outcome_type[s,t]] * PEnc;
+          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha[s,run_id[s,t],outcome_type[s,t]] * PE;
         }
       }
     }

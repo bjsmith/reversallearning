@@ -2,9 +2,9 @@ data {
   int<lower=1> N;
   int<lower=1> T;
   int<lower=1,upper=T> Tsubj[N];
-  int<lower=1,upper=36> N_cues[N];
+  int<lower=1,upper=100> N_cues[N];
   int<lower=0,upper=2> choice[N,T];
-  int<lower=0,upper=36> cue[N,T];
+  int<lower=0,upper=100> cue[N,T];
   int trial[N,T];
   int cue_pos[N,T];
   int subjid[N,T];
@@ -47,13 +47,13 @@ model {
 
   for (i in 1:N) {
     # Define values
-    matrix[36,2] ev;
+    matrix[100,2] ev;
     real PEnc; # fictitious prediction error (PE-non-chosen)
     real PE;         # prediction error
 
     # Initialize values
-    ev[,1] = rep_vector(0, 36); # initial ev values
-    ev[,2] = rep_vector(0, 36); # initial ev values
+    ev[,1] = rep_vector(0, 100); # initial ev values
+    ev[,2] = rep_vector(0, 100); # initial ev values
 
     for (t in 1:(Tsubj[i])) {
       # compute action probabilities
@@ -80,20 +80,20 @@ generated quantities {
   real log_lik[N];
   
   # For posterior predictive check
-  real y_hat[N,T];
-  real p_trial[N,T];
-  real p_subjID[N,T];
-  real p_cor_res[N,T];
-  real p_cue_pos[N,T];
-  real p_cue_freq[N,T];
-  real p_choice[N,T];
-  real p_outcome[N,T];
+  real y_hat[N,T] = rep_array(0.0,N,T);
+  real p_trial[N,T] = rep_array(0.0,N,T);
+  real p_subjID[N,T] = rep_array(0.0,N,T);
+  real p_cor_res[N,T] = rep_array(0.0,N,T);
+  real p_cue_pos[N,T] = rep_array(0.0,N,T);
+  real p_cue_freq[N,T] =rep_array(0.0,N,T);
+  real p_choice[N,T]= rep_array(0.0,N,T);
+  real p_outcome[N,T]= rep_array(0.0,N,T);
   
-  for (r in 1:N) {
-    for (c in 1:T) {
-      y_hat[r,c] = 0;
-    }
-  }
+  // for (r in 1:N) {
+  //   for (c in 1:T) {
+  //     y_hat[r,c] = 0;
+  //   }
+  // }
 
   mu_alpha  = Phi_approx(mu_p[1]);
   mu_beta   = Phi_approx(mu_p[2]) * 5;
@@ -101,14 +101,14 @@ generated quantities {
   { # local section, this saves time and space
     for (i in 1:N) {
       # Define values
-      matrix[36,2] ev;
+      matrix[100,2] ev;
       real PEnc; # fictitious prediction error (PE-non-chosen)
       real PE;         # prediction error
 
       # Initialize values
       log_lik[i] = 0;
-      ev[,1] = rep_vector(0, 36); # initial ev values
-      ev[,2] = rep_vector(0, 36); # initial ev values
+      ev[,1] = rep_vector(0, 100); # initial ev values
+      ev[,2] = rep_vector(0, 100); # initial ev values
 
       for (t in 1:(Tsubj[i])) {
         p_trial[i,t] = trial[i,t];

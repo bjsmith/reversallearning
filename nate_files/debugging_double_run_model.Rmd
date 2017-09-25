@@ -40,6 +40,7 @@ dim(fit.RiskyNoMeth.ex$mu_p_rm)
 dim(fit.RiskyNoMeth.ex$mu_alpha_rew_run_multiplier)
 dim(fit.RiskyNoMeth.ex$mu_alpha_rew)
 dim(fit.RiskyNoMeth.ex$sigma_rm)
+
 runMultiplierTable<-function(f,group_name){rbind(
   data.table(
   mean=f$mu_alpha_rew_run_multiplier[,1],
@@ -150,3 +151,5 @@ t.test(
 runMultiplierTable(fit.RiskyNoMeth.fast.ex)
 
 ```
+
+These look good. Let's use this!

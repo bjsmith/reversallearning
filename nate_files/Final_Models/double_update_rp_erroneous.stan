@@ -41,8 +41,8 @@ transformed parameters {
   vector<lower=0,upper=1>[N] alpha_pun;
   vector<lower=0,upper=5>[N] beta_rew;
   vector<lower=0,upper=5>[N] beta_pun;
-  print("STOPPING: The code below is faulty - beta_rew and beta_pun and alpha_pun and alpha_rew are confused. Don't run!")
-  reject("The code below is faulty - beta_rew and beta_pun and alpha_pun and alpha_rew are confused. Don't run!")
+
+  #reject("The code below is faulty - beta_rew and beta_pun and alpha_pun and alpha_rew are confused. Don't run!")
   for (i in 1:N) {
     alpha_rew[i]  = Phi_approx( mu_p[1, 1] + sigma[1, 1] * alpha_rew_pr[i] );
     beta_rew[i]   = Phi_approx( mu_p[1, 2] + sigma[1, 2] * beta_pun_pr[i] ) * 5;

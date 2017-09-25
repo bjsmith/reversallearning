@@ -1,0 +1,116 @@
+---
+title: "Compare versions of models"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+source("../nate_files/fitGroupsV3Onegroup.R")
+source("../data_summarize.R")
+```
+
+# September 23 2017: Model comparison
+
+For the current iteration of the model I am getting values that are quite different to earlier versions.
+
+There two possible explanations I have for this:
+
+ * Either the former or current model isn't well designed. One or the other isn't reliable. The difference between the two is consistently inconsistent. We need to work out which is mis-specified.
+ * Variational Bayes gives us different results each time we run the same model.
+ 
+These need to be tested out! So what we need to do is:
+
+ * run the models twice each
+ * save values
+ * compare Run1 mu, sigma, alpha, beta values for G2RiskyNoMeth and G3RiskyMeth
+ 
+This document will be structured in such a way that it can be re-run. i.e., if a particular model has already been re-rerun then we won't run it again; just load some easy-to-load data.
+
+##Method
+
+The hard part is running the model! This is done here. Let's compare:
+
+* `double_update_rpo_repeated_runs.stan`, the latest model designed for multiple runs
+* `double_update_rp.stan`, processes reward and punishment data but only one run
+* `double_update.stan`, Processes only reward *or* punishment data.
+
+We also want to run several times.
+
+```{r model_run, echo=TRUE}
+models_to_run<-c("double_update_rpo_repeated_runs","double_update_rp_fixed","double_update_rp_erroneous","double_update")
+times_to_run=2
+```
+
+The run-wrapper now takes a "file suffix" which means we can run it multiple times, each time with a different suffix, and the run will be saved and given an appropriate name.
+
+As we run these we need to be careful not to use up too much memory. We probably ought to extract *just the values we need*, which would exclude the individual subject values, then take each object out of memory.
+
+```{r model_run, echo=TRUE}
+model.fits<- vector("list", 2*length(models_to_run)*times_to_run)
+model.summaries <- vector("list", 2*length(models_to_run)*times_to_run)
+for (g in 2:3){
+  for (m in models_to_run){
+    for (t in 1:times_to_run){
+      print (paste0(g,m,t,collapse=", "))
+      #only run reward and punishment when we can
+      if(models_to_run %in% c("double_update_rpo_repeated_runs","double_update_rp_fixed","double_update_rp_erroneous")){
+        rp<-c(1,2)
+      }else{
+        rp<-c(2)
+      }
+      #only run multiple runs when we can
+      if(models_to_run %in% c("double_update_rpo_repeated_runs")){
+        runs=c(1,2)
+      }else{
+        runs=c(1)
+      }
+      fit<-lookupOrRunFit(
+        run=runs,groups_to_fit=g, model_to_use=m,includeSubjGroup = FALSE,
+        rp=rp,
+        model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,
+        fileSuffix=paste0("20170923_test_iteration_",as.character(t))
+        )
+      
+      #rm(fit)
+      
+      
+      first_empty_list_pos<-min(which(sapply(model.summaries,is.null)))
+      print(paste("first_empty_list_pos is", as.character(first_empty_list_pos)))
+      # model.fits[[first_empty_list_pos]]<-
+      #               list("fitObj"=fit,"g"=g,"m"=m,"t"=t)
+      if(m=="double_update_rpo_repeated_runs"){
+        model.summaries[[first_empty_list_pos]]<-
+                    list("summaryObj"=data_summarize_double_update_rpo_repeated_runs(rstan::extract(fit$fit)),
+                         "g"=g,"m"=m,"t"=t)
+      }else if(m=="double_update_rp_erroneous" || m=="double_update_rp_fixed"){
+        model.summaries[[first_empty_list_pos]]<-
+                    list("summaryObj"=data_summarize_double_update_rp(rstan::extract(fit$fit),
+                                                                    run = runs),
+                         "g"=g,"m"=m,"t"=t)
+      }else if(m=="double_update"){
+        model.summaries[[first_empty_list_pos]]<-
+                    list("summaryObj"=data_summarize_double_update(rstan::extract(fit$fit),
+                                                                   outcome.type = rp,
+                                                                   run = runs),
+                         "g"=g,"m"=m,"t"=t)
+      }else{
+        stop("fuck! I don't recognize that model.")
+      }
+      rm(fit)
+      
+    }
+  }
+}
+
+```
+
+## Results
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -49,7 +49,7 @@ Apparently we have negative learning rates and inverse temperatures here.
 What about run 1, meth group?
 ```{r double_update_risky_meth_group, echo=TRUE}
 
-source("fitGroupsV3OnegroupRun1.R")
+source("../nate_files/fitGroupsV3OnegroupRun1.R")
 
 fit<-lookupOrRunFit(run=1,3,model_to_use="double_update")
 
@@ -79,7 +79,7 @@ Let's start with expanding to multiple groups, since I have already written the 
 
 ```{r double_update_risky_meth_group, echo=TRUE}
 
-source("fitGroupsV3OnegroupRun1.R")
+source("../nate_files/fitGroupsV3OnegroupRun1.R")
 
 fit<-lookupOrRunFit(run=1,c(2,3), model_to_use="prl_ben_v3_group",includeSubjGroup = TRUE)
 
@@ -106,12 +106,15 @@ OK, so we are getting convergence problems here. Nathan expects that when we try
 So perhaps we should do each group separately? If we're doing that, then the next logical step is to take the double update model and try to add separate reward and punishment learning rates :-)
 
 ```{r double_update_risky_nometh_single_group_reward_and_punishment, echo=TRUE}
-
-source("fitGroupsV3OnegroupRun1.R")
+setwd("../nate_files/")
+source("../nate_files/fitGroupsV3Onegroup.R")
 
 #risky nometh
-fit<-lookupOrRunFit(run=1,groups_to_fit=2, model_to_use="double_update_rp",includeSubjGroup = FALSE,
-                    rp=c(1,2),model_rp_separately=TRUE,include_pain=FALSE)
+fit<-lookupOrRunFit(run=1,groups_to_fit=2, 
+                    model_to_use="double_update_rp",
+                    includeSubjGroup = FALSE,
+                    rp=c(1,2),
+                    model_rp_separately=TRUE,include_pain=FALSE)
 
 
 #risky meth....
@@ -126,10 +129,10 @@ fit<-lookupOrRunFit(run=1,groups_to_fit=2, model_to_use="double_update_rp",inclu
 
 fit.RiskyNoMeth.extracted<-rstan::extract(fit$fit)
 
-learning.rate.estimate.g2<-rbind(data.table(mean=fit.extracted$mu_alpha_rew,
-                                   variance=fit.extracted$sigma[,1,1],mode="reward",Group="RiskyNoMeth"),
-                              data.table(mean=fit.extracted$mu_alpha_pun,
-                                   variance=fit.extracted$sigma[,2,1],mode="punishment",Group="RiskyNoMeth"))
+learning.rate.estimate.g2<-rbind(data.table(mean=fit.RiskyNoMeth.extracted$mu_alpha_rew,
+                                   variance=fit.RiskyNoMeth.extracted$sigma[,1,1],mode="reward",Group="RiskyNoMeth"),
+                              data.table(mean=fit.RiskyNoMeth.extracted$mu_alpha_pun,
+                                   variance=fit.RiskyNoMeth.extracted$sigma[,2,1],mode="punishment",Group="RiskyNoMeth"))
 
 inverse.temperature.estimate.g2<-rbind(data.table(mean=fit.extracted$mu_beta_rew,
                                    variance=fit.extracted$sigma[,1,2],mode="reward",Group="RiskyNoMeth"),
@@ -187,110 +190,51 @@ At the group level, the run multiplier (except for the first) for each subject c
 There is a mean and variance of the population of run multipliers, just as there is for the population of alphas and betas.
 Although our data only has up to two runs per subject, this does handle an arbitrary number of runs. However, there may be problems dealing with subjects who have fewer than the normal number of runs, and we might have to record the number of runs per subject in order to take that into acccount.
 
+We could have modeled each run as its own separate parameter within a distribution of runs for each subject. However, it may not be appropriate to assume each run is sampled from a random distribution of runs for each subject, because order effects may mean that run 2 is qualitatively different to round 1. As such, our approach of using a difference parameter to estimate the difference between run 1 and run 2 can be appropriate.
+
+
 The model is run as follows:
 
-```{r double_update_reward_and_punishment_multiple runs, echo=TRUE}
+```{r double_update_reward_and_punishment_multiple_runs, echo=TRUE}
+source("../")
+source("notebooks/double_update_reward_and_punishment_multiple_runs.R")
 
-source("fitGroupsV3Onegroup.R")
-
-learningRateTable<-function(f,group_name){rbind(
-  data.table(
-  mean=f$mu_alpha_rew,
-  variance=f$sigma[,1,1],mode="reward",Group=group_name),
-  data.table(
-    mean=f$mu_alpha_pun,
-    variance=f$sigma[,2,1],
-    mode="punishment",Group=group_name))
-}
-
-
-inverseTemperatureTable<-function(f,group_name){rbind(
-  data.table(
-  mean=f$mu_beta_rew,
-  variance=f$sigma[,1,2],
-  mode="reward",Group=group_name),
-  data.table(
-    mean=f$mu_beta_pun,
-    variance=f$sigma[,2,2],
-    mode="punishment",Group=group_name))
-}
+#for each subject, subject-level mu and sigma alpha and beta for {reward,punishment}*{run1,run2}
+#let's leave the trial-level values for now.
+#so, let's have one data frame to represent group-level values
+#and another data frame to represent subject-level values
+#we will also need to add a column to express group level
+#do it in long format; I think that'll make it easier to get dimensions; we can reshape as necessary.
+ggplot(dcast(
+  grouplevel.dt[Run==1],iter+Motivation+Group+Statistic~Parameter,
+  value.var=c("Value"))
+       ,aes(x=alpha,y=beta,colour=Group))+geom_point()+
+  facet_grid(Motivation~Statistic)+
+  labs(title="Posterior group-level learning rate and inverse temperature for reward and punishment\n(First Run)",
+       x="alpha (Learning rate)",y="beta (inverse temperature)")
 
 
-fit.RiskyNoMeth<-lookupOrRunFit(
-  run=c(1,2),groups_to_fit=2, model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
-  rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
-  model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
-
-# load("Fits/double_update_rp_repeated_runs_Risky_NoMeth_rewpun_separate_run12_model_distinct_runs_good_1.RData")
-# goodfit<-fit_data
-# load("Fits/double_update_rp_repeated_runs_Risky_NoMeth_rewpun_separate_run12_model_distinct_runs_bad_1.RData")
-# badfit<-fit_data
-fit.RiskyNoMeth.ex<-rstan::extract(fit.RiskyNoMeth$fit)
-rm(fit.RiskyNoMeth)#these are large files; let's not keep them in memory where unnecessary.
-
-learning.rate.estimate.g2<-learningRateTable(fit.RiskyNoMeth.ex,"RiskyNoMeth")
-
-inverse.temperature.estimate.g2<-inverseTemperatureTable(fit.RiskyNoMeth.ex,"RiskyNoMeth")
-
-fit.RiskyMeth<-lookupOrRunFit(run=c(1,2),groups_to_fit=3, 
-                              model_to_use="double_update_rp_repeated_runs",includeSubjGroup = FALSE,
-                              rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
-                              model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE)
-
-fit.RiskyMeth.ex<-rstan::extract(fit.RiskyMeth$fit)
-
-rm(fit.RiskyMeth)#these are large files; let's not keep them in memory where unnecessary.
-
-learning.rate.estimate.g3<-learningRateTable(fit.RiskyMeth.ex,"RiskyMeth")
-inverse.temperature.estimate.g3<-inverseTemperatureTable(fit.RiskyMeth.ex,"RiskyMeth")
+ggplot(dcast(
+  grouplevel.dt[Run==1 & Group %in% c("RiskyNoMeth","RiskyMeth")],iter+Motivation+Group+Parameter~Statistic,
+  value.var=c("Value"))
+       ,aes(x=mu,y=sigma,colour=Group))+geom_point()+
+  facet_grid(Motivation~Parameter,scales="free")+
+  labs(title="Posterior group-level learning rate mu and sigma for reward and punishment\n(First Run)"
+       )
+# dres<-dcast(
+#   grouplevel.dt[Run==1 & Parameter=="alpha"],iter+Motivation+Group+Statistic~Parameter,
+#   value.var=c("Value"))
+# 
+# 
+# ggplot(dcast(
+#   grouplevel.dt[Run==1 & Parameter=="alpha"],iter+Motivation+Group~Value,
+#   value.var=c("Value"))
+#        ,aes(x=alpha,y=beta,colour=Group))+geom_point()+
+#   facet_grid(Motivation~Statistic)+
+#   labs(title="Posterior group-level learning rate and inverse temperature for reward and punishment\n(First Run)",
+#        x="alpha (Learning rate)",y="beta (inverse temperature)")
 
 
-learning.rate.estimate<-rbind(learning.rate.estimate.g2,learning.rate.estimate.g3)
-inverse.temperature.estimate<-rbind(inverse.temperature.estimate.g2,inverse.temperature.estimate.g3)
-
-
-
-ggplot(learning.rate.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
-  facet_grid(.~mode)+
-  labs(title="Posterior group-level learning rate and variance for reward and punishment\n(Both Runs)")
-
-ggplot(inverse.temperature.estimate,aes(x=mean,y=variance,colour=Group))+geom_point()+
-  facet_grid(.~mode)+
-  labs(title="Posterior group-level inverse temperature and variance for reward and punishment\n(Both Runs)")
-
-
-```
-We can present these in a slightly more principled way, too - it might be a bit weird to plot variance against mean as above. So let's plot variance as error bars.
-```{r double_update_reward_and_punishment_multipleruns_errorbars, echo=TRUE}
-
-lritTable<-function(f,group_name){rbind(
-  data.table(
-  alpha_mean=f$mu_alpha_rew,
-  alpha_variance=f$sigma[,1,1],
-  beta_mean=f$mu_beta_rew,
-  beta_variance=f$sigma[,1,2],
-  mode="reward",Group=group_name),
-  data.table(
-    alpha_mean=f$mu_alpha_pun,
-    alpha_variance=f$sigma[,2,1],
-    beta_mean=f$mu_beta_pun,
-    beta_variance=f$sigma[,2,2],
-    mode="punishment",Group=group_name))
-}
-lrit.estimate<-rbind(lritTable(fit.RiskyNoMeth.ex,"RiskyNoMeth"),lritTable(fit.RiskyMeth.ex,"RiskyMeth"))
-colnames(lrit.estimate)
-ggplot(lrit.estimate,aes(x=alpha_mean,y=beta_mean,colour=Group))+
-  geom_errorbarh(aes(
-    xmin=alpha_mean-alpha_variance, xmax=alpha_mean+alpha_variance,
-    
-    ), width=.1,alpha=0.01)+
-  geom_errorbar(aes(
-    ymin=beta_mean-beta_variance, ymax=beta_mean+beta_variance,
-    
-    ), width=.1,alpha=0.01)+
-  geom_point()+
-  facet_grid(.~mode)+
-  labs(title="Posterior group-level learning rate and inverse temperature\nfor reward and punishment (Both Runs)")
 
 ```
 
@@ -309,8 +253,12 @@ Can we speed this up at all? This takes a look at a model where reward and punis
 fit.RiskyNoMeth.fast<-lookupOrRunFit(
   run=c(1,2),groups_to_fit=2, model_to_use="double_update_rpo_repeated_runs",includeSubjGroup = FALSE,
   rp=c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT),
-  model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,fastDebug = FALSE)
+  model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,fastDebug = TRUE)
 ```
+The "vectorized" version is likely not faster because, although we turned Reward and Punishment into separate variables, we weren't able to
+actually vectorize any more operations. Operations like generating normal distributions in stan can only be done on vectors, not matrices or
+n-D arrays, so there is little point in vectorizing.
+
 
 
 Let's take a look at:
@@ -324,6 +272,19 @@ Let's take a look at:
 #Learning rate ratios 
 
 For learning rate ratios, see debugging_double_run_model.Rmd
+```{r calc_hdi, echo=TRUE}
+
+
+ggplot(dcast(
+  grouplevel.dt[Statistic=="mu"],iter+Motivation+Group+Statistic+Run~Parameter,
+  value.var=c("Value"))
+       ,aes(x=alpha,y=beta,colour=Run))+geom_point()+
+  facet_grid(Group~Motivation)+
+  labs(title="Posterior group-level learning rate and inverse temperature for reward and punishment\n(First Run)",
+       x="alpha (Learning rate)",y="beta (inverse temperature)")
+
+```
+
 
 #HDIs
 ```{r calc_hdi, echo=TRUE}
@@ -333,4 +294,67 @@ HDIofMCMC(fit.RiskyNoMeth.ex$mu_alpha_pun_run_multiplier[,1])
 
 HDIofMCMC(fit.RiskyNoMeth.extracted$mu_beta_rew)
 HDIofMCMC(fit.RiskyNoMeth.extracted$mu_alpha_rew)
+
+#OK, so let's do some group comparisons...
+#what is the difference in estimated mean learning rate between groups?
+
+#so, let's reshape into a shape and then we can describe statistically
+groupcomparison.dt<-dcast(
+  grouplevel.dt[Statistic=="mu"],iter+Motivation+Statistic+Run~Parameter+Group,
+  value.var=c("Value"))
+# - Risky No Meth <> Risky Meth, mu, {reward, punishment}
+#reshape to put data from each group onto the same line
+#need one column per Group
+
+hist(groupcomparison.dt$alpha_RiskyNoMeth-groupcomparison.dt$alpha_RiskyMeth)
+#does RiskyNoMeth have a higher learning rate than RiskyMeth?
+
+#overall
+source("../visualization/geom_hdi.R")
+p<-ggplot(groupcomparison.dt,aes(x=alpha_RiskyNoMeth-alpha_RiskyMeth))+geom_histogram(bins=30)+
+  labs(title="Difference in posterior learning rate, NoMeth-Meth")+
+  geom_hdi(size=4, lineend = "round",color="blue",alpha=0.5,credible_mass=0.95)
+plotly::ggplotly(p)  
+
+#reward
+p<-ggplot(groupcomparison.dt[Motivation=="Reward"],aes(x=alpha_RiskyNoMeth-alpha_RiskyMeth))+geom_histogram(bins=30)+
+  labs(title="Difference in posterior learning rate, NoMeth-Meth (Reward)")+
+  geom_hdi(size=4, lineend = "round",color="blue",alpha=0.5,credible_mass=0.95)
+plotly::ggplotly(p)
+#punishment
+p<-ggplot(groupcomparison.dt[Motivation=="Punishment"],aes(x=alpha_RiskyNoMeth-alpha_RiskyMeth))+geom_histogram(bins=30)+
+  labs(title="Difference in posterior learning rate, NoMeth-Meth (Punishment)")+
+  geom_hdi(size=4, lineend = "round",color="blue",alpha=0.5,credible_mass=0.95)
+plotly::ggplotly(p)
+
+
+# - Safe No Meth <> Risky No Meth, mu, {reward, punishment}
+
+#overall
+source("../visualization/geom_hdi.R")
+p<-ggplot(groupcomparison.dt,aes(x=alpha_SafeNoMeth-alpha_RiskyNoMeth))+geom_histogram(bins=30)+
+  labs(title="Difference in posterior learning rate, Safe-Risky NoMeth")+
+  geom_hdi(size=4, lineend = "round",color="blue",alpha=0.5,credible_mass=0.95)
+plotly::ggplotly(p)  
+
+p<-ggplot(groupcomparison.dt,aes(x=alpha_RiskyNoMeth-alpha_RiskyMeth,fill=Motivation,color=Motivation))+geom_histogram(bins=30)+
+  labs(title="Difference in posterior learning rate, Safe-Risky NoMeth")+
+  geom_hdi(size=4, lineend = "round",alpha=0.9,credible_mass=0.95)
+plotly::ggplotly(p)
+
+#reward
+p<-ggplot(groupcomparison.dt[Motivation=="Reward"],aes(x=alpha_RiskyNoMeth-alpha_RiskyMeth))+geom_histogram(bins=30)+
+  labs(title="Difference in posterior learning rate, Safe-Risky NoMeth")+
+  geom_hdi(size=4, lineend = "round",color="blue",alpha=0.5,credible_mass=0.95)
+plotly::ggplotly(p)
+#punishment
+p<-ggplot(groupcomparison.dt[Motivation=="Punishment"],aes(x=alpha_RiskyNoMeth-alpha_RiskyMeth))+geom_histogram(bins=30)+
+  labs(title="Difference in posterior learning rate, Safe-Risky NoMeth")+
+  geom_hdi(size=4, lineend = "round",color="blue",alpha=0.5,credible_mass=0.95)
+plotly::ggplotly(p)
+
+
+
+# - 
+
 ```

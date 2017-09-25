@@ -1,0 +1,9 @@
+#across subject level
+mu_alpha~normal()
+
+#across run level
+for (s in 1:S){
+mu_alpha_s~normal()
+}
+
+#within-run level

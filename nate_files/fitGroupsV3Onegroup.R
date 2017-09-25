@@ -4,11 +4,18 @@ library(dplyr)
 library(pROC)
 library(ggplot2)
 library(data.table)
+
 if(length(grep("nate_files",getwd()))>0){
   source("../util/apply_local_settings.R")
+  modelcode_rl<-""
+  apply_local_settings("../")
+}else if(length(grep("notebooks",getwd()))>0){
+  source("../util/apply_local_settings.R")
+  modelcode_rl<-"../nate_files/"
   apply_local_settings("../")
 }else{
   source("util/apply_local_settings.R")
+  modelcode_rl<-"nate_files/"
   apply_local_settings()
 }
 
@@ -18,7 +25,7 @@ REVERSAL_LEARNING_PUNISHMENT=2
 
 get_fit_desc<-function(use_model,descr,run,rp=c(2),
                        model_rp_separately=TRUE,model_runs_separately=FALSE,
-                       use_pain=FALSE,fastDebug=FALSE){
+                       use_pain=FALSE,fastDebug=FALSE,fileSuffix=""){
   fit_desc<-""
   dd<-localsettings$data.dir
   if (1 %in% rp & 2 %in% c(rp)){
@@ -52,13 +59,14 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
   if(fastDebug){
     fit_desc<-paste0(fit_desc,"_fastDebug")
   }
+  fit_desc<-paste0(fit_desc,fileSuffix)
   fit_desc<-paste0(fit_desc,".RData")
   return(fit_desc)
 }
 
 lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          includeSubjGroup,rp=c(2),model_rp_separately=TRUE,model_runs_separately=FALSE,
-                         include_pain=FALSE,fastDebug=FALSE){
+                         include_pain=FALSE,fastDebug=FALSE,fileSuffix=""){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -69,7 +77,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            model_rp_separately=model_rp_separately,
                            model_runs_separately=model_runs_separately,
                            use_pain=include_pain,
-                           fastDebug = fastDebug)
+                           fastDebug = fastDebug,
+                           fileSuffix = fileSuffix)
   if (file.exists(fit.fileid)){
     print("this has already been fit! Loading...")
     load(fit.fileid)
@@ -78,7 +87,7 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
   }else{
     print("This has not been previously fit. Running full model...")
     fit<-fitGroupsV3Onegroup(run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-                             include_pain,fastDebug=fastDebug)
+                             include_pain,fastDebug=fastDebug,fileSuffix=fileSuffix)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -92,6 +101,8 @@ get_group_description<-function(groups_to_fit){
       descr <- "Risky_NoMeth"
     }else if (groups_to_fit==3){
       descr <- "Risky_Meth"
+    }else if (groups_to_fit==1){
+      descr <- "Safe_NoMeth"
     }
   } else if (length(setdiff(groups_to_fit,c(2,3)))==0 & length(setdiff(c(2,3),groups_to_fit))==0){
       descr <- "RiskyMethAndNonMeth"
@@ -120,12 +131,12 @@ get_group_description<-function(groups_to_fit){
 }
 fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                                     includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-                                    include_pain,fastDebug=FALSE){
+                                    include_pain,fastDebug=FALSE,fileSuffix=fileSuffix){
   use_model<-model_to_use
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
-  source("Misc/freq_replace.R")
-  source("Misc/plot_model.R")
+  source(paste0(modelcode_rl,"Misc/freq_replace.R"))
+  source(paste0(modelcode_rl,"Misc/plot_model.R"))
   
   # Use pain as outcome?
   pain_outcome <- include_pain
@@ -133,16 +144,16 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   # Which model to use?
   models <- c("simple_delta", "simple_delta_bias", "switch_lr", "simple_decay", 
               "switch_model", "double_update", "switch_decay", "switch_lr_double_update")
-  
+  dd<-localsettings$data.dir
   # Read in raw data
   if (length(rp)==1){
     if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
-      rawdata <- read.table("../../data/all_subjs_datacomplete_punishment.txt", header=T)
+      rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_punishment.txt"), header=T)
     }else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
-      rawdata <- read.table("../../data/all_subjs_datacomplete_reward.txt", header=T)
+      rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward.txt"), header=T)
     }
   }else if (rp==c(REVERSAL_LEARNING_REWARD,REVERSAL_LEARNING_PUNISHMENT) & length(rp)==2){
-    rawdata <- read.table("../../data/all_subjs_datacomplete_reward_and_punishment.txt", header=T)
+    rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment.txt"), header=T)
   }else{
     print("unrecognized reward-punishment flag!")
   }
@@ -317,15 +328,15 @@ for (i in 1:numSubjs) {
     dataList[["R"]] = numRuns
   }
   cat("Building model...")
-  model_text<-paste0(readLines(paste0("Final_Models/", use_model,".stan")),collapse="\n")
+  model_text<-paste0(readLines(paste0(modelcode_rl,"Final_Models/", use_model,".stan")),collapse="\n")
   #check if a model under the name exists under "compiled models"
   precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", use_model)
   model.loaded<-FALSE
   if (file.exists(paste0(precompiled.location,".stan"))){
-    print("A model with this name already exists. Checking to see if if it's identical to model being currently run...")
+    print("A compiled stan model with this name already exists. Checking to see if it's identical to model being currently run...")
     m.precompiled.text<-paste0(readLines(paste0(precompiled.location,".stan")),collapse="\n")
     if(model_text==m.precompiled.text){
-      print("Models match, loading precompiled model...")
+      print("Models match; loading precompiled model...")
       load(paste0(precompiled.location,".RData"))
       model.loaded<-TRUE
     }
@@ -334,9 +345,11 @@ for (i in 1:numSubjs) {
     print("No pre-compiled model exists. Compiling...")
     #if it does, check to see if the text is exactly the same
     #if it is, use the pre-compiled model.
-    m1 <- stan_model(paste0("Final_Models/", use_model,".stan"))
+    m1 <- stan_model(paste0(modelcode_rl,"Final_Models/", use_model,".stan"))
+    #save away the compiled model and its source into the cache directory.
+    #this will allow this model to be loaded already pre-compiled next time! Should save us a bit of time.
     save(m1,file=paste0(precompiled.location,".RData"))
-    file.copy(paste0("Final_Models/", use_model,".stan"),paste0(precompiled.location,".stan"),overwrite=TRUE)
+    file.copy(paste0(modelcode_rl,"Final_Models/", use_model,".stan"),paste0(precompiled.location,".stan"),overwrite=TRUE)
   }
   
   
@@ -378,7 +391,7 @@ for (i in 1:numSubjs) {
   for_plot$pred_correct <- ifelse((for_plot$y_hat==for_plot$choice & for_plot$outcome==1) | (for_plot$y_hat!=for_plot$choice & for_plot$outcome!=1), 1, 0)
   
   fit_data <- list(fit = fit, plot_object = for_plot,model_text=model_text)
-  
+  cat("\nSaving model...")
   save(fit_data, file = get_fit_desc(use_model=use_model,
                                      group.description$descr,
                                      run,
@@ -386,7 +399,9 @@ for (i in 1:numSubjs) {
                                      model_rp_separately=model_rp_separately,
                                      model_runs_separately=model_runs_separately,
                                      use_pain=include_pain,
-                                     fastDebug=fastDebug))
+                                     fastDebug=fastDebug,
+                                     fileSuffix=fileSuffix))
+  cat("...model saved.\n")
   
   #next line might fail. Be careful
   tryCatch({
