@@ -14,26 +14,6 @@ source("rl_behav_analysis_learning_setup.R")
 
 ######################
 #align by pre-post reversal
-break.labels=c("1\nPre-reversal",2:8,"1\nReversal",2:5)
-
-
-accuracy.by.pres_seg.subid<-rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,subid,Motivation)]
-
-accuracy.by.pres_seg<-
-  rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,Motivation)]
-
-#mean across subjects
-# accuracy.by.pres_seg.subid.summary<-accuracy.by.pres_seg.subid[
-#   ,
-#   .(prop.correct.m=mean(prop.correct),
-#     prop.correct.sd=sd(prop.correct),
-#     prop.correct.p25=rank(prop.correct)/.N),
-#   .(presentation_n_over_segments,Motivation)]
-
-break.labels=c("1\nPre-reversal",2:last_nonreversal,"1\nReversal",2:6)
-accuracy.by.pres_seg.subid.finalpc<-
-  accuracy.by.pres_seg.subid[presentation_n_over_segments==4,.(final.prop.correct=prop.correct),.(subid,Motivation)]
-accuracy.by.pres_seg.subid<-merge(accuracy.by.pres_seg.subid,accuracy.by.pres_seg.subid.finalpc,by=c("subid","Motivation"))
 
 
 reversal_learning_timeline_ggplot_commands<-
@@ -54,3 +34,9 @@ accuracy.by.pres_seg.subid.summary<-accuracy.by.pres_seg.subid[
   .(prop.correct.m=mean(prop.correct),
     prop.correct.sd=sd(prop.correct)),
   .(presentation_n_over_segments,Motivation)]
+
+accuracy.by.pres_seg.subid.summary.bygroup<-accuracy.by.pres_seg.subid[
+  presentation_n_over_segments<=13,
+  .(prop.correct.m=mean(prop.correct),
+    prop.correct.sd=sd(prop.correct)),
+  .(presentation_n_over_segments,Motivation,RiskLabel,MethUse,SexRisk)]

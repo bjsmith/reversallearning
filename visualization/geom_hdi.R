@@ -125,17 +125,18 @@ StatHdi <- ggproto("StatHdi", Stat,
 to_basic.GeomHdi<-function (data, prestats_data, layout, params, p, ...) 
 {
   require(tidyr)
-  print(data)
+  #print(data)
   #put a confidence interval into the hovertext
   data$hovertext<-apply(data,1,
                         function(r){
-                          sub(paste0(params$hoverTextAes,": -?\\d+(.\\d+)?(e\\d+)?"),
-                              paste0(params$hoverTextAes,": [",signif(as.numeric(r[["x"]]),4),", ",
+                          sub(paste0(params$hoverTextAes[["x"]],":( )+-?\\d+(.\\d+)?(e\\d+)?"),
+                              paste0(params$hoverTextAes[["x"]],": [",signif(as.numeric(r[["x"]]),4),", ",
                                      signif(as.numeric(r[["xend"]],4)),"]"),r[["hovertext"]])
                         })
                         
   d<-tidyr::gather(data,xposinline,x,x:xend)
-  d$y<-rep(1:dim(d)[1]/2,each=2)-1
+  d$y<-0#should fix this later; for now we don't need it!
+  #d$y<-rep(1:(dim(d)[1]/2),each=2)-1
   dline<-d
 
   #

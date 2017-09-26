@@ -40,6 +40,8 @@ main.prop.cor.ggplot<-
 
 ggplotly(main.prop.cor.ggplot)
 
+main.prop.cor.ggplot
+
 ```
 
 

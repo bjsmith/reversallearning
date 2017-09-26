@@ -10,6 +10,8 @@ require(tidyr)
 #install.packages("corrplot")
 require(corrplot)
 
+source("get_risk_group.R")
+
 rl.all.subjects.list<-NULL
 for (condition in c(
   "reward",
@@ -147,6 +149,8 @@ for (condition in c(
   }
 }
 
+subgroupdata<-get_risk_group()
+rl.all.subjects.list<-merge(rl.all.subjects.list,subgroupdata,by.x="subid",by.y="Adjusted_subid")
 rl.all.subjects.list[,presentation_n_over_segments:=presentation_n_in_segment]
 last_nonreversal<-max(rl.all.subjects.list[reversal_trial==FALSE,presentation_n_in_segment])
 #aligns so that for every subject, we give the same index to the first reversal trial
@@ -158,7 +162,7 @@ rl.all.subjects.list[reversal_trial==TRUE,presentation_n_over_segments:=presenta
 break.labels=c("1\nPre-reversal",2:8,"1\nReversal",2:5)
 
 
-accuracy.by.pres_seg.subid<-rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,subid,Motivation)]
+accuracy.by.pres_seg.subid<-rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,subid,Motivation,RiskLabel,MethUse,SexRisk)]
 
 accuracy.by.pres_seg.image<-
   rl.all.subjects.list[,.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,Motivation,image)]

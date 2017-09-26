@@ -109,14 +109,14 @@ data_summarize_double_update<- function(extracted.data,outcome.type=NA,run=NA){
     
     otr.df<-rbind(
       data.frame("iter"=1:item.count,
-                 "Motivation"=outcome_types_abbrev[outcome.type],
+                 "Motivation"=outcome_types[outcome.type],
                  "Run"=run,
                  "Statistic"="mu",
                  "Parameter"=rep(parameter,item.count),
                  "Value"=extracted.data[[paste0("mu_",parameter)]]
       ),
       data.frame("iter"=1:item.count,
-                 "Motivation"=outcome_types_abbrev[outcome.type],
+                 "Motivation"=outcome_types[outcome.type],
                  "Run"=run,
                  "Statistic"=sigma_stat,
                  "Parameter"=rep(parameter,item.count),

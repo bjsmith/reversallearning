@@ -1,6 +1,8 @@
 ---
-title: "Compare versions of models"
-output: html_document
+title: "Relative reliability of Models and variational Bayes"
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -10,107 +12,216 @@ source("../nate_files/fitGroupsV3Onegroup.R")
 source("../data_summarize.R")
 ```
 
-# September 23 2017: Model comparison
+I am working on using a Bayesian model to estimate parameters for our reward learning data. I'm extending [Nate Haines' Double Update Model for Reversal Learning](https://rpubs.com/CCSL/hBayesDM). Nate modified the version available in his package hBayesDM to work with our dataset, which is a deterministic Reversal Learning task. I have since incrementally extended it to handle two different tasks (reward and punishment learning) and repeated runs.
 
-For the current iteration of the model I am getting values that are quite different to earlier versions.
-
-There two possible explanations I have for this:
+In the latest, repeated runs version, `double_update_rpo_repeated_runs`, I am getting values that are quite different to earlier versions. There two possible explanations I have for this:
 
  * Either the former or current model isn't well designed. One or the other isn't reliable. The difference between the two is consistently inconsistent. We need to work out which is mis-specified.
- * Variational Bayes gives us different results each time we run the same model.
+ * Variational Bayes gives us different results each time we run the same model. Variational Bayes is known to be less precise (but faster) than Monte Carlo Markov Chain estimation.
  
 These need to be tested out! So what we need to do is:
 
  * run the models twice each
  * save values
- * compare Run1 mu, sigma, alpha, beta values for G2RiskyNoMeth and G3RiskyMeth
- 
-This document will be structured in such a way that it can be re-run. i.e., if a particular model has already been re-rerun then we won't run it again; just load some easy-to-load data.
+ * compare Run1 mu, alpha, beta values for G2RiskyNoMeth and G3RiskyMeth
+
 
 ##Method
 
 The hard part is running the model! This is done here. Let's compare:
 
 * `double_update_rpo_repeated_runs.stan`, the latest model designed for multiple runs
-* `double_update_rp.stan`, processes reward and punishment data but only one run
+* `double_update_rp_erroneous.stan`, processes reward and punishment data but only one run; there was an error that confused reward inverse temperature variance with punishment learning rate variance; I've included that here so we can compare to the resutls we obtained before the error was discovered.
+* `double_update_rp_fixed.stan`, as above, but with the error fixed.
 * `double_update.stan`, Processes only reward *or* punishment data.
 
 We also want to run several times.
 
-```{r model_run, echo=TRUE}
+```{r model_run_prep, echo=TRUE, message=FALSE, warning=FALSE}
 models_to_run<-c("double_update_rpo_repeated_runs","double_update_rp_fixed","double_update_rp_erroneous","double_update")
-times_to_run=2
+times_to_run=3
 ```
 
 The run-wrapper now takes a "file suffix" which means we can run it multiple times, each time with a different suffix, and the run will be saved and given an appropriate name.
 
 As we run these we need to be careful not to use up too much memory. We probably ought to extract *just the values we need*, which would exclude the individual subject values, then take each object out of memory.
 
-```{r model_run, echo=TRUE}
-model.fits<- vector("list", 2*length(models_to_run)*times_to_run)
-model.summaries <- vector("list", 2*length(models_to_run)*times_to_run)
-for (g in 2:3){
-  for (m in models_to_run){
-    for (t in 1:times_to_run){
-      print (paste0(g,m,t,collapse=", "))
-      #only run reward and punishment when we can
-      if(models_to_run %in% c("double_update_rpo_repeated_runs","double_update_rp_fixed","double_update_rp_erroneous")){
-        rp<-c(1,2)
-      }else{
-        rp<-c(2)
-      }
-      #only run multiple runs when we can
-      if(models_to_run %in% c("double_update_rpo_repeated_runs")){
-        runs=c(1,2)
-      }else{
-        runs=c(1)
-      }
-      fit<-lookupOrRunFit(
-        run=runs,groups_to_fit=g, model_to_use=m,includeSubjGroup = FALSE,
-        rp=rp,
-        model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,
-        fileSuffix=paste0("20170923_test_iteration_",as.character(t))
-        )
-      
-      #rm(fit)
-      
-      
-      first_empty_list_pos<-min(which(sapply(model.summaries,is.null)))
-      print(paste("first_empty_list_pos is", as.character(first_empty_list_pos)))
-      # model.fits[[first_empty_list_pos]]<-
-      #               list("fitObj"=fit,"g"=g,"m"=m,"t"=t)
-      if(m=="double_update_rpo_repeated_runs"){
-        model.summaries[[first_empty_list_pos]]<-
-                    list("summaryObj"=data_summarize_double_update_rpo_repeated_runs(rstan::extract(fit$fit)),
-                         "g"=g,"m"=m,"t"=t)
-      }else if(m=="double_update_rp_erroneous" || m=="double_update_rp_fixed"){
-        model.summaries[[first_empty_list_pos]]<-
-                    list("summaryObj"=data_summarize_double_update_rp(rstan::extract(fit$fit),
-                                                                    run = runs),
-                         "g"=g,"m"=m,"t"=t)
-      }else if(m=="double_update"){
-        model.summaries[[first_empty_list_pos]]<-
-                    list("summaryObj"=data_summarize_double_update(rstan::extract(fit$fit),
-                                                                   outcome.type = rp,
-                                                                   run = runs),
-                         "g"=g,"m"=m,"t"=t)
-      }else{
-        stop("fuck! I don't recognize that model.")
-      }
-      rm(fit)
-      
-    }
-  }
+
+```{r model_run, message=FALSE, warning=FALSE}
+if(file.exists("model-summaries.RData")){
+  load(file="model-summaries.RData")
+}else{
+  model.summaries <- vector("list", 2*length(models_to_run)*times_to_run)
 }
 
+if(any(sapply(model.summaries,is.null))){
+  for (g in 2:3){
+    for (m in models_to_run){
+      for (t in 1:times_to_run){
+        print (paste0(g,m,t,collapse=", "))
+        #only run reward and punishment when we can
+        if(models_to_run %in% c("double_update_rpo_repeated_runs","double_update_rp_fixed","double_update_rp_erroneous")){
+          rp<-c(1,2)
+        }else{
+          rp<-c(2)
+        }
+        #only run multiple runs when we can
+        if(models_to_run %in% c("double_update_rpo_repeated_runs")){
+          runs=c(1,2)
+          generatePosteriorTrialPredictions=FALSE
+        }else{
+          runs=c(1)
+          generatePosteriorTrialPredictions=NA
+        }
+        #run the model
+        fit<-lookupOrRunFit(
+          run=runs,groups_to_fit=g, model_to_use=m,includeSubjGroup = FALSE,
+          rp=rp,
+          model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,
+          fileSuffix=paste0("20170923_test_iteration_",as.character(t),generatePosteriorTrialPredictions=generatePosteriorTrialPredictions)
+          )
+        
+        cat("...model loaded. Extracting...")
+        #save just the output we want.
+        first_empty_list_pos<-min(which(sapply(model.summaries,is.null)))
+        print(paste("first_empty_list_pos is", as.character(first_empty_list_pos)))
+  
+  
+        if(m=="double_update_rpo_repeated_runs"){
+          model.summaries[[first_empty_list_pos]]<-
+                      list("summaryObj"=data_summarize_double_update_rpo_repeated_runs(rstan::extract(fit$fit)),
+                           "g"=g,"m"=m,"t"=t)
+        }else if(m=="double_update_rp_erroneous" || m=="double_update_rp_fixed"){
+          model.summaries[[first_empty_list_pos]]<-
+                      list("summaryObj"=data_summarize_double_update_rp(rstan::extract(fit$fit),
+                                                                      run = runs),
+                           "g"=g,"m"=m,"t"=t)
+        }else if(m=="double_update"){
+          model.summaries[[first_empty_list_pos]]<-
+                      list("summaryObj"=data_summarize_double_update(rstan::extract(fit$fit),
+                                                                     outcome.type = rp,
+                                                                     run = runs),
+                           "g"=g,"m"=m,"t"=t)
+        }else{
+          stop("f^<%! I don't recognize that model.")
+        }
+        #remove the fit object from memory, because it is pretty large!
+        rm(fit)
+        print("...summary data extracted.")
+      }
+    }
+  }
+  save(model.summaries,file="model-summaries.RData")
+}
+
+
 ```
+
 
 ## Results
 
-You can also embed plots, for example:
+For each of the four models, we can compare to see how closely analyses runs matched one another. For each of the Run1 mu, sigma, alpha, beta values for G2RiskyNoMeth and G3RiskyMeth, we can see how much variance exists within and how much variance exists between models.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r getDataIntoTable, echo=TRUE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+for(ms in model.summaries){
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj)
+  }
+}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Alpha mu (learning rate)
+```{r AOVAlpha, echo=FALSE}
+
+m.run1.punish.alpha.mu<-model.summary.all[Motivation=="Reward" & Statistic=="mu" & Parameter=="alpha" & Run==1]
+#nice. 
+#now, we should be able to ask how much of the variance is due to AnalysisRepetition, how much is due to Group, how much is due to ModelName
+#to keep things simple we will start with mu-alpha, run1, and treat iteration as random variable
+var.res.alpha<-aov(Value~factor(AnalysisRepetition)+factor(Group)+ModelName,m.run1.punish.alpha.mu)
+print(summary(var.res.alpha))
+print(drop1(var.res.alpha,~.,test="F"))
+```
+
+
+It appears that repetition did make a difference, but most of the variance here really does seem to be in the model name (and even more between groups!)
+
+
+### Beta mu (inverse temperature)
+```{r AOVbeta, echo=FALSE}
+
+m.run1.punish.beta.mu<-model.summary.all[Motivation=="Reward" & Statistic=="mu" & Parameter=="beta" & Run==1]
+#nice. 
+#now, we should be able to ask how much of the variance is due to AnalysisRepetition, how much is due to Group, how much is due to ModelName
+#to keep things simple we will start with mu-alpha, run1, and treat iteration as random variable
+
+var.res.beta<-aov(Value~factor(AnalysisRepetition)+factor(Group)+ModelName,m.run1.punish.beta.mu)
+print(summary(var.res.beta))
+print(drop1(var.res.beta,~.,test="F"))
+
+```
+
+We can visualize how that looks.
+
+```{r AOVVisualize, echo=TRUE, message=FALSE, warning=FALSE}
+source("../visualization/geom_hdi.R")
+
+m.reward.mu.run1<-model.summary.all[Motivation=="Reward" & Statistic=="mu" & Run==1]
+#table(m.reward.mu.run1$ModelName)
+#for clarity's sake...
+m.reward.mu.run1$ModelName<-sub("double_update","DU",m.reward.mu.run1$ModelName)
+
+  #plotly::ggplotly(p)
+  ggplot(m.reward.mu.run1[Parameter=="alpha"],aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(ModelName~AnalysisRepetition)+
+    labs(title=paste0("mu statistic in reward rounds, alpha"))
+   
+  ggplot(m.reward.mu.run1[Parameter=="beta"],aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.9,credible_mass=0.95)+
+    facet_grid(ModelName~AnalysisRepetition)+
+    labs(title=paste0("mu statistic in reward rounds, beta"))
+
+
+   
+```
+
+There is one thing consistent across all samples for the reward round, no matter what model is used and across both repetitions. Meth users have lower or similar learning rates compared to Non-users. In no runs did we find that meth users had higher learning rates or inverse temperatures than non-users.
+
+However, there is considerable variation across both runs and models. Importantly, for the final model, which takes into account Run2 and also calculates both reward and punishment, posterior alpha (learning rate) samples overlapped such that it is visually not clear there was a significant difference between groups. If we examine the difference between groups for each analysis, we can see that the 95% HDI includes (and in fact, is pretty closely centered around) zero for two of the three analyses run for the final model.
+
+```{r lastModelFollowup, message=FALSE, warning=FALSE}
+
+alpha_lastModel<-tidyr::spread(m.reward.mu.run1[Parameter=="alpha" & ModelName=="DU_rpo_repeated_runs"],
+              Group, Value)
+
+alpha_lastModel$GroupDifference<-alpha_lastModel$`2`-alpha_lastModel$`3`
+
+plotly::ggplotly(ggplot(alpha_lastModel,
+         aes(x=GroupDifference,color=factor(AnalysisRepetition)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    labs(title=paste0("learning rate NoMeth-Meth group difference credible values, by Analysis\nWith 95% Highest Density Intervals")))
+
+
+
+```
+
+
+Differences between the groups varied considerably depending on whether we examine Analysis Run 1 or Run 2. For the second analysis, there were very small differences between groups; for the first analysis differences seemed to be larger. There was also quite a lot of variation between the parameters estimated by the different models, although it is not clear that it is necessary to go to the model used to explain the difference - this may simply be due to the random effects of each analysis.
+
+# Discussion
+
+$\beta$ values are reasonably consistent between repeated trials. But for our final and most comprehensive analysis, variational bayes varies widely between concluding that there is a real between-group difference and that there is not.
+
+Thus, to really get at a decent answer we will want to take a look at using an MCMC estimator.
+
