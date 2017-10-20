@@ -1,7 +1,7 @@
 from pain_regression_allsubjs import *
 rlPain=RLPain()
 
-rlPain.fMRI_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed'
+rlPain.fMRI_dir='/expdata/xfgavin/MSM/'
 rlPain.onset_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
 #rlPain.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
 rlPain.nps_map_filepath = '/Users/benjaminsmith/GDrive/joint-modeling/wager-pain-dataset/NPS_share/weights_NSF_grouppred_cvpcr.img'
