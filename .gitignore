@@ -12,3 +12,4 @@ Rlocalsettings.RData
 Rscript.e*
 Rscript.o*
 notebooks/cache/*
+notebooks/*.pdf
