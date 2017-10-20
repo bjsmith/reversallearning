@@ -6,6 +6,7 @@ require(data.table)
 #require(ggplot2)
 #install.packages("tidyr")
 require(tidyr)
+require(ggplot2)
 source("util/apply_local_settings.R")
 apply_local_settings()
 
