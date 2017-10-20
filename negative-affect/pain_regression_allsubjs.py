@@ -33,6 +33,19 @@ class RLPain:
         self.regressor_output_dir=''
         self.decoder_file = ''
         self.stats=None
+        self.stats_origin=''
+
+        self.nps_map_dir=''
+        self.onset_file_version='20170819T170218'
+
+    def get_wager_nps_map(self):
+        if(os.path.isfile(self.nps_map_filepath)):
+            nps = Brain_Data(self.nps_map_filepath)
+            self.stats=nps
+            self.stats_origin='nps'
+        else:
+            raise Exception("error; cannot find NPS map")
+
 
     def compile_pain_decoder(self,pain_dir=None):
         print("compiling pain dir")
@@ -52,6 +65,7 @@ class RLPain:
             stats = pdata.predict(algorithm='ridge', plot=False)
             with open(self.decoder_file, "wb") as f:
                 pickle.dump(stats, f, pickle.HIGHEST_PROTOCOL)
+        self.stats_origin='chang_pain_data'
 
         print ("pain data loaded.")
 
@@ -73,11 +87,10 @@ class RLPain:
                 if os.path.isfile(nifti_file+'.nii.gz'):
                     print(self.fMRI_dir)
                     #got an nii.gz, check tosee if there's also a onset file for this.
-                    onset_file=self.onset_dir + '/runfiledetail20170820T012610_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
+                    onset_file=self.onset_dir + '/runfiledetail'+self.onset_file_version+'_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
                     if (os.path.isfile(onset_file)):
                         print ('we have a match!')
                         #print("done the regressing :-)")
-
 
                         msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
                         msm_predicted_pain_dict['subid'] = sid
@@ -106,7 +119,7 @@ class RLPain:
                 if os.path.isfile(nifti_file+'.nii.gz'):
                     print(self.fMRI_dir)
                     #got an nii.gz, check tosee if there's also a onset file for this.
-                    onset_file=self.onset_dir + '/runfilepunishmentcompare20170819T170218_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
+                    onset_file=self.onset_dir + '/runfilepunishmentcompare'+self.onset_file_version+'_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
                     if (os.path.isfile(onset_file)):
                         print ('we have a match!')
 
@@ -125,10 +138,11 @@ class RLPain:
     def get_trialtype_pain_regressors(self,nifti_data,onset_file):
         print("importing nifti")
         #import the nifti
+        #load the nltools prepped file if it's available.
         if (os.path.isfile(nifti_data + "nltoolstandard.nii.gz")):
             msmrl1 = Brain_Data(
                 nifti_data + "nltoolstandard.nii.gz")
-        else:
+        else:#but if it's not; no worries; just load the original one.
             msmrl1 = Brain_Data(
                 nifti_data + ".nii.gz")
             msmrl1.write(nifti_data + "nltoolstandard.nii.gz")
@@ -147,6 +161,7 @@ class RLPain:
 
         onsets_convolved=onsets.convolve()
 
+        #delete columns with no information in them.
         for c in onsets_convolved.columns:
             if sum(onsets_convolved.ix[:, c]) <= 0:
                 print('deleting '+ str(c))
@@ -158,9 +173,10 @@ class RLPain:
         onsets_convolved['ones']=[1]*360
         msmrl1.X=onsets_convolved
         print("convolved onsets; regressing...")
-        #regress
+        #regress the file on each of the onsets. So then, when we compare similarity to the regression, we'll be getting the
+        #regression to the each event, not to each TR.
         regression=msmrl1.regress()
-        print("Regressing; calculating similarity...")
+        print("Regressing; calculating similarity to the pain map from " + self.stats_origin + "...")
         msm_predicted_pain = regression['beta'].similarity(self.stats['weight_map'], 'dot_product')
         onset_colnames = onsets_convolved.columns.tolist()
         msm_predicted_pain_dict={}
@@ -168,6 +184,5 @@ class RLPain:
             msm_predicted_pain_dict[onset_colnames[i]] = b
         return msm_predicted_pain_dict
 
-    #def get_regressors_for_sub_and_visualize(self, subid,runid):
 
 
