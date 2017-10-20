@@ -78,6 +78,7 @@ class RLPain:
 
         self.stats = stats
 
+
     def process_detailed_regressors(self):
         #csvfile=None
         header_written=False

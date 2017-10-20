@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e9ef381-d689-4a57-8cf1-52b5c1dc26a8" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/main_nps.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/visualize_timecourses.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../rl_behav_analysis_learning_setup-benmac.R" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pain_regression_allsubjs.py" afterPath="$PROJECT_DIR$/pain_regression_allsubjs.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,8 +26,8 @@
       <file leaf-file-name="pain_regression_allsubjs.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pain_regression_allsubjs.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="89" column="70" lean-forward="false" selection-start-line="89" selection-start-column="70" selection-end-line="89" selection-end-column="70" />
+            <state relative-caret-position="210">
+              <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
               <folding>
                 <element signature="e#70#109#0" expanded="true" />
               </folding>
@@ -913,8 +909,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pain_regression_allsubjs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="89" column="70" lean-forward="false" selection-start-line="89" selection-start-column="70" selection-end-line="89" selection-end-column="70" />
+        <state relative-caret-position="210">
+          <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
           <folding>
             <element signature="e#70#109#0" expanded="true" />
           </folding>
