@@ -30,10 +30,11 @@ class RLPain:
         self.pain_decoder=''
         self.fMRI_dir=''
         self.onset_dir=''
-        self.regressor_output_dir=''
+        self.regressor_output_filepathprefix=''
         self.decoder_file = ''
         self.stats=None
-        self.stats_origin=''
+        self.decoder=None
+        self.decoder_origin=''
 
         self.nps_map_dir=''
         self.onset_file_version='20170819T170218'
@@ -41,8 +42,8 @@ class RLPain:
     def get_wager_nps_map(self):
         if(os.path.isfile(self.nps_map_filepath)):
             nps = Brain_Data(self.nps_map_filepath)
-            self.stats=nps
-            self.stats_origin='nps'
+            self.decoder=nps
+            self.decoder_origin='nps'
         else:
             raise Exception("error; cannot find NPS map")
 
@@ -65,7 +66,7 @@ class RLPain:
             stats = pdata.predict(algorithm='ridge', plot=False)
             with open(self.decoder_file, "wb") as f:
                 pickle.dump(stats, f, pickle.HIGHEST_PROTOCOL)
-        self.stats_origin='chang_pain_data'
+        self.decoder_origin='chang_pain_data'
 
         print ("pain data loaded.")
 
@@ -77,7 +78,7 @@ class RLPain:
         #stats = data_train.predict(algorithm='ridge',plot=False)
 
         self.stats = stats
-
+        self.decoder = stats['weight_map']
 
     def process_detailed_regressors(self):
         #csvfile=None
@@ -96,7 +97,7 @@ class RLPain:
                         msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
                         msm_predicted_pain_dict['subid'] = sid
                         msm_predicted_pain_dict['runid'] = rid
-                        with open(self.regressor_output_dir + str(sid) + '_punishment_r' + str(rid) + '.csv',
+                        with open(self.regressor_output_filepathprefix + str(sid) + '_punishment_r' + str(rid) + '.csv',
                                   'w') as csvfile:
                             w = csv.DictWriter(csvfile, msm_predicted_pain_dict.keys())
                             w.writeheader()
@@ -127,7 +128,7 @@ class RLPain:
                         print(self.onset_file)
                         predicted_pain=self.get_trialtype_pain_regressors(nifti_file+'.nii.gz',onset_file)
 
-                        with open(self.regressor_output_dir +str(sid)+'_punishment_r'+str(rid)+'.csv', 'w') as csvfile:
+                        with open(self.regressor_output_filepathprefix +str(sid)+'_punishment_r'+str(rid)+'.csv', 'w') as csvfile:
                             spamwriter = csv.writer(csvfile, delimiter=',',
                                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
                             spamwriter.writerow(['subid', 'runid', 'pain_regressor'])
@@ -177,8 +178,8 @@ class RLPain:
         #regress the file on each of the onsets. So then, when we compare similarity to the regression, we'll be getting the
         #regression to the each event, not to each TR.
         regression=msmrl1.regress()
-        print("Regressing; calculating similarity to the pain map from " + self.stats_origin + "...")
-        msm_predicted_pain = regression['beta'].similarity(self.stats['weight_map'], 'dot_product')
+        print("Regressing; calculating similarity to the pain map from " + self.decoder_origin + "...")
+        msm_predicted_pain = regression['beta'].similarity(self.decoder, 'dot_product')
         onset_colnames = onsets_convolved.columns.tolist()
         msm_predicted_pain_dict={}
         for i, b in enumerate(msm_predicted_pain):
