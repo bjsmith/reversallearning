@@ -6,6 +6,8 @@ require(data.table)
 #require(ggplot2)
 #install.packages("tidyr")
 require(tidyr)
+source("util/apply_local_settings.R")
+apply_local_settings()
 
 #install.packages("corrplot")
 require(corrplot)
@@ -39,9 +41,9 @@ for (condition in c(
     graph.title.condition.suffix<-"\n(Punishment trials)"
   }
   #get list of subjects
-  sub.rec.filenames.f1<-list.files(path="../data/RL_behav/",pattern=filename.pattern,ignore.case=TRUE)
-  sub.rec.filenames.f2<-list.files(path="../data/ReversalLearning/new",pattern=filename.pattern,ignore.case=TRUE)
-  sub.rec.filenames.f3<-list.files(path="../data/ReversalLearning/results",pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f1<-list.files(path=paste0(localsettings$data.dir,"RL_behav/"),pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f2<-list.files(path=paste0(localsettings$data.dir,"ReversalLearning/new"),pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f3<-list.files(path=paste0(localsettings$data.dir,"ReversalLearning/results"),pattern=filename.pattern,ignore.case=TRUE)
   get.sub.rl.data <- function(sub.filename,sub.folder){
     mat.data<-readMat(sub.filename)
     sub.data<-as.data.frame(mat.data$RL)
@@ -116,10 +118,10 @@ for (condition in c(
     return(sub.data.table)
   }
   
-  #res<-get.sub.rl.data(paste0("RL_behav/",sub.rec.filenames[1]))
-  rl.subjects.f1.list<-do.call("rbind",lapply(paste0("../data/RL_behav/",sub.rec.filenames.f1),get.sub.rl.data,"../data/RL_behav"))
-  rl.subjects.f2.list<-do.call("rbind",lapply(paste0("../data/ReversalLearning/new/",sub.rec.filenames.f2),get.sub.rl.data,"../data/ReversalLearning/new"))
-  rl.subjects.f3.list<-do.call("rbind",lapply(paste0("../data/ReversalLearning/results/",sub.rec.filenames.f3),get.sub.rl.data,"../data/ReversalLearning/results"))
+  
+  rl.subjects.f1.list<-do.call("rbind",lapply(paste0(localsettings$data.dir, "RL_behav/",sub.rec.filenames.f1),get.sub.rl.data,paste0(localsettings$data.dir,"RL_behav")))
+  rl.subjects.f2.list<-do.call("rbind",lapply(paste0(localsettings$data.dir,"ReversalLearning/new/",sub.rec.filenames.f2),get.sub.rl.data,paste0(localsettings$data.dir,"ReversalLearning/new")))
+  rl.subjects.f3.list<-do.call("rbind",lapply(paste0(localsettings$data.dir,"ReversalLearning/results/",sub.rec.filenames.f3),get.sub.rl.data,paste0(localsettings$data.dir,"ReversalLearning/results")))
   unique(rl.subjects.f1.list$subid)
   length(unique(rl.subjects.f1.list$subid))
   length(unique(rl.subjects.f2.list$subid))

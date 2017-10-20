@@ -15,18 +15,18 @@ data {
 transformed data {
 }
 parameters {
-# Declare all parameters as vectors for vectorizing
-  # Hyper(group)-parameters
+// Declare all parameters as vectors for vectorizing
+  // Hyper(group)-parameters
   vector[2] mu_p;
   vector<lower=0>[2] sigma;
 
-  # Subject-level raw parameters (for Matt trick)
-  vector[N] alpha_pr;   # learning rate
-  vector[N] beta_pr;  # inverse temperature
+  // Subject-level raw parameters (for Matt trick)
+  vector[N] alpha_pr;   // learning rate
+  vector[N] beta_pr;  // inverse temperature
 }
 
 transformed parameters {
-  # Transform subject-level raw parameters
+  // Transform subject-level raw parameters
   vector<lower=0,upper=1>[N] alpha;
   vector<lower=0,upper=5>[N] beta;
 
@@ -37,33 +37,33 @@ transformed parameters {
 }
 
 model {
-  # Hyperparameters
+  // Hyperparameters
   mu_p  ~ normal(0, 1);
   sigma ~ cauchy(0, 5);
 
-  # individual parameters
+  // individual parameters
   alpha_pr  ~ normal(0,1);
   beta_pr   ~ normal(0,1);
 
   for (i in 1:N) {
-    # Define values
+    // Define values
     matrix[100,2] ev;
-    real PEnc; # fictitious prediction error (PE-non-chosen)
-    real PE;         # prediction error
+    real PEnc; // fictitious prediction error (PE-non-chosen)
+    real PE;         // prediction error
 
-    # Initialize values
-    ev[,1] = rep_vector(0, 100); # initial ev values
-    ev[,2] = rep_vector(0, 100); # initial ev values
+    // Initialize values
+    ev[,1] = rep_vector(0, 100); // initial ev values
+    ev[,2] = rep_vector(0, 100); // initial ev values
 
     for (t in 1:(Tsubj[i])) {
-      # compute action probabilities
+      // compute action probabilities
       if (choice[i,t]!=0) {
         choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
-        # prediction error
+        // prediction error
         PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
         PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
   
-        # value updating (learning)
+        // value updating (learning)
         ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
         ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
       }
@@ -72,14 +72,14 @@ model {
 }
 
 generated quantities {
-  # For group level parameters
+  // For group level parameters
   real<lower=0,upper=1> mu_alpha;
   real<lower=0,upper=5> mu_beta;
 
-  # For log likelihood calculation
+  // For log likelihood calculation
   real log_lik[N];
   
-  # For posterior predictive check
+  // For posterior predictive check
   real y_hat[N,T] = rep_array(0.0,N,T);
   real p_trial[N,T] = rep_array(0.0,N,T);
   real p_subjID[N,T] = rep_array(0.0,N,T);
@@ -98,17 +98,17 @@ generated quantities {
   mu_alpha  = Phi_approx(mu_p[1]);
   mu_beta   = Phi_approx(mu_p[2]) * 5;
 
-  { # local section, this saves time and space
+  { // local section, this saves time and space
     for (i in 1:N) {
-      # Define values
+      // Define values
       matrix[100,2] ev;
-      real PEnc; # fictitious prediction error (PE-non-chosen)
-      real PE;         # prediction error
+      real PEnc; // fictitious prediction error (PE-non-chosen)
+      real PE;         // prediction error
 
-      # Initialize values
+      // Initialize values
       log_lik[i] = 0;
-      ev[,1] = rep_vector(0, 100); # initial ev values
-      ev[,2] = rep_vector(0, 100); # initial ev values
+      ev[,1] = rep_vector(0, 100); // initial ev values
+      ev[,2] = rep_vector(0, 100); // initial ev values
 
       for (t in 1:(Tsubj[i])) {
         p_trial[i,t] = trial[i,t];
@@ -119,17 +119,17 @@ generated quantities {
         p_choice[i,t] = choice[i,t];
         p_cue_freq[i,t] = cue_freq[i,t];
         if (choice[i,t]!=0) {
-          # Iterate log-likelihood
+          // Iterate log-likelihood
           log_lik[i] = log_lik[i] + categorical_logit_lpmf( choice[i,t] |  to_vector(ev[cue[i,t],]) * beta[i]);
           
-          # Posterior prediction
+          // Posterior prediction
           y_hat[i,t] = categorical_rng( softmax(to_vector(ev[cue[i,t],]) * beta[i]));
           
-          # prediction error
+          // prediction error
           PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
           PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
     
-          # value updating (learning)
+          // value updating (learning)
           ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
           ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
         }

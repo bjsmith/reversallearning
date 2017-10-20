@@ -21,7 +21,7 @@ data_summarize_double_update_rpo_repeated_runs<- function(extracted.data){
           sigma_vals<-extracted.data$sigma_rm[,ot,r-1,p]
           sigma_stat<-"diff_sigma"
         }
-        
+        print(paste(r,p))
         otr.df<-rbind(
           data.frame("iter"=1:item.count,
                      "Motivation"=rep(outcome_types[ot],item.count),

@@ -1,7 +1,7 @@
 get_risk_group <- function (){
   cwd<-getwd()
   group.data<-NULL
-  file.data<-"../data/group.data.csv"
+  file.data<-paste0(localsettings$data.dir,"group.data.csv")
   if (file.exists(file.data)){
     group.data<-read.csv(file=file.data)
   }else{
@@ -10,7 +10,7 @@ get_risk_group <- function (){
     group.data<-measures.rl[,c("Adjusted_subid","RiskCat","RiskLabel")]
     group.data$MethUse<-!grepl("No Meth",as.character(group.data$RiskLabel))
     group.data$SexRisk<-grepl("Risky",as.character(group.data$RiskLabel))
-    write.csv(group.data,file = "../data/group.data.csv",row.names = FALSE)
+    write.csv(group.data,file = file.data,row.names = FALSE)
   }
   setwd(cwd)
   return(group.data)

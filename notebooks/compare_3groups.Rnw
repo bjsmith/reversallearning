@@ -1,0 +1,320 @@
+\documentclass{article}
+
+\title{Longer iterations}
+
+\begin{document}
+
+
+
+<<echo=FALSE>>=
+  library(data.table)
+library(ggplot2)
+
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE, 
+                      cache=TRUE)
+knitr::opts_chunk$set(tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+@
+  
+  <<>>=
+  source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+source("visualization/geom_hdi.R")
+@
+  
+  
+  <<>>=
+  source("du_rp_rr_moreiterations_3groups.R")
+@
+  
+  
+In the previous test, (see compare_models_moreiterations.Rnw), I compared Groups 2 and 3 using the simple double update model and a revised model that calculates reward and punishment and both runs separately.
+
+In this test, I wanted to see how Groups 2 and 3 compare with each other.
+
+\section*{Method}
+
+As previously, because prior testing showed that across Analysis Repetitions for differing random seeds, there was very little change in the posteriors acquired when using MCMC, I only ran one repetition for MCMC. However, I ran 5 iterations for Variational Bayes, because prior testing showed vb was unreliable.
+
+
+<<>>=
+  
+  ms.summary<-NULL
+
+for (i in 1:length(model.summaries)){
+  ms<-model.summaries[[i]]
+  dt.i<-data.table(
+    "Group"=ms$g,
+    "AnalysisRepetition"=ms$t,
+    "Model"=ms$m,
+    "EstimationMethod"=ms$EstimationMethod,
+    "Duration"=ms$elapsedTime
+  )
+  if(dim(dt.i)[1]>1){
+    print("dt greater than 1")
+    print(i)
+    print(summary(ms))
+    stop()
+  }
+  
+  if(is.null(ms.summary)){
+    ms.summary<-dt.i
+    
+  }else{
+    ms.summary<-rbind(ms.summary,dt.i)
+  }
+}
+knitr::kable(ms.summary[,.N,by=.(EstimationMethod,Model,Group)])
+
+@
+  
+  
+  \section*{Results}
+
+
+<<>>=
+
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  model.summaries[[i]]$EstimationMethod<-ms.summaryObj$EstimationMethod
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+@
+
+
+
+\subsection*{VB reliability}
+Is Variational Bayes just as unreliable as previously? We don't really have suitable formal diagnostics for vb, but we can at least see whether they are consistent across analysis repetitions with different starting seeds.
+
+<<>>=
+
+m.mu.run1<-model.summary.all[Motivation=="Punishment" & 
+Statistic=="mu" & Run==1 & 
+EstimationMethod=="variationalbayes"]
+
+ggplot(m.mu.run1,aes(x=Value,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  coord_cartesian(ylim=c(0,80))+
+  facet_grid(Group~Parameter+ModelName,scales="free")+
+  labs(title=expression(paste(alpha[mu], " and ", beta[mu], " punishment rounds")
+  ))+
+  scale_color_discrete(guide=guide_legend(title="Analysis Repetition:"))
+
+@
+  
+As before, we get quite different results when we compare repeated Analysis repetitions for each group. We can't rely on Variational Bayes for this comparison.
+
+\subsection*{MCMC Reliability}
+
+To assess MCMC reliability, we can make use of some summary statistics, including:
+
+\begin{itemize}
+  \item `\hat{R}`, the _shrink factor_, which measures variance within chains compared to variance between chains. This should ideally be 1 and definitely below 1.1.
+  \item _Effective sample size_, which uses autocorrelation to adjust the actual sample size (the number of iterations multiplied by the number of chains) to represent the estimated amount of independent information actually present in the estimate. For estimating a good HDI, we'd aim for an ESS of around 10,000 or higher.
+\end{itemize}
+
+<<>>=
+
+get.model.title<-function(ms,i){
+  return(paste("group=",ms$g,",",ms$m,",",model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]]))))
+}
+get.cols.to.process<-function(i){
+  names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+}
+
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    model.title<-get.model.title(model.summaries[[i]],i)
+    
+    cols.to.process<-get.cols.to.process(i)
+    cat("\n\n")
+    print(model.title)
+    print(model.stanfits[[i]],pars=cols.to.process)
+  }
+}
+@
+
+\subsection*{MCMC Results}
+Are our MCMC estimates any use?
+
+<<>>=
+  m.mu.run1<-model.summary.all[Motivation=="Punishment" & 
+                                 Statistic=="mu" & Run==1 & 
+                                 EstimationMethod=="MCMC"]
+
+ggplot(m.mu.run1,aes(x=Value,fill=factor(Group),color=factor(Group)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(ModelName~Parameter,scales="free")+
+  labs(title=expression(paste(alpha[mu], " and ", beta[mu], " punishment rounds, both models, MCMC")
+  ))#+
+#scale_color_discrete(guide=guide_legend(title="Analysis Repetition:"))
+
+m.run1.groupdiff<-model.summary.all[Motivation=="Punishment" & 
+                                 Run==1 & 
+                                 EstimationMethod=="MCMC"] %>% .[,TestId:=NULL] %>% tidyr::spread(Group,Value,sep="") %>% .[,`:=`(G2G1Diff = Group2-Group1,
+                                 G3G2Diff = Group3-Group2)]
+
+ggplot(m.run1.groupdiff,aes(x=G2G1Diff,fill=factor(ModelName),color=factor(ModelName)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], " punishment rounds, both models,\nNoMeth Risky Minus Safe Difference, MCMC")
+  ))#+
+
+ggplot(m.run1.groupdiff,aes(x=G3G2Diff,fill=factor(ModelName),color=factor(ModelName)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], " punishment rounds, both models,\nRisky Meth Minus NoMeth Difference, MCMC")
+  ))#+
+library(hBayesDM)
+
+g2g1betamuHDI<-hBayesDM::HDIofMCMC(m.run1.groupdiff[Statistic=="mu" & Parameter=="beta" & ModelName=="double_update_notrialpost",G2G1Diff])
+@
+  
+The simple double update model, although not the both runs, both motivations model, might suggest a marginal difference in mean inverse temperature for Run 1 Punishment; the 95\% HDI is 
+[`print(paste0(round(g2g1betamuHDI,2),collapse=", "))`].
+
+But so far, we've only looked at Punishment, Run 1, because those were the only values covered by both models so far.
+
+Do we see any more interesting group differences when we look at the other values?
+
+
+<<>>=
+
+model2.mcmc.alldata<-model.summary.all[ModelName=="double_update_rpo_repeated_runs_notrialpost" & EstimationMethod=="MCMC"]
+
+model2.alldata.groupdiff<-model2.mcmc.alldata[,TestId:=NULL] %>% 
+  tidyr::spread(Group,Value,sep="") %>% 
+  .[,`:=`(G2G1Diff = Group2-Group1, G3G2Diff = Group3-Group2)]
+colnames(model2.alldata.groupdiff)
+ggplot(model2.alldata.groupdiff,aes(x=G2G1Diff,fill=factor(Run),color=factor(Run)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter+Motivation,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], ",\nNoMeth Risky Minus Safe Difference, MCMC")
+  ))
+
+ggplot(model2.alldata.groupdiff,aes(x=G3G2Diff,fill=factor(Run),color=factor(Run)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter+Motivation,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], ",\nNoMeth Risky Minus Safe Difference, MCMC")
+  ))
+# 
+# library(hBayesDM)
+# 
+# g2g1betamuHDI<-hBayesDM::HDIofMCMC(m.run1.groupdiff[Statistic=="mu" & Parameter=="beta" & ModelName=="double_update_notrialpost",G2G1Diff])
+@
+
+The two graphs above show no obvious differences were apparent between Run1 and Run2. This is not particularly meaningful, but exactly what we expect if the model is specified correctly. It may be interpreted as an absence of any kind of learning effect from one round to the next.
+
+
+<<>>=
+ggplot(model2.alldata.groupdiff,aes(x=G2G1Diff,fill=factor(Motivation),color=factor(Motivation)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter+Run,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], ",\nNoMeth Risky Minus Safe Difference, MCMC")
+  ))
+
+ggplot(model2.alldata.groupdiff,aes(x=G3G2Diff,fill=factor(Motivation),color=factor(Motivation)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter+Run,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], ",\nNoMeth Risky Minus Safe Difference, MCMC")
+  ))
+# 
+# library(hBayesDM)
+# 
+# g2g1betamuHDI<-hBayesDM::HDIofMCMC(m.run1.groupdiff[Statistic=="mu" & Parameter=="beta" & ModelName=="double_update_notrialpost",G2G1Diff])
+@
+
+The two graphs above show the same data, but the graph are re-arranged to show each run in a single pair of axes and color-code the Motivations, in order to compare the Group differences in Reward and Punishment performance. No clear differences are observable.
+
+<<>>=
+
+model2.alldata.motivationdiff<-model2.mcmc.alldata[,TestId:=NULL] %>% 
+  tidyr::spread(Motivation,Value) %>% 
+  .[,`:=`(RewPunDiff = Reward-Punishment)]
+
+ggplot(model2.alldata.motivationdiff,aes(x=RewPunDiff,fill=factor(Run),color=factor(Run)))+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter+Group,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], ",\nNoMeth Risky Minus Safe Difference, MCMC")
+  ))
+@
+
+The graph above examines the difference in Reward and Punishment for each run. As above, there are no clear differences between runs.
+
+<<>>=
+ggplot(model2.alldata.motivationdiff,aes(x=RewPunDiff,fill=factor(Group),color=factor(Group)))+
+  geom_vline(xintercept = 0)+
+  geom_freqpoly(alpha=0.5,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  #coord_cartesian(ylim=c(0,80))+
+  facet_grid(Statistic~Parameter+Run,scales="free")+
+  labs(title=expression(paste(alpha[mu,sigma], " and ", beta[mu,sigma], ",\n, MCMC")
+  ))
+
+hBayesDM::HDIofMCMC(model2.alldata.motivationdiff[Statistic=="mu" & Parameter=="beta"  & Group=="1",RewPunDiff])
+hBayesDM::HDIofMCMC(model2.alldata.motivationdiff[Statistic=="mu" & Parameter=="beta"  & Group=="2",RewPunDiff])
+hBayesDM::HDIofMCMC(model2.alldata.motivationdiff[Statistic=="mu" & Parameter=="beta"  & Group=="3",RewPunDiff])
+@
+
+The graph above shows Reward-Punishment differences for each group on its own graph.
+
+Clear differences are apparent in that Punishment inverse temperatures are much higher, for all three groups, than reward inverse temperatures. This has been found before.
+
+There is no interaction with the Risky-Safe inverse temperature difference apparent.
+
+\section*{Discussion}
+
+We found a significant group difference in inverse temperature between Risky and safe (No Meth) subjects.
+
+This difference no longer appeared when we were looking at the full model. The next comparison evaluates the full model for some suspected errors by estimating Run 1, Run2, Reward, and Punishment separately.
+
+\end{document}

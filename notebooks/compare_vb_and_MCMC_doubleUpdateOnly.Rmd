@@ -1,0 +1,386 @@
+---
+title: "testing out stan MCMC vs. variational bayes"
+author: "Ben Smith"
+date: "9/27/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+```
+
+
+Variational Bayes is known to be less reliable than MCMC; my previous analysis (compare_models.Rmd) confirms that variational Bayes is less reliable than we would like.
+
+So the next step is to try the model again in MCMC. I'll repeat the previous analysis, in which I repeatedly tested models with a couple of different parameters, but this time, run it with both MCMC and variational Bayes.
+
+We want to answer the questions:
+
+* For the reversal learning model, what is the speed like for MCMC compared to variational Bayes?
+* How much does MCMC improve our *reliability* for an effect compared to variational Bayes?
+
+## Settings
+
+One point which arose during this period was how much I had tried to optimize variational Bayes. It might be that the iterations I used were not enough. The default number of iterations for variational Bayes is 10000, but we had been using only 1000.
+
+For an initial pilot analysis using the "fastDebug" option I created which does just 100 iterations, the analysis duration was 1000 seconds. For 4000 iterations (for MCMC), we can expect 40 times that duration, or about 11 hours.
+
+
+# Method 
+
+In the last comparison I tested out four different models. For this one, I'll keep it simple, and just compare `double_update.stan`, which processes only one run of reward *or* punishment data. The reason for this is that preliminary testing showed the full model was not feasible to run on our system using MCMC (see later for details).
+
+We'll run each model three times, as for the previous comparison. This time we will be using MCMC rather than variational bayes to do the estimation. We will also (as last time) run this for both Group 2 and Group 3. All up, two groups, with two models, run three times, using two different estimation techniques, this will require 24 repetitions.
+
+
+In the backend, this has required some change to my `stan` wrapper function:
+
+* take a parameter which sets whether to use MCMC or variational bayes for an estimation task.
+* important for this analysis, we want to record the time taken for the analysis itself.
+* To improve reproduceability, I have set seed to a constant value for each iteration.
+
+
+
+```{r model_run, message=FALSE, warning=FALSE, cache=TRUE}
+
+#source("../compare_vb_and_MCMC_doubleUpdateOnly.R")
+#we never properly completed these results, and the notrialposteriors ended up being simpler and probably demonstrates the same principle.
+#we can't /don't want to run the full model with posteriors, so we have to choose. 
+#We're running the notrialposteriors now and this will give us an opportunity to compare to vb.
+source("compare_notrialposteriors_full.R")
+
+```
+
+
+# Results
+
+
+## Stan speed with Variational bayes and MCMC, and with and without trial posterior calculation
+
+It is important to optimize calculating models in RStan because it is very computationally intensive. Initially, we were calculating trial posteriors for each subject and trial in order to plot a predicted time course for every subject. I tried our stan model script without that and observed a marked improvement in processing time.
+
+```{r trial_posterior_table}
+speeds<-as.data.frame(t(sapply(model.summaries,function(x){return(cbind(x$m,x$g,length(x$summaryObj$iter),x$t, x$elapsedTime))})),
+                      stringsAsFactors = FALSE)
+colnames(speeds)<-c("model","subjectgroup","estimation method","testiteration","speed")
+speeds$model<-sapply(speeds$model,function(x){return(sub("double_update$","Basic double update with trial posteriors",x))})
+speeds$model<-gsub("^double_update_notrialpost$","Basic double update without trial posteriors",speeds$model)
+
+speeds$`estimation method`<-gsub("24000","MCMC",gsub("3992", "vb",as.character(speeds$`estimation method`)))
+speeds<-data.table(speeds)
+
+#speeds[,range:=,by=.(model)]
+speeds.agg<-speeds[,.(mean=round(mean(as.numeric(speed)),0),range=paste0(round(min(as.numeric(speed)),0), " to ", round(max(as.numeric(speed)),0), " s")),by=.(model,`estimation method`)]
+knitr::kable(speeds.agg)
+
+
+
+```
+
+Across three iterations and two subject groups, calculated independently, the basic double update model was consistently calculated much faster using Variational Bayes, and generally faster when not calculating trial posteriors.
+
+If Variational Bayes is just as reliable as MCMC for this problem, there would seem to be no reason to use MCMC, given Variational Bayes' speed. Considering the difference between calculating without trial posteriors and calculating with them, using Variational Bayes appears to be much faster.
+
+As can be seen across estimation methods and subject groups, calculation was much faster when not calculating trial posteriors, so calculating these shoul be avoided where it is not desirable.
+
+## MCMC and Variational Bayes: Reliability
+
+```{r getDataIntoTable, echo=TRUE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+for(ms.i in 1:length(model.summaries)){
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(mod(length(ms$summaryObj$iter),3992)==0){
+    ms.summaryObj$EstimationMethod=as.character(ESTIMATION_METHOD.VariationalBayes)
+  }else if (mod(length(ms$summaryObj$iter),24000)==0){
+    ms.summaryObj$EstimationMethod=as.character(ESTIMATION_METHOD.MCMC)
+  }
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+```
+
+```{r VisualizeIterationConsistency, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+source("visualization/geom_hdi.R")
+m.mu.run1<-model.summary.all[Motivation=="Punishment" & Statistic=="mu" & Run==1]
+#table(m.reward.mu.run1$ModelName)
+#for clarity's sake...
+m.mu.run1$ModelName<-sub("^double_update$","with trial posteriors",m.mu.run1$ModelName)
+m.mu.run1$ModelName<-sub("^double_update_notrialpost$"," without trial posteriors",m.mu.run1$ModelName)
+  #plotly::ggplotly(p)
+ggplot(m.mu.run1[Parameter=="alpha"],aes(x=Value,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  coord_cartesian(xlim=c(0,0.5),ylim=c(0,80))+
+    facet_grid(AnalysisRepetition~EstimationMethod+Group,scales="fixed")+
+    labs(title=paste0("mu statistic in punishment rounds, alpha"))+scale_color_discrete(guide=guide_legend(title="Double Update Model..."))
+   
+```
+
+We set consistent speeds for each model configuration - randomization seeds only differed between iterations. Figure \@ref(fig:VisualizeIterationConsistency) shows, as we would expect for a correctly specified model and consistently set seeds, that including trial posteriors generally made little difference to model estimations. Each model does show some difference - likely random variation - and in once case (the second iteration using MCMC to calculate a model for Group 2), the model without trial posteriors produced a long tail not observed in the model with trial posteriors. 
+
+Subsequent graphs in this section will present only results when not calculating posteriors, unless otherwise specified.
+```{r CompareVBAndMCMCReliability, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+source("visualization/geom_hdi.R")
+m.mu.run1<-model.summary.all[Motivation=="Punishment" & Statistic=="mu" & Run==1]
+#table(m.reward.mu.run1$ModelName)
+#for clarity's sake...
+#m.mu.run1$ModelName<-sub("^double_update$","DU with trial posteriors",m.mu.run1$ModelName)
+#m.mu.run1$ModelName<-sub("^double_update_notrialpost$"," DU without trial posteriors",m.mu.run1$ModelName)
+  #plotly::ggplotly(p)
+ggplot(m.mu.run1[Parameter=="alpha" & ModelName=="double_update_notrialpost" ],aes(x=Value,fill=factor(EstimationMethod),color=factor(EstimationMethod)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    coord_cartesian(xlim=c(0,0.5),ylim=c(0,80))+
+    facet_grid(AnalysisRepetition~Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " punishment rounds for DU model")))+   
+    scale_color_discrete(guide=guide_legend(title="Double Update Model..."))
+  
+ggplot(m.mu.run1[Parameter=="beta" & ModelName=="double_update_notrialpost" ],aes(x=Value,fill=factor(EstimationMethod),color=factor(EstimationMethod)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    #coord_cartesian(xlim=c(0,0.5),ylim=c(0,80))+
+    facet_grid(AnalysisRepetition~Group,scales="free")+
+    labs(title=expression(paste(beta[mu], " punishment rounds for DU model")
+      ))+
+    scale_color_discrete(guide=guide_legend(title="Double Update Model..."))
+```
+
+From Figure \@ref(fig:CompareVBAndMCMCReliability) it is immediately apparent that MCMC, as we've applied it estimates much wider HDIs than variational Bayes. We ran 2000 iterations: 1000 warmup iterations and 1000 estimation. It may be that estimation hadn't stabilized after 1000 steps, and we need to estimate more warmup iterations, and we may need more estimation iterations, too. However, in most cases, MCMC estimates seem to be relatively stable across iterations. That may be an indication that the wide MCMC estimations correctly represent the data, and that the true posterior distribution for these data are relatively wide\footnote{A test of my randomization procedure suggested no problem with that (see seedtester.R)}.
+
+Examining the Variational Bayes results, there are real concerns about whether it has converged on appropriate results - it may be falling upon local minima, as can be seen below:
+
+```{r CompareVBvsMCMCReliability2, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+source("visualization/geom_hdi.R")
+m.mu.run1<-model.summary.all[Motivation=="Punishment" & Statistic=="mu" & Run==1]
+#table(m.reward.mu.run1$ModelName)
+#for clarity's sake...
+#m.mu.run1$ModelName<-sub("^double_update$","DU with trial posteriors",m.mu.run1$ModelName)
+#m.mu.run1$ModelName<-sub("^double_update_notrialpost$"," DU without trial posteriors",m.mu.run1$ModelName)
+  #plotly::ggplotly(p)
+
+ggplot(m.mu.run1[ModelName=="double_update_notrialpost" ],aes(x=Value,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    coord_cartesian(ylim=c(0,80))+
+    facet_grid(EstimationMethod~Group+Parameter,scales="free")+
+    labs(title=expression(paste(beta[mu], " punishment rounds for DU model")
+      ))+
+    scale_color_discrete(guide=guide_legend(title="Analysis Repetition:"))
+```
+
+The pattern here is that MCMC HDIs are much wider, but overlap from one iteration to the next. In contrast, our Variational Bayes HDIs, across repeated iterations, often entirely fail to overlap. Thus, it cannot be assumed that our Variational Bayes calculations are reliable, whereas our MCMC results, although they are insufficiently precise, seem to accurately capture results, with one or two exceptions.
+
+## MCMC Representativness, accuracy, and efficiency
+
+Considering the wide HDIs produced by our MCMC estimates, I want to take a closer look to see if the MCMC estimates are representative, accurate, and efficient. \footnote{cite Kruschke}
+
+<!-- we are going to need the original fit objects for this. -->
+### Representativeness
+
+To assess Representativeness for an MCMC algorithm, we need to see whether chains have converged such that initial randomly-chosen priors are not related to final values. We can visually examine the trace plots below, and we can, examine teh density plots, and examine the Gelman-Rubin statistic (Gelman & Rubin, 1992) or the "potential scale reduction factor" or "shrink factor". In $rstan$, this is available as the statistic $\widehat{r}$.
+```{r StanTracePlot, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+#class(model.stanfits[[5]])
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$m=="double_update_notrialpost"){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]])))
+    #cols.to.process<-[names(model.stanfits[[i]]) %in% 
+    cols.to.process<-names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+    #print(cols.to.process)
+    trace<-traceplot(model.stanfits[[i]],cols.to.process,alpha=0.5,inc_warmup=TRUE)
+    
+    print(trace+labs(title=traceplot.title)+scale_color_discrete(guide=guide_legend(nrows=1))+theme(legend.position = "bottom"))#+title(traceplot.title))
+  }
+}
+#
+```
+They look pretty stable, so we can't complain about instability, though it is strange that there is such quick initial convergence followed by stable but widely differing chain patterns. 
+
+For the double update (no trial posterior) version iteration 2, we do see two parameters with one chain that failed to converge, although all other chains converged correctly.
+
+```{r StanPlotLogResults, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+#class(model.stanfits[[5]])
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$m=="double_update_notrialpost"){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]])))
+    #cols.to.process<-[names(model.stanfits[[i]]) %in% 
+    cols.to.process<-names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+    #print(cols.to.process)
+    stanplot<-plot(model.stanfits[[i]])
+    print(stanplot+labs(title=traceplot.title,x="log value",y="statistic"))#+scale_color_discrete(guide=guide_legend(nrows=1))+theme(legend.position = "bottom"))#+title(traceplot.title))
+  }
+}
+#
+```
+
+Do we see overlap of the chains, or do they not overlap very much? Given the traceplot, I'd expect high levels of overlap.
+```{r StanPlotDensity, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+#class(model.stanfits[[5]])
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$m=="double_update_notrialpost"){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]])))
+    #cols.to.process<-[names(model.stanfits[[i]]) %in% 
+    cols.to.process<-names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+    #print(cols.to.process)
+    stanplot<-stan_dens(model.stanfits[[i]],separate_chains=TRUE,show_density=TRUE,show_outer_line=TRUE)
+    print(stanplot+labs(title=traceplot.title,x="log value",y="statistic"))#+scale_color_discrete(guide=guide_legend(nrows=1))+theme(legend.position = "bottom"))#+title(traceplot.title))
+  }
+}
+
+```
+
+Visually, these seem reasonably good, with the exception of Group 3, No Trial Posteriors. How do we calculate MCSE and ESS?
+
+
+```{r StanGeneralStats, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+#class(model.stanfits[[5]])
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$m=="double_update_notrialpost"){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]])))
+    #cols.to.process<-[names(model.stanfits[[i]]) %in% 
+    cols.to.process<-names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+    #print(cols.to.process)
+    print(model.stanfits[[i]],pars=c("mu_p","sigma"))
+    
+  }
+}
+
+```
+
+the Rhat values, which are Brooks-Gelman-Rubin statistics or "potential scale reduction factors" (Broooks & Gelman, 1998; Kruschke, 20xx) should be close to 1--and definitely within 10% of 1 (0.91 to 1.1). It appears that one MCMC failed to converge but others converged separately.
+
+## Accuracy
+
+To assess the _accuracy_ of the chains, we need to take into account the _effective sample size_ (ESS)--how much independent data actually exists in our analysis. To do this, we need a measure of *autocorrelation*. From ESS, we can get a measure of _Monte Carlo Standard Error_.
+
+
+
+### Autocorrelation measures
+
+We can view and measure autocorrelation in a number of ways:
+ - To get the effective sample size, we can use `rstan`'s `stan_ess`; bayesplot also offers [appropriate diagnostic tools]([https://cran.r-project.org/web/packages/bayesplot/vignettes/visual-mcmc-diagnostics.html#effective-sample-size). Kruschke (20xx) recommends an effective sample size of 10000 for estimating an HDI.
+ 
+ 
+
+```{r StanAutocorrelation, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+get.model.title<-function(ms,i){
+  return(paste("group=",ms$g,ms$m,ms$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]]))))
+}
+get.cols.to.process<-function(i){
+  names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+}
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$m=="double_update_notrialpost" & model.summary.all[,first(EstimationMethod),by=TestId][i,V1]=="MCMC"){
+    print(model.summaries[[i]]$m=="double_update_notrialpost" & model.summary.all[,first(EstimationMethod),by=TestId][i,V1]=="MCMC")
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    model.title<-get.model.title(model.summaries[[i]],i)
+    
+    cols.to.process<-get.cols.to.process(i)
+    
+    print(stan_ess(model.stanfits[[i]],pars=cols.to.process,separate_chains = TRUE))
+    
+  }
+}
+#https://rdrr.io/cran/rstan/man/plotting-functions.html
+#https://cran.r-project.org/web/packages/bayesplot/vignettes/visual-mcmc-diagnostics.html#effective-sample-size
+
+
+```
+
+Kruschke advocates for an ESS of 10,000 for values like 95% HDIs of posteriors. Considering that we have 1000 post-warmup iterations and 6 chains, that equals 6000 iterations and ESS/SS appears to be in the realm of 0.2-0.4. To get an ESS of 10,000, without optimizing the function further, we'd need an actual sample size of 25,000 to 50,000. Twelve chains of 4000 post-warmup iterations would get us 48,000, which seems like a good amount to aim for.
+
+### Monte Carlo Standard Error
+
+Monte Carlo Standard Error is calculated as 
+
+$$MCSE= ^{SD}/_{\sqrt{ESS}}$$
+or the standard formulation for standard error, but with effective sample size used in place of actual sample size.
+
+
+We can view Monte Carlo Standard Error using the stan function `stan_mcse`.
+
+
+
+```{r StanMCSE, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$m=="double_update_notrialpost" & model.summary.all[,first(EstimationMethod),by=TestId][i,V1]=="MCMC"){
+    print(model.summaries[[i]]$m=="double_update_notrialpost" & model.summary.all[,first(EstimationMethod),by=TestId][i,V1]=="MCMC")
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    model.title<-paste0("Model MSCE:\n",get.model.title(model.summaries[[i]],i))
+    
+    cols.to.process<-get.cols.to.process(i)
+    
+    print(stan_mcse(model.stanfits[[i]],pars=cols.to.process,separate_chains = TRUE)+labs(title=model.title,x="log value",y="statistic"))
+    
+  }
+}
+
+```
+
+
+### MCMC Efficiency
+
+_Efficiency_ simply describes how efficient the estimation algorithm is at calculating our model's result. This includes not only measures like autocorrelation but also other model performance features that could potentially slow it down.
+
+Efficiency is one of Turner's key arguments for the use of DE-MCMC over other forms of MCMC, such as the Metropolis-Hastings algorithm (CITEREF:TURNER2013), or NUTS or Hamiltonian Markov Models (personal communication) as implemented in Stan.
+
+# Discussion
+
+MCMC proved to yield stable results that, after a 1000-iteration warm-up, with one notable exception, was representative, accurate, and somewhat efficient. Compared to vb, it yielded posteriors that were reliabile, but much less informative. Variational Bayes yielded posteriors that seemed informative, but across repetitions, could be shown to be completely unreliable.
+
+Because variational Bayes is exponentially quicker - on the order of only a few seconds--it may still be valuable to attempt to find reliable results for variational Bayes. 
+
+The efficiency wasn't too bad; an $ESS/SS$ ratio of between 0.2 and 0.4 seems acceptable, but falls well short of Kruschke's recommendation for a sample size of around 10000 to estimate an HDI. Thus, the sample size needs to be increased.
+
+Increasing our sample size may also result in renegade chains, as was observed for one iteration here, finally resolving.
+
+
+
+
+Thus, from here, I need to:
+
+ - Run this again, using the full model
+ - Run MCMC with a greater number of iterations - should be 12 chains and 4000 post-warmup iterations. It will not be necessary to run more than 2 analyses for each time, because the data here shows that across analyses,  MCMC performance consistently estimated the value of key parameters.
+ - Run Variational Bayes also with a greater number of iterations to see if it becomes more reliable.

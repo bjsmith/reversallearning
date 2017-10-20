@@ -112,6 +112,7 @@ StatHdi <- ggproto("StatHdi", Stat,
                                                 credible_mass=0.95) {
                          require(hBayesDM)
                          hdi.data<-HDIofMCMC(data$x,credible_mass)
+                         #print(hdi.data)
                          data.frame(x=hdi.data[1],xend=hdi.data[2],y=0,yend=0)
                        }
 )

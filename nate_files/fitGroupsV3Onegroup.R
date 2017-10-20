@@ -22,10 +22,21 @@ if(length(grep("nate_files",getwd()))>0){
 REVERSAL_LEARNING_REWARD=1
 REVERSAL_LEARNING_PUNISHMENT=2
 
+ESTIMATION_METHODS<-as.factor(c("variationalbayes","MCMC"))
+ESTIMATION_METHOD.VariationalBayes=ESTIMATION_METHODS[[1]]
+ESTIMATION_METHOD.MCMC=ESTIMATION_METHODS[[2]]
+
 
 get_fit_desc<-function(use_model,descr,run,rp=c(2),
                        model_rp_separately=TRUE,model_runs_separately=FALSE,
-                       use_pain=FALSE,fastDebug=FALSE,fileSuffix=""){
+                       use_pain=FALSE,fastDebug=FALSE,fileSuffix="",
+                       estimation_method=ESTIMATION_METHOD.VariationalBayes,
+                       bseed=bseed,
+                       iterations=NA,
+                       collateTrialData=TRUE,
+                       chainNum=NA,
+                       warmup_iter=NA
+                       ){
   fit_desc<-""
   dd<-localsettings$data.dir
   if (1 %in% rp & 2 %in% c(rp)){
@@ -59,6 +70,22 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
   if(fastDebug){
     fit_desc<-paste0(fit_desc,"_fastDebug")
   }
+  if(!is.na(iterations)){
+    fit_desc<-paste0(fit_desc,"_itercount",as.character(iterations))
+  }
+  if(!is.na(chainNum)){
+    fit_desc<-paste0(fit_desc,"_nchain",as.character(chainNum))
+  }
+  if(!is.na(warmup_iter)){
+    fit_desc<-paste0(fit_desc,"_wup",as.character(warmup_iter))
+  }
+  if(estimation_method!=ESTIMATION_METHOD.VariationalBayes){
+    fit_desc<-paste0(fit_desc,"_",as.character(estimation_method))
+  }
+  if(collateTrialData==FALSE){
+    fit_desc<-paste0(fit_desc,"_noTrialData")
+  }
+  
   fit_desc<-paste0(fit_desc,fileSuffix)
   fit_desc<-paste0(fit_desc,".RData")
   return(fit_desc)
@@ -66,7 +93,13 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
 
 lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          includeSubjGroup,rp=c(2),model_rp_separately=TRUE,model_runs_separately=FALSE,
-                         include_pain=FALSE,fastDebug=FALSE,fileSuffix=""){
+                         include_pain=FALSE,fastDebug=FALSE,fileSuffix="",
+                         estimation_method=ESTIMATION_METHOD.VariationalBayes,
+                         bseed=bseed,
+                         iterations=NA,
+                         collateTrialData=TRUE,
+                         chainNum=NA,
+                         warmup_iter=NA){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -78,7 +111,13 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            model_runs_separately=model_runs_separately,
                            use_pain=include_pain,
                            fastDebug = fastDebug,
-                           fileSuffix = fileSuffix)
+                           fileSuffix = fileSuffix,
+                           estimation_method=estimation_method,
+                           bseed=bseed,
+                           iterations=iterations,
+                           collateTrialData=collateTrialData,
+                           chainNum=chainNum,
+                           warmup_iter=warmup_iter)
   if (file.exists(fit.fileid)){
     print("this has already been fit! Loading...")
     load(fit.fileid)
@@ -87,7 +126,11 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
   }else{
     print("This has not been previously fit. Running full model...")
     fit<-fitGroupsV3Onegroup(run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-                             include_pain,fastDebug=fastDebug,fileSuffix=fileSuffix)
+                             include_pain,fastDebug=fastDebug,fileSuffix=fileSuffix,
+                             estimation_method=estimation_method,
+                             bseed=bseed,iterations.set =iterations,collateTrialData=collateTrialData,
+                             chainNum.set = chainNum,
+                             warmup_iter.set = warmup_iter)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -131,7 +174,10 @@ get_group_description<-function(groups_to_fit){
 }
 fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                                     includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-                                    include_pain,fastDebug=FALSE,fileSuffix=fileSuffix){
+                                    include_pain,fastDebug=FALSE,fileSuffix=fileSuffix,
+                                estimation_method=ESTIMATION_METHOD.VariationalBayes,
+                                bseed=sample.int(.Machine$integer.max, 1),iterations.set=NA,collateTrialData=TRUE,chainNum.set=NA,
+                                warmup_iter.set=NA){
   use_model<-model_to_use
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
@@ -330,9 +376,13 @@ for (i in 1:numSubjs) {
   cat("Building model...")
   model_text<-paste0(readLines(paste0(modelcode_rl,"Final_Models/", use_model,".stan")),collapse="\n")
   #check if a model under the name exists under "compiled models"
-  precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", use_model)
+  #only for this particular system [intended to pick out an individual system; not completely fool-proof but should do the trick]
+  #in instances where there are different systems 
+  compile.environ<-gsub("[(). -#-]","",paste0(Sys.getenv("R_PLATFORM"),Sys.info()["version"],Sys.getenv("USER"),Sys.info()["nodename"]))
+  precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", compile.environ,use_model)
   model.loaded<-FALSE
   if (file.exists(paste0(precompiled.location,".stan"))){
+    print(precompiled.location)
     print("A compiled stan model with this name already exists. Checking to see if it's identical to model being currently run...")
     m.precompiled.text<-paste0(readLines(paste0(precompiled.location,".stan")),collapse="\n")
     if(model_text==m.precompiled.text){
@@ -354,43 +404,76 @@ for (i in 1:numSubjs) {
   
   
   print("model built.")
+  if(fastDebug==FALSE){
+    
+  }
   
   cat("Fitting model...")
-  if (fastDebug==TRUE){
-    warning("\nFast debugging enabled. Results will be highly unreliable and should only be used for debugging purposes.\n")
-    fit <- vb(m1, data = dataList, adapt_engaged = F, eta = 1,iter=100,output_samples=100)
+  estimation.start<-proc.time()
+  if (estimation_method==ESTIMATION_METHOD.VariationalBayes){
+    if (fastDebug==TRUE){
+      warning("\nFast debugging enabled. Results will be highly unreliable and should only be used for debugging purposes.\n")
+      fit <- vb(m1, data = dataList, adapt_engaged = F, eta = 1,iter=100,output_samples=100,seed=bseed)
+    }else{
+      if(is.na(iterations.set)){
+        iterations=10000
+      }else{
+        iterations<-iterations.set
+      }
+      if(is.na(warmup_iter.set)){
+        warmup_iter<-iterations/2
+      }else{
+        warmup_iter<-warmup_iter.set
+      }
+      fit <- vb(m1, data = dataList, adapt_engaged = F, eta = 1,iter=iterations,seed=bseed)
+    }
+  }else if (estimation_method==ESTIMATION_METHOD.MCMC){
+    if (fastDebug==TRUE){
+      warning("\nFast debugging enabled. Results will be highly unreliable and should only be used for debugging purposes.\n")
+      fit <- sampling(m1, data = dataList, iter=100,warmup=warmup_iter,
+                      sample_file=paste0(localsettings$data.dir,"MCMCSample"),
+                      diagnostic_file=paste0(localsettings$data.dir,"MCMCdiagnostic"),
+                      seed=bseed,
+                      verbose=TRUE)
+    }else{
+      if(is.na(iterations.set)){
+        iterations=2000
+      }else{
+        iterations<-iterations.set
+      }
+      if(is.na(warmup_iter.set)){
+        warmup_iter<-iterations/2
+      }else{
+        warmup_iter<-warmup_iter.set
+      }
+      if(is.na(chainNum.set)){
+        chainNum=6#the default value. Don't set it at chainNum.set because we only want this number recorded in the filename if it's not the default.
+      }else{
+        chainNum<-chainNum.set
+      }
+      fit <- sampling(m1, data = dataList,chains=chainNum,iter=iterations,warmup=warmup_iter,
+                      sample_file=paste0(localsettings$data.dir,"MCMCSample"),
+                      diagnostic_file=paste0(localsettings$data.dir,"MCMCdiagnostic"),
+                      seed=bseed,
+                      verbose=TRUE)
+    }
+    
   }else{
-    fit <- vb(m1, data = dataList, adapt_engaged = F, eta = 1)
+    stop(paste0("Estimation method \"",as.character(estimation_method),"\" not recognized."))
   }
-  print("...model fit.")
+  estimation.finish<-proc.time()
+  estimation.duration<-estimation.finish[["elapsed"]]-estimation.start[["elapsed"]]
+  print(paste0("...model fit. Duration was ",as.character(estimation.duration), " s."))
   
-  # Compute AUC
-  parVals <- rstan::extract(fit)
-  
-  #shape the data into a format suitable for plotting.
-  for_plot <- NULL
-  for_plot$subjID <- reshape2::melt(apply(parVals$p_subjID, c(2,3), mean, na.rm=T))[,3]
-  for_plot$cor_res <- reshape2::melt(apply(parVals$p_cor_res, c(2,3), mean, na.rm=T))[,3]
-  for_plot$outcome <- reshape2::melt(apply(parVals$p_outcome, c(2,3), mean, na.rm=T))[,3]
-  for_plot$cue_pos <- reshape2::melt(apply(parVals$p_cue_pos, c(2,3), mean, na.rm=T))[,3]
-  for_plot$cue_freq <- reshape2::melt(apply(parVals$p_cue_freq, c(2,3), mean, na.rm=T))[,3]
-  for_plot$y_hat <- round(reshape2::melt(apply(parVals$y_hat, c(2,3), mean, na.rm=T))[,3]); for_plot$y_hat[for_plot$y_hat==0] <- NA
-  for_plot$choice <- round(reshape2::melt(apply(parVals$p_choice, c(2,3), mean, na.rm=T))[,3]); for_plot$choice[for_plot$choice==0] <- NA
-  for_plot <- as.data.frame(for_plot)
-  
-  all_pred_size<-min((dim(parVals$y_hat)[1]),500)#the lesser of the length of y_hat, or 500
-  all_pred <- array(NA, dim = c(all_pred_size, length(for_plot$y_hat)))
-  for (i in 1:all_pred_size) {
-    tmp_y_hat <- reshape2::melt(parVals$y_hat[i,,])[,3]; tmp_y_hat[tmp_y_hat==0] <- NA
-    all_pred[i,] <- ifelse((tmp_y_hat==for_plot$choice & for_plot$outcome==1) | (tmp_y_hat!=for_plot$choice & for_plot$outcome!=1), 1, 0)
+  if(collateTrialData){
+    for_plot<-collate_trial_data(fit)
+  }else{
+    for_plot<-NULL
   }
-  for_plot$all_pred_correct <- apply(all_pred, 2, mean, na.rm=T)
   
-  # correct % of subject and model
-  for_plot$actual_correct <- ifelse(for_plot$outcome==1, 1, 0)
-  for_plot$pred_correct <- ifelse((for_plot$y_hat==for_plot$choice & for_plot$outcome==1) | (for_plot$y_hat!=for_plot$choice & for_plot$outcome!=1), 1, 0)
+
+  fit_data <- list(fit = fit, plot_object = for_plot,model_text=model_text,general_info=list(estimation_duration=estimation.duration))
   
-  fit_data <- list(fit = fit, plot_object = for_plot,model_text=model_text)
   cat("\nSaving model...")
   save(fit_data, file = get_fit_desc(use_model=use_model,
                                      group.description$descr,
@@ -400,7 +483,14 @@ for (i in 1:numSubjs) {
                                      model_runs_separately=model_runs_separately,
                                      use_pain=include_pain,
                                      fastDebug=fastDebug,
-                                     fileSuffix=fileSuffix))
+                                     fileSuffix=fileSuffix,
+                                     estimation_method=estimation_method,
+                                     bseed=bseed,
+                                     iterations=iterations.set,
+                                     collateTrialData=collateTrialData,
+                                     chainNum=chainNum.set,
+                                     warmup_iter = warmup_iter.set))
+
   cat("...model saved.\n")
   
   #next line might fail. Be careful
@@ -412,4 +502,39 @@ for (i in 1:numSubjs) {
   }
   )
   return(fit_data)
+}
+
+collate_trial_data <- function(fit){
+  for_plot<-NULL
+  print(paste0("Extracting data to examine..."))
+  # Compute AUC
+  parVals <- rstan::extract(fit)
+  print(paste0("...extracted."))
+  if("p_subjID" %in% parVals){
+    print(paste0("Collating trial-by-trail data for graphing..."))
+    for_plot$subjID <- reshape2::melt(apply(parVals$p_subjID, c(2,3), mean, na.rm=T))[,3]
+    for_plot$cor_res <- reshape2::melt(apply(parVals$p_cor_res, c(2,3), mean, na.rm=T))[,3]
+    for_plot$outcome <- reshape2::melt(apply(parVals$p_outcome, c(2,3), mean, na.rm=T))[,3]
+    for_plot$cue_pos <- reshape2::melt(apply(parVals$p_cue_pos, c(2,3), mean, na.rm=T))[,3]
+    for_plot$cue_freq <- reshape2::melt(apply(parVals$p_cue_freq, c(2,3), mean, na.rm=T))[,3]
+    for_plot$y_hat <- round(reshape2::melt(apply(parVals$y_hat, c(2,3), mean, na.rm=T))[,3]); for_plot$y_hat[for_plot$y_hat==0] <- NA
+    for_plot$choice <- round(reshape2::melt(apply(parVals$p_choice, c(2,3), mean, na.rm=T))[,3]); for_plot$choice[for_plot$choice==0] <- NA
+    for_plot <- as.data.frame(for_plot)
+    
+    all_pred_size<-min((dim(parVals$y_hat)[1]),500)#the lesser of the length of y_hat, or 500
+    all_pred <- array(NA, dim = c(all_pred_size, length(for_plot$y_hat)))
+    for (i in 1:all_pred_size) {
+      tmp_y_hat <- reshape2::melt(parVals$y_hat[i,,])[,3]; tmp_y_hat[tmp_y_hat==0] <- NA
+      all_pred[i,] <- ifelse((tmp_y_hat==for_plot$choice & for_plot$outcome==1) | (tmp_y_hat!=for_plot$choice & for_plot$outcome!=1), 1, 0)
+    }
+    for_plot$all_pred_correct <- apply(all_pred, 2, mean, na.rm=T)
+    
+    # correct % of subject and model
+    for_plot$actual_correct <- ifelse(for_plot$outcome==1, 1, 0)
+    for_plot$pred_correct <- ifelse((for_plot$y_hat==for_plot$choice & for_plot$outcome==1) | (for_plot$y_hat!=for_plot$choice & for_plot$outcome!=1), 1, 0)
+    
+    print("...collated.")
+    
+  }
+  return(for_plot)
 }

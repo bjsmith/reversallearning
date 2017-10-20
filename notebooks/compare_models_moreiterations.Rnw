@@ -1,0 +1,358 @@
+\documentclass{article}
+
+\title{Longer iterations}
+
+\begin{document}
+
+
+
+<<echo=FALSE>>=
+library(data.table)
+library(ggplot2)
+
+knitr::opts_chunk$set(echo = FALSE,
+               message = FALSE,
+               warning = FALSE, 
+               cache=TRUE)
+knitr::opts_chunk$set(tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+@
+
+<<>>=
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+source("visualization/geom_hdi.R")
+@
+
+
+<<>>=
+source("du_rp_rr_moreiterations.R")
+@
+
+In previous tests, Variational Bayes proved to be unreliable - each time I ran it, I got a different result. MCMC seemed to give posteriors for the learning rates that were uninformative. However, the effective sample size for MCMC turned out to be very small. Although the trace plots showed good evidence that chains had reached stability, I wanted to see whether we could get better results targetting an effective sample size of at least 10,000, as recommended by Kruschke (2014).
+
+\section*{Method}
+
+Because prior testing showed that across Analysis Repetitions for differing random seeds, there was very little change in the posteriors acquired when using MCMC, I only ran one repetition for MCMC. However, I ran 5 iterations for Variational Bayes, because prior testing showed vb was unreliable.
+
+
+<<>>=
+
+ms.summary<-NULL
+
+for (i in 1:length(model.summaries)){
+  ms<-model.summaries[[i]]
+  dt.i<-data.table(
+    "Group"=ms$g,
+    "AnalysisRepetition"=ms$t,
+    "Model"=ms$m,
+    "EstimationMethod"=ms$EstimationMethod,
+    "Duration"=ms$elapsedTime
+    )
+  if(dim(dt.i)[1]>1){
+    print("dt greater than 1")
+    print(i)
+    print(summary(ms))
+    stop()
+  }
+  
+  if(is.null(ms.summary)){
+    ms.summary<-dt.i
+    
+  }else{
+    ms.summary<-rbind(ms.summary,dt.i)
+  }
+}
+knitr::kable(ms.summary[,.N,by=.(EstimationMethod,Model,Group)])
+
+@
+
+
+\section*{Results}
+
+
+<<>>=
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  model.summaries[[i]]$EstimationMethod<-ms.summaryObj$EstimationMethod
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+@
+
+
+Estimations for Punishment data appeared to differ somewhat when both runs and when reward data was added, as we'd expect.
+
+
+\subsection*{VB}
+Is Variational Bayes just as unreliable as previously?
+
+<<>>=
+
+m.mu.run1<-model.summary.all[Motivation=="Punishment" & 
+                               Statistic=="mu" & Run==1 & 
+                               EstimationMethod=="variationalbayes"]
+#table(m.reward.mu.run1$ModelName)
+#for clarity's sake...
+#m.mu.run1$ModelName<-sub("^double_update$","DU with trial posteriors",m.mu.run1$ModelName)
+#m.mu.run1$ModelName<-sub("^double_update_notrialpost$"," DU without trial posteriors",m.mu.run1$ModelName)
+  #plotly::ggplotly(p)
+
+ggplot(m.mu.run1,aes(x=Value,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Group~Parameter+ModelName,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " punishment rounds")
+      ))+
+    scale_color_discrete(guide=guide_legend(title="Analysis Repetition:"))
+
+ggplot(m.mu.run1,aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    coord_cartesian(ylim=c(0,160))+
+    facet_grid(Parameter~ModelName,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " punishment rounds, all Repetitions, by group")
+      ))+
+    scale_color_discrete(guide=guide_legend(title="Analysis Repetition:"))
+m.mu.run1.groupdiff<-tidyr::spread(m.mu.run1%>%.[,TestId:=NULL],Group,Value,sep="")
+m.mu.run1.groupdiff[,GroupDiff:=Group3-Group2]
+
+ggplot(m.mu.run1.groupdiff,aes(x=GroupDiff,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    coord_cartesian(ylim=c(0,160))+
+    facet_grid(Parameter~ModelName,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " punishment rounds, all Repetitions, Group Differences")
+      ))+
+    scale_color_discrete(guide=guide_legend(title="Analysis Repetition:"))
+@
+
+Unfortunately, Variational Bayes stil does not seem to be sitting on consistent estimations. Not only do Analysis Repetition HDIs not even overlap, but group differences sit across the 0 point in inconsistent ways.
+
+\subsection*{MCMC}
+
+Are our MCMC estimates any use?
+\subsubsection*{Results}
+<<>>=
+m.mu.run1<-model.summary.all[Motivation=="Punishment" & 
+                               Statistic=="mu" & Run==1 & 
+                               EstimationMethod=="MCMC"]
+
+ggplot(m.mu.run1,aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    #coord_cartesian(ylim=c(0,80))+
+    facet_grid(ModelName~Parameter,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " punishment rounds, both models, MCMC")
+      ))#+
+    #scale_color_discrete(guide=guide_legend(title="Analysis Repetition:"))
+
+m.mu.run1.groupdiff<-m.mu.run1[,TestId:=NULL] %>% tidyr::spread(Group,Value,sep="") %>% .[,GroupDiff:=Group3-Group2]
+
+ggplot(m.mu.run1.groupdiff,aes(x=GroupDiff,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    #coord_cartesian(ylim=c(0,80))+
+    facet_grid(~Parameter,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " punishment rounds, both models, Meth Minus No Meth Difference, MCMC")
+      ))#+
+@
+
+Unfortunately, at least for this statistic, we don't seem to be able to distinguish between groups. What about for just the repeated runs model with Reward and Punishment?
+
+<<>>=
+#broader group of stats for just the repeated values:
+
+m.MCMC.rp_rr<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_notrialpost"]
+
+ggplot(m.MCMC.rp_rr,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Run+Statistic~Parameter+Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")
+      ))
+@
+
+Here, the model does seem to show evidence of *inverse temperature* but not *learning rate*. This might be interesting.
+
+<<>>=
+#broader group of stats for just the repeated values:
+
+m.MCMC.rp_rr<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_notrialpost"]
+m.MCMC.rp_rr.groupdiff<-m.MCMC.rp_rr[,TestId:=NULL] %>% tidyr::spread(Group,Value,sep="") %>% .[,GroupDiff:=Group3-Group2]
+
+ggplot(m.MCMC.rp_rr.groupdiff,aes(x=GroupDiff,fill=factor(Motivation),color=factor(Motivation)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  geom_vline(xintercept=0)+
+    #coord_cartesian(ylim=c(0,80))+
+    facet_grid(Run+Statistic~Parameter,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment, Group Differences")
+      ))
+
+m.MCMC.rp_rr.MotivationDifference<-m.MCMC.rp_rr[,TestId:=NULL] %>% tidyr::spread(Motivation,Value) %>% .[,MotivationDiff:=Punishment-Reward]
+
+
+ggplot(m.MCMC.rp_rr.MotivationDifference,aes(x=MotivationDiff,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  geom_vline(xintercept=0)+
+    #coord_cartesian(ylim=c(0,80))+
+    facet_grid(Run+Statistic~Parameter,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment differences by Group",x="Punishment-Reward")
+      ))
+@
+
+Once again, there do not appear to be any differences between our two groups. Consistent across groups, we do see potentially large differences in Reward and Punishment in inverse temperature, though not learning rate.
+
+But can we trust these values?
+
+\subsubsection*{Diagnostics: Efficiency}
+
+<<>>=
+
+get.model.title<-function(ms,i){
+  return(paste("group=",ms$g,ms$m,ms$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]]))))
+}
+get.cols.to.process<-function(i){
+  names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+}
+
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    model.title<-get.model.title(model.summaries[[i]],i)
+    
+    cols.to.process<-get.cols.to.process(i)
+    
+    trace<-traceplot(model.stanfits[[i]],cols.to.process,alpha=0.5,inc_warmup=TRUE)
+    
+    print(trace+labs(title=model.title)+scale_color_discrete(guide=guide_legend(nrows=1))+theme(legend.position = "bottom"))#+title(traceplot.title))
+  }
+}
+@
+
+Once again, the traceplots indicate good representativeness: these values have tended to converge very quickly, albeit on fairly large intervals.
+
+<<>>=
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+
+    model.title<-get.model.title(model.summaries[[i]],i)
+    
+    cols.to.process<-get.cols.to.process(i)
+    
+    
+    stanplot<-plot(model.stanfits[[i]],pars<-cols.to.process)
+    print(stanplot+labs(title=traceplot.title,x="log value",y="statistic"))#+scale_color_discrete(guide=guide_legend(nrows=1))+theme(legend.position = "bottom"))#+title(traceplot.title))
+  }
+}
+
+@
+
+Monte Carlo Standard Error:
+
+<<>>=
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    model.title<-paste0("Model MSCE:\n",get.model.title(model.summaries[[i]],i))
+    
+    cols.to.process<-get.cols.to.process(i)
+    
+    print(stan_mcse(model.stanfits[[i]],pars=cols.to.process,separate_chains = TRUE)+labs(title=model.title,x="log value",y="statistic"))
+    
+  }
+}
+
+@
+
+Autocorrelation, and effective sample size
+
+<<>>=
+
+
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    
+    model.title<-get.model.title(model.summaries[[i]],i)
+    
+    cols.to.process<-get.cols.to.process(i)
+    
+    print(model.stanfits[[i]],pars=c("mu_p","sigma"))
+    
+    
+    cat("\n\n")
+    
+  }
+}
+
+@
+Effective sample sizes are now sensible.
+<<>>=
+
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    print(model.summaries[[i]]$m=="double_update_notrialpost" & model.summary.all[,first(EstimationMethod),by=TestId][i,V1]=="MCMC")
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    model.title<-get.model.title(model.summaries[[i]],i)
+    
+    cols.to.process<-get.cols.to.process(i)
+    
+    print(stan_ess(model.stanfits[[i]],pars=cols.to.process,separate_chains = TRUE))
+    
+  }
+}
+
+
+@
+
+\section*{Discussion}
+
+Overall, we could not find differences between groups in overall performance. We did find evidence that inverse temperature differs for subjects--for both groups--between reward and punishment rounds. This is something to look into further.
+
+Next steps:
+\begin{itemize}
+  \item Look into the inverse temperature difference more closely. Can we validate that this is a real effect, and why would this be?
+  \item Compare Safe No Meth with Safe Meth users
+  \item See if we can get more precise posteriors with DE-MCMC
+  \item Try to integrate neural data from the pain classifier or other sources
+\end{itemize}
+
+\end{document}
