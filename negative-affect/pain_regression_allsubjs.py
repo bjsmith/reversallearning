@@ -123,9 +123,7 @@ class RLPain:
                     #got an nii.gz, check tosee if there's also a onset file for this.
                     onset_file=self.onset_dir + '/runfilepunishmentcompare'+self.onset_file_version+'_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
                     if (os.path.isfile(onset_file)):
-                        print ('we have a match!')
-
-                        print(self.onset_file)
+                        print ('we have a match; '+ onset_file)
                         predicted_pain=self.get_trialtype_pain_regressors(nifti_file+'.nii.gz',onset_file)
 
                         with open(self.regressor_output_filepathprefix +str(sid)+'_punishment_r'+str(rid)+'.csv', 'w') as csvfile:
