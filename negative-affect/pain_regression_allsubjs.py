@@ -91,7 +91,7 @@ class RLPain:
                     #got an nii.gz, check tosee if there's also a onset file for this.
                     onset_file=self.onset_dir + '/runfiledetail'+self.onset_file_version+'_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
                     if (os.path.isfile(onset_file)):
-                        print ('we have a match!')
+                        print ('we have a match; '+ onset_file)
                         #print("done the regressing :-)")
 
                         msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
