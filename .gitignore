@@ -14,3 +14,4 @@ Rscript.o*
 notebooks/cache/*
 notebooks/*.pdf
 negative-affect/subject_mask_task_output/*
+*.nii.gz
