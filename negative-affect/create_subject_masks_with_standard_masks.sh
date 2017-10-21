@@ -14,12 +14,12 @@ do
 	do
 		#if we have pre-processed data for this subject*run
 #		/expdata/xfgavin/MSM/sub113/data
-		SUBJECT_INPUT="/expdata/xfgavin/MSM/sub${s}/data/ReversalLearningRewardrun${r}.nii.gz"
+		SUBJECT_INPUT="/expdata/xfgavin/MSM/sub${s}/data/ReversalLearningPunishrun${r}.nii.gz"
 		if [ -e "$SUBJECT_INPUT" ];
 		then
 			echo "$SUBJECT_INPUT exists; creating symbolic link..."
 			#create link
-			ln -s $SUBJECT_INPUT sub${s}ReversalLearningPunishrun${r}.nii.gz
+			ln -s $SUBJECT_INPUT /expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks/sub${s}ReversalLearningPunishrun${r}.nii.gz
 		fi
 	done
 done
