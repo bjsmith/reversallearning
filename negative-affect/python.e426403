@@ -1,0 +1,28 @@
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/ndimage/interpolation.py:462: UserWarning: The behaviour of affine_transform with a one-dimensional array supplied for the matrix parameter has changed in scipy 0.18.0.
+  "The behaviour of affine_transform with a one-dimensional "
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nltools/data.py:363: RuntimeWarning: invalid value encountered in true_divide
+  t_out.data = b / stderr
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:879: RuntimeWarning: invalid value encountered in greater
+  return (self.a < x) & (x < self.b)
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:879: RuntimeWarning: invalid value encountered in less
+  return (self.a < x) & (x < self.b)
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:1735: RuntimeWarning: invalid value encountered in greater_equal
+  cond2 = (x >= self.b) & cond0
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nilearn/image/resampling.py:481: UserWarning: Casting data from int16 to float32
+  warnings.warn("Casting data from %s to %s" % (data.dtype.name, aux))
+Traceback (most recent call last):
+  File "main_nps_allsubjs_server.py", line 20, in <module>
+    rlPain.process_detailed_regressors()
+  File "/expdata/bensmith/joint-modeling/code/msm/behavioral-analysis/reversallearning/negative-affect/pain_regression_allsubjs.py", line 97, in process_detailed_regressors
+    msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
+  File "/expdata/bensmith/joint-modeling/code/msm/behavioral-analysis/reversallearning/negative-affect/pain_regression_allsubjs.py", line 170, in get_trialtype_pain_regressors
+    onsets_convolved['linearterm']=range(1,361)
+  File "/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/pandas/core/frame.py", line 2331, in __setitem__
+    self._set_item(key, value)
+  File "/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/pandas/core/frame.py", line 2397, in _set_item
+    value = self._sanitize_column(key, value)
+  File "/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/pandas/core/frame.py", line 2568, in _sanitize_column
+    value = _sanitize_index(value, self.index, copy=False)
+  File "/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/pandas/core/series.py", line 2879, in _sanitize_index
+    raise ValueError('Length of values does not match length of ' 'index')
+ValueError: Length of values does not match length of index
