@@ -47,7 +47,7 @@ if(any(sapply(model.summaries,is.null))){
           print (paste0(g,m,t,collapse=", "))
           #we will loop just once for the model that handles everything at once
           #but four times for the model that needs to process runs and reward/punishment separately.
-          if(m %in% c("double_update_rpo_repeated_runs_notrialpost")){
+          if(m %in% c("double_update_rpo_repeated_runs_notrialpost", "double_update_rpo_repeated_runs_ntp_otmod")){
             runlist<-list(c(1,2))
             rp_list<-list(c(1,2))
           }else if (m %in% c("double_update_notrialpost")){
@@ -69,7 +69,7 @@ if(any(sapply(model.summaries,is.null))){
                 rp=rp,
                 model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,
                 fastDebug=FALSE,
-                fileSuffix=paste0("additional_iterations_20171016",as.character(t)),
+                fileSuffix=paste0("additional_iterations_201710162",as.character(t)),
                 estimation_method = em,
                 bseed=t+599374823,#sample.int(.Machine$integer.max, 1)
                 collateTrialData=FALSE,
