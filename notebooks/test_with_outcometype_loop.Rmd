@@ -114,7 +114,7 @@ m.combined.analysisrepcheck<-model.summary.all[EstimationMethod=="MCMC" & ModelN
 
 ggplot(m.combined.analysisrepcheck,aes(x=Value,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
     geom_freqpoly(alpha=0.5,binwidth=0.001)+
-     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+     geom_hdi(size=2, lineend = "round",alpha=0.2,credible_mass=0.95)+
 #    coord_cartesian(ylim=c(0,80))+
     facet_grid(Run+Statistic~Motivation+Group,scales="free")+
     labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
@@ -136,32 +136,24 @@ ggplot(m.combined,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))
 ```
 
 
-Do our separately-estimated group parameters appear similar?
+Does the method using loops rather than separate commands to calculate outcome type outcomes look similar or different?
 
 ```{r inverse temperature difference in separately estimated groups, echo=FALSE}
 
-m.separate<-model.summary.ar1[EstimationMethod=="MCMC" & ModelName=="double_update_notrialpost"]
+m.looped<-model.summary.ar1[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_ntp_otmod"]
 
-ggplot(m.separate,
-       aes(x=Value,fill=factor(Motivation),color=factor(Motivation))
-       )+
-     geom_freqpoly(alpha=0.5,binwidth=0.001)+xlim(0,3)+
-  facet_grid(Run+Statistic~Group+Parameter,scales="free")+
-    coord_cartesian(ylim=c(0,150),xlim=c(0,2))+
+ggplot(m.looped,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
      geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
-     labs(title=expression(paste(beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
-
+#    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Run+Statistic~Parameter+Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model using loop for Outcome Type")))
 ```
 
-
-Unfortunately, these results indicate a problem with the model. When estimated separately, there is no difference between Reward and Punishment beta values. This likely indicates we have a problem in buliding our model, and in particular, it seems to be the Punishment values which are particularly problematic.
-
-That isn't all, however. These results suggest that Run 2 contain some kind of irregularity. While parameter estimates for Run 1 appear reasonable, there seems to be a runaway chain for Run 2. That kind of data irregularity could potentially drive differences where the groups are estimated in one model together.
-
-Does this appear for the second analysis repetition?
+These models are very similar. what about for the second analysis repetition?
 
 ```{r}
-m.separate.ar2<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_notrialpost" & 
+m.separate.ar2<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_ntp_otmod" & 
                                     AnalysisRepetition==2]
 ggplot(m.separate.ar2,
        aes(x=Value,fill=factor(Motivation),color=factor(Motivation))
@@ -184,13 +176,142 @@ ggplot(m.combined.ar2,aes(x=Value,fill=factor(Motivation),color=factor(Motivatio
     labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
 ```
 
+So it seems like the abberant Punishment results are not due to outcome type being treated differently in the code; these are now treated in precisely the same way.
 
-No, we don't get the same problems for the second repetition.
+Next thing to test might be swapping the data around - swap around the outcome types and see if that changes how the datasets are treated in the model.
 
-Need to look at what might be wrong:
-
- - Could be that we're not feeding data in tohte punishment trials right
- - Could be that we're not marking the types correctly in outcome_type
- - 
+If we do that, and the results come out still with the second factor abberant, that would suggest that the problem is in the way the code treats the second factor--whichever factor is numbered (2). If we do that and the results come out with the first factor abberrant, that would then suggest there's some characteristic of the data itself that causes the model to interact with in this way. It could still be a misspecification of the model.
 
 
+# Variational Bayes
+
+This has been taking a long time. I want to see whether we can run the same tests using variational Bayes. Does Variational Bayes estimates yield the same problem? If it does, we can use vb to diagnose the problem much more quickly.
+
+
+```{r model_run_prep_vb}
+source("du_model_otloop_vb.R")
+```
+
+
+
+```{r setup3vb, message=FALSE, warning=FALSE}
+
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+
+ms.summary<-NULL
+
+for (i in 1:length(model.summaries)){
+  ms<-model.summaries[[i]]
+  dt.i<-data.table(
+    "Group"=ms$g,
+    "AnalysisRepetition"=ms$t,
+    "Model"=ms$m,
+    "EstimationMethod"=ms$EstimationMethod,
+    "Duration"=ms$elapsedTime
+    )
+  if(dim(dt.i)[1]>1){
+    print("dt greater than 1")
+    print(i)
+    print(summary(ms))
+    
+    next
+  }
+  
+  if(is.null(ms.summary)){
+    ms.summary<-dt.i
+    
+  }else{
+    ms.summary<-rbind(ms.summary,dt.i)
+  }
+}
+
+```
+
+
+Table:
+
+
+```{r}
+
+knitr::kable(ms.summary[,.N,by=.(EstimationMethod,Model,Group)])
+
+```
+
+What do these repetitions look like?
+
+```{r VariationalBayesRepetitions}
+m.combined.analysisrepcheck<-model.summary.all[ ModelName=="double_update_rpo_repeated_runs_notrialpost" &Parameter=="beta"]
+
+ggplot(m.combined.analysisrepcheck,aes(x=Value,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.2,credible_mass=0.95)+
+#    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Run+Statistic~Motivation+Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
+
+
+```
+
+
+
+we'll only look at the first.
+
+```{r inverse temperature difference vb}
+
+m.combined<-model.summary.all[ModelName=="double_update_rpo_repeated_runs_notrialpost"]
+
+ggplot(m.combined,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+#    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Run+Statistic~Parameter+Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
+```
+
+
+Yes: these appear to be essentially the same results as we got when using MCMC; in that the same error is apparent.
+
+And do we also see it in VB for teh looped version?
+
+
+```{r inverse temperature difference vb}
+
+m.looped<-model.summary.all[ModelName=="double_update_rpo_repeated_runs_ntp_otmod"]
+
+ggplot(m.looped,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+#    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Run+Statistic~Parameter+Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
+```
+
+
+Yeah, we do. So what does this mean?
+
+First, Variational Bayes with 12 repetitions might be a good quick-and-dirty substitute for MCMC, for this model. It's still not quite as good as MCMC and shouldn't be an end-goal substittute, but we'll speed up testing a lot with it.
+
+Second...I don't know what's wrong with the model. I've checked just about everything and ruled out all the problems with it that I can think of.

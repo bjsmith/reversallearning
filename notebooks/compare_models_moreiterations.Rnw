@@ -192,13 +192,15 @@ m.MCMC.rp_rr<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_up
 ggplot(m.MCMC.rp_rr,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
     geom_freqpoly(alpha=0.5,binwidth=0.001)+
      geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
-    coord_cartesian(ylim=c(0,80))+
+    coord_cartesian(ylim=c(0,160))+
     facet_grid(Run+Statistic~Parameter+Group,scales="free")+
     labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")
       ))
 @
 
-Here, the model does seem to show evidence of *inverse temperature* but not *learning rate*. This might be interesting.
+~~Here, the model does seem to show evidence of *inverse temperature* but not *learning rate*. This might be interesting.~~
+
+Nope. We do see a large difference between the estimation of the $\beta_{\mu}$ parameter. This is probably due to a problem with the model as specified--it uses a "run multiplier" to estimate run 2 and that may have been confused somehow. It is notable that it doesn't seem to have affected estimation of mu values.
 
 <<>>=
 #broader group of stats for just the repeated values:
@@ -228,7 +230,9 @@ ggplot(m.MCMC.rp_rr.MotivationDifference,aes(x=MotivationDiff,fill=factor(Group)
       ))
 @
 
-Once again, there do not appear to be any differences between our two groups. Consistent across groups, we do see potentially large differences in Reward and Punishment in inverse temperature, though not learning rate.
+~~Once again, there do not appear to be any differences between our two groups. Consistent across groups, we do see potentially large differences in Reward and Punishment in inverse temperature, though not learning rate.~~
+
+There *may* be a difference for $\alpha_{\mu}$ Punishment group, but only on run 2.
 
 But can we trust these values?
 
@@ -348,7 +352,7 @@ Overall, we could not find differences between groups in overall performance. We
 
 Next steps:
 \begin{itemize}
-  \item Look into the inverse temperature difference more closely. Can we validate that this is a real effect, and why would this be?
+  \item Look into the Run1 vs. Run2 difference more closely. Must be some kind of problem with the model.
   \item Compare Safe No Meth with Safe Meth users
   \item See if we can get more precise posteriors with DE-MCMC
   \item Try to integrate neural data from the pain classifier or other sources

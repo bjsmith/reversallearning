@@ -1,34 +1,37 @@
 outcome_types=factor(c("Reward","Punishment"),ordered=TRUE)
 outcome_types_abbrev=factor(c("rew","pun"),ordered=TRUE)
 parameters=factor(c("alpha","beta"),ordered=TRUE)
-data_summarize_double_update_rpo_repeated_runs<- function(extracted.data){
+
+
+data_summarize_double_update_rpo_repeated_runs<- function(extracted.data,comprehensive=FALSE){
   grouplevel.df<-NULL
   
   #create a data table storing subject-level values.
   for (ot in 1:length(outcome_types)){
-    print(ot)
-    print(outcome_types[ot])
+    #print(ot)
+    #print(outcome_types[ot])
     #cycle through runs,
-    for (r in 1:dim(extracted.data$mu_p)[2]){
-      #create df
-      item.count<-dim(extracted.data$mu_p)[1]
-      for (p in 1:length(parameters)){
-        parameter<-parameters[p]
+    #create df
+    item.count<-dim(extracted.data$mu_p)[1]
+    for (p in 1:length(parameters)){
+      parameter<-parameters[p]
+      for (r in 1:dim(extracted.data$mu_p)[2]){
         if(r==1){
-          sigma_vals<-extracted.data$sigma[,ot,p]
+          sigma_vals<-extracted.data$sigma[,ot,p] #20171027: Seems to be correctly ordered
           sigma_stat<-"sigma"
         }else{
-          sigma_vals<-extracted.data$sigma_rm[,ot,r-1,p]
+          sigma_vals<-extracted.data$sigma_rm[,ot,r-1,p] #20171027: Seems to be correctly ordered
           sigma_stat<-"diff_sigma"
         }
-        print(paste(r,p))
+        #print(paste(r,p))
         otr.df<-rbind(
           data.frame("iter"=1:item.count,
                      "Motivation"=rep(outcome_types[ot],item.count),
                      "Run"=rep(r,item.count),
                      "Statistic"="mu",
                      "Parameter"=rep(parameter,item.count),
-                     "Value"=extracted.data[[paste0("mu_",parameter)]][,ot,r]
+                     "Value"=extracted.data[[paste0("mu_",parameter)]][,r,ot]
+                     #20171027: there was a mistake here, before; I have hopefully fixed it now.seems to be a mistake!
           ),
           data.frame("iter"=1:item.count,
                      "Motivation"=rep(outcome_types[ot],item.count),
@@ -45,6 +48,29 @@ data_summarize_double_update_rpo_repeated_runs<- function(extracted.data){
           grouplevel.df<-rbind(grouplevel.df,otr.df)
         }
       }
+      #runs weren't recorded for these.
+      if(comprehensive){
+        #we won't usually need this, but I'm trying to do some error checking
+        #our generated quantities for Run2, beta mu (particularly) are not going well
+        #and I want to see what's wrong. bjs20171027
+        otr.df.comprehensive<-rbind(data.frame(
+          "iter"=1:item.count,
+          "Motivation"=as.character(ot),
+          "Run"=NA,
+          "Statistic"="mu_p",
+          "Parameter"=as.character(p),
+          "Value"=extracted.data[["mu_p"]][,ot,p]
+        ),data.frame(
+          "iter"=1:item.count,
+          "Motivation"=as.character(ot),
+          "Run"=NA,
+          "Statistic"="mu_p_rm",
+          "Parameter"=as.character(p),
+          "Value"=extracted.data[["mu_p_rm"]][,ot,1,p]
+        )
+        )
+        grouplevel.df<-rbind(grouplevel.df,otr.df.comprehensive)
+      }
     }
   }
   return(data.table(grouplevel.df))
@@ -54,8 +80,8 @@ data_summarize_double_update_rp<- function(extracted.data,run=NA){
   grouplevel.df<-NULL
   #create a data table storing subject-level values.
   for (ot in 1:length(outcome_types)){
-    print(ot)
-    print(outcome_types[ot])
+    #print(ot)
+    #print(outcome_types[ot])
     # #cycle through runs,
     # for (r in 1:dim(extracted.data$mu_p)[2]){
       #create df
@@ -93,7 +119,7 @@ data_summarize_double_update_rp<- function(extracted.data,run=NA){
   return(data.table(grouplevel.df))
 }
 
-data_summarize_double_update<- function(extracted.data,outcome.type=NA,run=NA){
+data_summarize_double_update<- function(extracted.data,outcome.type=NA,run=NA,comprehensive=FALSE){
   print(outcome.type)
   print(run)
   grouplevel.df<-NULL
@@ -123,6 +149,17 @@ data_summarize_double_update<- function(extracted.data,outcome.type=NA,run=NA){
                  "Value"=sigma_vals
       )
     )
+    if(comprehensive){
+      otr.df.comprehensive<-data.frame(
+        "iter"=1:item.count,
+        "Motivation"=outcome_types[outcome.type],
+        "Run"=run,
+        "Statistic"="mu_p",
+        "Parameter"=as.character(p),
+        "Value"=extracted.data[["mu_p"]][,parameter]
+      )
+      otr.df<-rbind(otr.df,otr.df.comprehensive)
+    }
     #add the data
     if(is.null(grouplevel.df)){
       grouplevel.df<-otr.df

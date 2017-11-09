@@ -1,0 +1,133 @@
+---
+title: "power-analysis-confusability"
+author: "Ben Smith"
+date: "10/26/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(ggplot2)
+library(boot)
+```
+
+I'm not aware of a cohen's $d$ for a task like this, but we can build a model to estimate the power required to get a "discriminability score" which describes how confusable each pair of images are.
+
+Our input from each subject is a binomial correct or incorrect confusability values.
+
+This is produced by some kind of binomial model, e.g., logistic regression, based on:
+
+ - Random interference effect - whatever the random distractor was between the task, $d
+ - Random subject effect - how good this subject performs overall, $s$
+ - The variation in discriminability itself, $c$
+ 
+ This discriminability parameter would be one parameter in the model that we estimate.
+
+We can imagine a logistic regression model like:
+
+$$logit(p_i)=\beta_{1}d+\beta_{2}s+\beta_{3}c+\beta_0$$
+where we have $n$ subjects, with just one trial per subject.
+
+We will then need to assign an assumed variance in random distraction between tasks, performance across subjects, the relationships between them all, and the variation in discriminability.
+
+Let's imagine that the variation due to the images is twice as much as the variation due to performance across subjects, and that variation due to random interference is only half as much as subject performance. We can generate some values based on this.
+
+Imagine that subject performance is an approximately normally distributed value between 0 and 96 with a mean of 48 and standard deviation of 20.
+
+
+```{r}
+#https://stats.stackexchange.com/questions/46523/how-to-simulate-artificial-data-for-logistic-regression
+image.trials<-50000
+
+#generate some data.
+#performance.dt<-data.table(distractor=0.5+rbeta(image.trials,2,5)/2,subject=0.5+rbeta(image.trials,2,5)/2,discriminability=0.5+rbeta(image.trials,2,5)/2)
+performance.dt<-data.table(distractor=rpois(image.trials,2)/3,subject=rpois(image.trials,2)/3,discriminability=rpois(image.trials,2)/3)
+#for any given trial, imagine that actual discriminability accounts for 25% of the variability; 3/8 is from the subject, #and 3/8 is from random noise in the task.
+
+#performance won't ever be negative...
+#performance.dt$z<-1/5*scale(performance.dt$distractor)+1/5*scale(performance.dt$subject)+3/5*scale(performance.dt$discriminability)
+#we can avoid scaling because they're all the same SD
+#performance.dt$z<-0.355*scale(performance.dt$distractor)+0.355*scale(performance.dt$subject)+0.29*scale(performance.dt$discriminability)
+
+performance.dt$z<-0.355*performance.dt$distractor+0.355*performance.dt$subject+0.29*performance.dt$discriminability
+
+#performance.dt$z<-0.355*scale(performance.dt$distractor)+0.355*scale(performance.dt$subject)+1*scale(performance.dt$discriminability)
+#verify that this is the way it worked
+cor.test(performance.dt$z,performance.dt$distractor)$estimate^2
+cor.test(performance.dt$z,performance.dt$subject)$estimate^2
+cor.test(performance.dt$z,performance.dt$discriminability)$estimate^2
+#performance.dt$logit_p<-0.5+(inv.logit(performance.dt$z)/2)
+performance.dt$logit_p<-(inv.logit(performance.dt$z))
+# testmodel<-lm(logit_p~subject+distractor+discriminability,performance.dt)
+# summary(testmodel)
+
+performance.dt$correct<-rbinom(image.trials,1,performance.dt$logit_p)
+hist(performance.dt$logit_p)
+hist(performance.dt$z)
+#that's the data generated - 20,000 estimates for a particular image.
+
+#now, if we were coming to this and wanted to estimate those betas, using each subject's performance (approximat) 
+pairs(performance.dt)
+
+```
+Then we could estimate discriminability, given only the subject's overall performance (which is known) interacting with whether or not the subject got it right (y). We can estimated discriminability of an imagepair using a model taking each subject's average performance and their answer of right or wrong.
+
+$$c=\beta_{d,i}d+\beta_{s,i}s+\beta_{c,i}c+\beta_0$$
+
+```{r}
+
+#now, we don't have access to the image discriminability or the variation in discriminability itself, but we do have the subject's own test scores.
+
+#For any given imagepair, given a number of subjects classifying that imagepair, we can calculate its discriminability based on the proportion of subjects
+#who correctly classify the imagepair.
+
+res<-lm(discriminability~subject*(correct==1),performance.dt)
+summary(res)
+
+#how would we estimate discriminability c from this?
+
+
+```
+So, if we had *all* the data, how well would our predictions match the reality?
+
+
+```{r}
+summary(res)
+hist(predict(res))
+plot(predict(res),performance.dt$discriminability)
+
+cor.test(predict(res),performance.dt$discriminability)
+
+
+```
+How mnay subjects would we need to estimate the discriminability of the imagepairs with an r coefficient of at least 0.3, 80% of the time?
+
+```{r mychunk}
+for (s in 1:10){
+  subjects<-s*100
+  boots<-1000
+  r_coefficient<-as.numeric(rep(NA,boots))
+  for (n in 1:boots){
+    #get the dataset that we'll build a model with
+    samplevals<-sample(dim(performance.dt)[1],subjects*2, replace=FALSE)
+    samplevals.model<-samplevals[1:subjects]
+    samplevals.fit<-samplevals[(subjects+1):(subjects*2)]
+    
+    #build the model
+    res<-lm(discriminability~subject+(p==1),performance.dt[samplevals.model])
+    #now test the relationship between the predictions the model makes and the actual data
+    r_coefficient[n]<-cor.test(predict(res,performance.dt[samplevals.fit]),performance.dt[samplevals.fit,discriminability])$estimate
+  }
+  #hist(r_coefficient)
+  print(mean(r_coefficient))
+  power<-sum((r_coefficient>0.3)/boots)
+  
+  print(power)
+}
+
+
+```
+
+
+

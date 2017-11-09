@@ -5,11 +5,11 @@ output: html_notebook
 
 #Motivation
 
-In previous testing (see compare_models_moreiterations.Rnw), I found that reward and punishment groups differed on inverse temperature.
+In previous testing (see compare_models_moreiterations.Rnw), I found that ~~reward and punishment groups differed on inverse temperature.~~ Run 1 and Run 2 appear to be showing different values.
 
 However, I also suspected this could be due to problems with the model implementation itself. I therefore decided to run the simple model, which calculates parameters for only one model at a time, on reward and punishment, run 1 and run2 separately.
 
-If find consistent results with this analysis, we can generally be confident our new model doesn't have anomalies in how it treats the groups. If we find that differences in estimated parameters for each group are slightly *larger* here, we can also conclude the full model is fine. We expect some regression to the mean when estimating multiple groups with the same overall model. However, if this separately-calculated model actually predicts more *similar* group parameters, it's a sign there's something wrong with the larger model.
+If we find consistent results with this analysis, we can generally be confident our new model doesn't have anomalies in how it treats the groups. If we find that differences in estimated parameters for each group are slightly *larger* here, we can also conclude the full model is fine. We expect some regression to the mean when estimating multiple groups with the same overall model. However, if this separately-calculated model actually predicts more *similar* group parameters, it's a sign there's something wrong with the larger model.
 
 
 ```{r setup, include=FALSE}
@@ -41,7 +41,7 @@ source("du_model_with_rp_2runs_separate.R")
 The one-group double-update model was used to estimate model parameters for each of the two runs and each of the two motivations. For comparison, we also estimated the full model which estimates parameters for all four groups at once. Each of these was run a total of two times, in order to allow for comparison across models. Consistent with the last test (du_rp_rr_moreiterations.R) and the next test (du_rp_rr_moreiterations_3groups.R) a seed of 599374824 was used for the first Analysis Repetition and 599374825 was used for the second Analysis Repetition. The model cache was used, so that for identically designed analyses, we actually didn't run the model again but simply used results from previous analyses
 
 In order to run this test successfully we need to:
- - present the previous effect, showing a large difference in inverse temperature between reward and punishment groups. 
+ - present the previous effect, showing a large difference in inverse temperature between Run 1 and Run 2 (Edit: probably an error!). 
  - For affirmative results--confirming the difference is not due to a misconfiguration of the larger model--we need to show that parameters for individually-calculated groups are similar.
  - For negative results--confirming there is a problem with the larger model--we need to show that parameters for the individually-calculated groups do not differ to the same degree by group.
 
@@ -122,20 +122,22 @@ ggplot(m.combined.analysisrepcheck,aes(x=Value,fill=factor(AnalysisRepetition),c
     facet_grid(Run+Statistic~Motivation+Group,scales="free")+
     labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
 
-model.summary.ar1<-model.summary.all[AnalysisRepetition==1]
-```
-Results are very consistent across repetitions, so for teh remainder of this analysis, we'll only look at the first.
 
-```{r inverse temperature difference}
+```
+Results are very consistent across repetitions, so for the remainder of this analysis, we'll only look at the first.
+
+```{r Run differences}
+
+model.summary.ar1<-model.summary.all[AnalysisRepetition==1]
 
 m.combined<-model.summary.ar1[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_notrialpost"]
 
-ggplot(m.combined,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
+ggplot(m.combined,aes(x=Value,fill=factor(Run),color=factor(Run)))+
     geom_freqpoly(alpha=0.5,binwidth=0.001)+
      geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
 #    coord_cartesian(ylim=c(0,80))+
-    facet_grid(Run+Statistic~Parameter+Group,scales="free")+
-    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
+    facet_grid(Motivation+Statistic~Parameter+Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " Run 1 and Run 2\nfor DU Repeated Runs model")))
 ```
 
 
@@ -143,57 +145,126 @@ Do our separately-estimated group parameters appear similar?
 
 ```{r inverse temperature difference in separately estimated groups, echo=FALSE}
 
-m.separate<-model.summary.ar1[EstimationMethod=="MCMC" & ModelName=="double_update_notrialpost"]
+m.separate.beta<-model.summary.ar1[EstimationMethod=="MCMC" & ModelName=="double_update_notrialpost" & 
+                                     Parameter=="beta"]
 
-ggplot(m.separate,
-       aes(x=Value,fill=factor(Motivation),color=factor(Motivation))
-       )+
-     geom_freqpoly(alpha=0.5,binwidth=0.001)+xlim(0,3)+
-  facet_grid(Run+Statistic~Group+Parameter,scales="free")+
-    coord_cartesian(ylim=c(0,150),xlim=c(0,2))+
-     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
-     labs(title=expression(paste(beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
+ggplot(m.separate.beta,aes(x=Value,fill=factor(Run),color=factor(Run)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+#     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+#    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Motivation+Statistic~Group,scales="free")+
+    labs(title=expression(paste(beta[mu], " Run 1, Run 2 \nfor DU Repeated Runs model")))
+
+m.separate.alpha<-model.summary.ar1[EstimationMethod=="MCMC" & ModelName=="double_update_notrialpost" & 
+                                     Parameter=="alpha"]
+
+ggplot(m.separate.alpha,aes(x=Value,fill=factor(Run),color=factor(Run)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
+#     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+#    coord_cartesian(ylim=c(0,80))+
+    facet_grid(Motivation+Statistic~Group,scales="free")+
+    labs(title=expression(paste(alpha[mu], " Run 1, Run 2 \nfor DU Repeated Runs model")))
 
 ```
 
 
-Unfortunately, these results indicate a problem with the model. When estimated separately, there is no difference between Reward and Punishment beta values. This likely indicates we have a problem in buliding our model, and in particular, it seems to be the Punishment values which are particularly problematic.
+Unfortunately, these results indicate a problem with the model. When estimated separately, there is no difference between Run 1 and Run 2 beta values. This likely indicates we have a problem in buliding our model#, and in particular, it seems to be the Run values which are particularly problematic. 
+THis is likely related to a Run 2 misspecification.
 
-That isn't all, however. These results suggest that Run 2 contain some kind of irregularity. While parameter estimates for Run 1 appear reasonable, there seems to be a runaway chain for Run 2. That kind of data irregularity could potentially drive differences where the groups are estimated in one model together.
+# Closer look at the parameters.
 
-Does this appear for the second analysis repetition?
+```{r comprehensive_model_run_prep, echo=TRUE, message=FALSE, warning=FALSE}
+source("du_model_with_rp_2runs_separate_comprehensive.R")
+```
 
-```{r}
-m.separate.ar2<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_notrialpost" & 
-                                    AnalysisRepetition==2]
-ggplot(m.separate.ar2,
-       aes(x=Value,fill=factor(Motivation),color=factor(Motivation))
-       )+
-     geom_freqpoly(alpha=0.5,binwidth=0.001)+xlim(0,3)+
-  facet_grid(Run+Statistic~Group+Parameter,scales="free")+
-    coord_cartesian(ylim=c(0,150),xlim=c(0,2))+
-     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
-     labs(title=expression(paste(beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
 
-m.combined.ar2<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_notrialpost" & 
-                                    AnalysisRepetition==2]
-hist(m.combined.ar2$Value[sample(0:length(m.combined.ar2$Value),1000)])
 
-ggplot(m.combined.ar2,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
-    geom_freqpoly(alpha=0.5,binwidth=0.001)+xlim(0,3)+
+```{r setup3comprehensive, message=FALSE, warning=FALSE}
+
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+
+ms.summary<-NULL
+
+for (i in 1:length(model.summaries)){
+  ms<-model.summaries[[i]]
+  dt.i<-data.table(
+    "Group"=ms$g,
+    "AnalysisRepetition"=ms$t,
+    "Model"=ms$m,
+    "EstimationMethod"=ms$EstimationMethod,
+    "Duration"=ms$elapsedTime
+    )
+  if(dim(dt.i)[1]>1){
+    print("dt greater than 1")
+    print(i)
+    print(summary(ms))
+    
+    next
+  }
+  
+  if(is.null(ms.summary)){
+    ms.summary<-dt.i
+    
+  }else{
+    ms.summary<-rbind(ms.summary,dt.i)
+  }
+}
+
+```
+
+
+```{r data table comprehensive, message=FALSE, warning=FALSE}
+
+
+knitr::kable(ms.summary[,.N,by=.(EstimationMethod,Model,Group)])
+
+```
+
+
+
+Do the mu_p values, which aren't generated quantities, make any more sense than the generated quantities?
+
+Let's focus on the $\beta{\mu}$ values.
+
+
+```{r Run differences comprehensive}
+
+m.combined<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_notrialpost" & 
+                                AnalysisRepetition==1 & Statistic %in% c("mu", "mu_p","mu_p_rm")]
+
+ggplot(m.combined,aes(x=Value,fill=factor(Run),color=factor(Run)))+
+    geom_freqpoly(alpha=0.5,binwidth=0.001)+
      geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
 #    coord_cartesian(ylim=c(0,80))+
-    facet_grid(Run+Statistic~Parameter+Group,scales="free")+
-    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " reward and punishment rounds\nfor DU Repeated Runs model")))
+    facet_grid(Group~Parameter+Statistic+Motivation,scales="free")+
+    labs(title=expression(paste(alpha[mu], " and ", beta[mu], " Run 1 and Run 2\nfor DU Repeated Runs model")))
 ```
 
 
-No, we don't get the same problems for the second repetition.
 
-Need to look at what might be wrong:
 
- - Could be that we're not feeding data in tohte punishment trials right
- - Could be that we're not marking the types correctly in outcome_type
- - 
 
 

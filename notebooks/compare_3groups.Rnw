@@ -31,6 +31,8 @@ source("visualization/geom_hdi.R")
   
   <<>>=
   source("du_rp_rr_moreiterations_3groups.R")
+
+stop("This document is outdated. 20171027 I found a bug and this document needs to written to reflect that. We don't have a beta mu Rew v. Punishment difference; we have a beta mu Run1 vs. Run2 difference. that's what we need to investigate, and it is really important we look at that before doing anything else with this model.")
 @
   
   

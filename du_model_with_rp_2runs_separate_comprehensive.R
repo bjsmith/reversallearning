@@ -21,7 +21,7 @@ subject_groups<-2:3
 
 times_to_run<-2
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_compare_all_runs_rp_separately_20171017.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_compare_all_runs_rp_separately_compr_20171017.RData")
 
 model.summaries <- vector("list", length(subject_groups)*times_to_run*(4+1))
 model.stanfits <- vector("list", length(subject_groups)*times_to_run*(4+1))
@@ -93,11 +93,11 @@ if(any(sapply(model.summaries,is.null))){
               
               if(m %in% c("double_update_rpo_repeated_runs", "double_update_rpo_repeated_runs_notrialpost")){
                 model.summaries[[first_empty_list_pos]]<-
-                  list("summaryObj"=data_summarize_double_update_rpo_repeated_runs(extractedfit),
+                  list("summaryObj"=data_summarize_double_update_rpo_repeated_runs(extractedfit,comprehensive=TRUE),
                        "g"=g,"m"=m,"t"=t,"EstimationMethod"=em,"elapsedTime"=fitpackage$general_info$estimation_duration)
               }else if(m=="double_update" || m=="double_update_notrialpost"){
                 model.summaries[[first_empty_list_pos]]<-
-                  list("summaryObj"=data_summarize_double_update(extractedfit,
+                  list("summaryObj"=data_summarize_double_update(extractedfit,comprehensive=TRUE,
                                                                  outcome.type = rp,
                                                                  run = runs),
                        "g"=g,"m"=m,"t"=t,"EstimationMethod"=em,"elapsedTime"=fitpackage$general_info$estimation_duration)

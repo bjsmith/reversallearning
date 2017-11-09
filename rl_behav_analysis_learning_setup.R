@@ -52,12 +52,21 @@ for (condition in c(
       c("ID","image","cor_res","Condition","response_key","reaction_time",
         "score","onset_time_designed","onset_time_actual",
         "reversal_trial","runid","blockid")
+    #record the actual response key
+    if((as.numeric(regexpr("_sub",basename(sub.filename))[1])%%2)==1){
+      sub.data$cor_res_Counterbalanced= 3-sub.data$cor_res
+    }else{
+      sub.data$cor_res_Counterbalanced=sub.data$cor_res
+    }
     
     # MID=1; %
     #   %Mtrial=2; %
     #   % Mcrres=3; % Correct Response
     #  Mcond=4; % 1: reversal; 2: control
-    #  Mres=5; % left or right key. counterbalance across subjects;
+    #  Mres=5; % left or right key. counterbalance across subjects; Do NOT try to match this to Mcrres ("cor_res"). MScore records whether there was an *actual* match after taking into account counter-balancing, so if you want to know whether a subject got it right orn ot, you need to look at that.
+    #% response key counterbalance across subject;
+    #% for subject with odd subjectID: left=L, right=R;
+    #% for subject with even subjectID: left=R; right=L;
     #  MRT=6; % reaction time;
     #  Mscore=7; % 1: correct; -1: wrong; 0: no response
     #  Monset=8; % designed trial onset time

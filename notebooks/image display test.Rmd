@@ -1,0 +1,43 @@
+---
+title: 'Image test'
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+  # useful: https://github.com/jgm/pandoc/issues/3752
+---
+
+This is a basic description of the reversal learning dataset.
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+library(ggplot2)
+source("visualization/geom_hdi.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+#source("rl_behav_analysis_learning_setup.R")
+#rl.all.subjects.list.g1g2g3<-rl.all.subjects.list[RiskLabel!="Safe Meth"]
+getwd()
+```
+Here's an image:
+![](/expdata/bensmith/joint-modeling/code/msm/behavioral-analysis/reversallearning/ReversalLearning_20130621/images/abs4.jpg)
+
+
+
+How do we express that relatively?
+
+Here's an image:
+![](../ReversalLearning_20130621/images/abs4.jpg)
+
+
+
+
+

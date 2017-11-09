@@ -1,0 +1,109 @@
+---
+title: "Stimulus comparisons"
+output: html_notebook
+---
+How many stimuli would we need to compare to get a score of 'confusability' between images?
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+library(ggplot2)
+source("visualization/geom_hdi.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("rl_behav_analysis_learning_setup.R")
+
+rl.all.subjects.list.g1g2g3<-rl.all.subjects.list[RiskLabel!="Safe Meth"]
+```
+
+
+All the images are presented in sequence, and they are the same sequence for each subject:
+
+
+```{r ImageInSegment2, echo=FALSE}
+
+knitr::kable(rl.all.subjects.list.g1g2g3[subid %in% sample(rl.all.subjects.list.g1g2g3$subid,3,replace=FALSE),image,by=.(Motivation,runid,subid)] %>%  .[, lapply(.SD, function(x) toString(unique(x))), by = .(Motivation,runid,subid)] %>% spread(subid,image,sep=" "))
+```
+
+
+The simplest way to get a measure of "confusability" here might be to present exactly the same sequence of images and ask subject, "Have you seen this image before?" If subjects say "yes" when they have not in fact seen the image before, we could infer that the images are more "confusable". In this design, we wouldn't know which image is being confused.
+
+If we do some 2x2 test, we might want to comapre all images with all the images that preceded them. We can calculate a matrix describing how many timesteps prior to each image each other image was observed. We should do this separately for run1, run2, reward, and punishment; it only needs to be done with one subject. We can pick subject 229 as one subject we know has all data intact.
+
+
+
+```{r timestep_comparison, echo=FALSE}
+test.s229<-rl.all.subjects.list.g1g2g3[subid==229]
+table(test.s229$Motivation)
+table(test.s229$runid)
+image.matrix.list<-vector("list",4)
+#create a matrix telling you how many presentations prior to image in column c was each image in row r presented.
+for (m in c("punishment", "reward") ){
+  for (run in c(1,2)){
+    #m<-"punishment"
+    #r<-1
+    #we only need the images in order
+    image.series<-test.s229[Motivation==m & runid==run] %>% .[order(onset_time_actual),image]
+    
+    image.matrix<- matrix(nrow = length(unique(image.series)),ncol=length(unique(image.series)))
+    
+    rownames(image.matrix)<-as.character(unique(image.series))
+    colnames(image.matrix)<-as.character(unique(image.series))
+    for (c in colnames(image.matrix)){
+      for (r in rownames(image.matrix)){
+        #positions of c in image series
+        preceeding.vals<-sapply(which(image.series==c),function(p){
+          #p<-8
+          previmgset<-which(image.series[1:p]==r)
+          if(length(previmgset)==0){
+              return(NA)
+            }else{
+              return(p-max(previmgset))
+            }
+        })
+        #if we would otherwise  be below the diagonal in the matrix
+        if(which(c==colnames(image.matrix))<which(r==rownames(image.matrix))){
+          #then flip the assignment
+          if(any(!sapply(preceeding.vals,is.na))){
+            image.matrix[as.character(c),as.character(r)]<-min(
+              c(min(preceeding.vals,na.rm = TRUE),image.matrix[as.character(c),as.character(r)]),na.rm=TRUE)
+          }
+          }else{
+            if(any(!sapply(preceeding.vals,is.na))){
+            image.matrix[as.character(r),as.character(c)]<-min(
+              c(min(preceeding.vals,na.rm = TRUE),image.matrix[as.character(c),as.character(r)]),na.rm=TRUE)
+          }
+          }
+        
+      }
+    }
+    
+    image.matrix.list[[min(which(sapply(image.matrix.list,is.null)))]]<-image.matrix
+    
+  }
+}
+
+#OK, so let's say an image needs to be compared to another image if either of them have appeared 
+    #within 10 time points of each other; how many comparisons is that?
+total.comparisons<-
+  sum(image.matrix.list[[1]]<=10 & image.matrix.list[[1]]>0,na.rm = TRUE)+
+  sum(image.matrix.list[[2]]<=10 & image.matrix.list[[2]]>0,na.rm = TRUE)+
+  sum(image.matrix.list[[3]]<=10 & image.matrix.list[[3]]>0,na.rm = TRUE)+
+  sum(image.matrix.list[[4]]<=10 & image.matrix.list[[4]]>0,na.rm = TRUE)
+
+total.comparisons.3<-
+  sum(image.matrix.list[[1]]<=3 & image.matrix.list[[1]]>0,na.rm = TRUE)+
+  sum(image.matrix.list[[2]]<=3 & image.matrix.list[[2]]>0,na.rm = TRUE)+
+  sum(image.matrix.list[[3]]<=3 & image.matrix.list[[3]]>0,na.rm = TRUE)+
+  sum(image.matrix.list[[4]]<=3 & image.matrix.list[[4]]>0,na.rm = TRUE)
+#
+```
+The total number of comparisons is `r as.character(total.comparisons)`. If we had to run each comparison only once per subject, and each trial took 3 seconds, the length of the task would be `r as.character(round(3*total.comparisons/60,1)) ` minutes. With `r as.character(total.comparisons.3)` comparisons, this drops to `r as.character(round(3*total.comparisons.3/60,1)) ` minutes.
+

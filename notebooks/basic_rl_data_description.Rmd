@@ -1,0 +1,104 @@
+---
+title: 'Reversal learning: basic data description'
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+This is a basic description of the reversal learning dataset.
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+library(ggplot2)
+source("visualization/geom_hdi.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("rl_behav_analysis_learning_setup.R")
+
+rl.all.subjects.list.g1g2g3<-rl.all.subjects.list[RiskLabel!="Safe Meth"]
+```
+
+# Subjects
+
+There were two runs of two different Motivation conditions, the Reward Motivation Condition and Punishment Motivation Condition. A few runs were not completed correctly because some subjects did not attend their second session, or data was lost, or for other reasons. The table below shows the number of subjects whose data we had for each condition.
+
+```{r MySubjectInfo, echo=FALSE}
+subjecttable<-rl.all.subjects.list.g1g2g3[,.(Subjects=length(unique(subid))),by=.(Motivation,runid,RiskLabel)] %>% spread(RiskLabel,Subjects)
+subjecttable$All<-subjecttable$`Risky Meth`+subjecttable$`Risky No Meth`+subjecttable$`Safe No Meth`
+
+knitr::kable(subjecttable)
+```
+
+
+# Runs
+
+Within each of the two runs, for either reward or punishment, subjects saw 218 images in total; a total of 18 unique images per subject. There were up at least 5 and as many as 8 images before reversal. The table below shows the count of images for one particular subject, at each time point relative to that image's reversal. All subjects were given the same basic design as shown here.
+
+
+
+```{r ImageInSegment, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::kable(rl.all.subjects.list.g1g2g3[subid==113,.(.N),by=.(Motivation,runid,presentation_n_after_reversal)] %>% spread(presentation_n_after_reversal,N))
+```
+
+Subjects received the same set of images for each of the motivations and runs; a random selection of three different subjects is shown below:
+
+```{r ImageInSegment2, echo=FALSE}
+
+knitr::kable(rl.all.subjects.list.g1g2g3[subid %in% sample(rl.all.subjects.list.g1g2g3$subid,3,replace=FALSE),image,by=.(Motivation,runid,subid)] %>%  .[, lapply(.SD, function(x) toString(unique(x))), by = .(Motivation,runid,subid)] %>% spread(subid,image,sep=" "))
+```
+
+
+
+The first 40 image presentations are presented below. Pay attention to several things here:
+
+ - Each image is presented between 5 and 8 times pre-reversal, and 5 times post-reversal.
+ - Image presentations are interleaved, with two new images presented at a time
+ - For each presentation, subjects must press either the LEFT key or the RIGHT key. Either left or right is the correct response
+ - There's about 3 seconds between each presentation
+ - at the beginning and end, there are a few "Control" trials using images whose reinforcement contingencies are never reversed.
+ - left and right key presses are counterbalanced across subjects
+ 
+```{r UniqueImages, echo=FALSE}
+#are images mapped directly from the image ID to the image itself
+#In rlr.m#215, RL(trail,Mtrial) directly indexes imageData, pulling from imageData the image with index associated with the current tirla as recorded in the data.
+#imageData records the filenames, indexing directly by x where the number in the filename corresponds to that image filename's index in imageData
+#so I think we're safe to match the filename to the image ID.
+
+by_trial<-rl.all.subjects.list.g1g2g3[
+  subid==146 & Motivation=="reward" & runid==1,
+  .(image,onset_time_actual,presentation_n_in_segment,first_reversal,presentation_n,score,
+    correct,
+    reaction_time
+    
+    )
+  ] %>% .[order(onset_time_actual),
+          .("Image"=paste0(as.character(image)," ![](../ReversalLearning_20130621/images/abs",as.character(image),".jpg){#id .class width=0.1667in height=0.1667in}"),
+            "Onset (s)"=round(onset_time_actual,1),
+            "Presentation Type"=ifelse(is.na(first_reversal),"Control",ifelse(first_reversal>presentation_n,"PreReversal","PostReversal")),
+            "Image Presentation"=presentation_n_in_segment,
+            "Response"=ifelse(reaction_time==0,"Nonresponse",ifelse(correct==TRUE,"Correct","Incorrect")),
+            "RT (ms) "=ifelse(reaction_time==0,"",round(reaction_time*1000,0))
+            
+            ),
+          
+          ]# %>% .[c(1:40,(dim(.)[1])-40:dim(.)[1])])
+
+knitr::kable(by_trial[1:40,])
+```
+
+Last 40:
+```{r UniqueImages2, echo=FALSE}
+knitr::kable(by_trial[(dim(by_trial)[1]-40):dim(by_trial)[1],])
+```
+
+
+

@@ -1,7 +1,4 @@
-//This file was created in order to try to work out what's wrong with the Punishment
-//trials. Just in case there was a bug in the Punishment code; this now loops through
-//reward and punishment to ensure they are definitely, absolutely treated the same 
-//at all times.
+//Here, we model 
 data {
   int<lower=1> N;//number of subjects
   int<lower=1> T; //number of trials (max)
@@ -36,13 +33,13 @@ transformed data {
 parameters {
 // Declare all parameters as vectors for vectorizing
   // Hyper(group)-parameters
-  vector[2] mu_p[2];
+  vector[2] mu[2];
   vector<lower=0>[2] sigma[2];
   //this is an array of vectors; each vector represents data for reward or punishment.
   //each value in vector represents a different parameter.
   
   //see Stan ref manual Section5.8 for a helpful example of how to index arrays of vectors.
-  vector[2] mu_p_rm[2,R-1];
+  vector[2] mu_rm[2,R-1];
   vector<lower=0>[2] sigma_rm[2,R-1];
   //2D array of vectors; each vector represents data for reward or punishment.
   
@@ -73,17 +70,17 @@ transformed parameters {
   for (s in 1:N) {
   	for (ot in OT_MIN:OT_MAX){
   	    //run 1
-    	alpha[s,1,ot]  = Phi_approx( mu_p[ot, 1] + sigma[ot, 1] * alpha_pr[s,ot] );
-	    beta[s,1,ot]   = Phi_approx( mu_p[ot, 2] + sigma[ot, 2] * beta_pr[s,ot] ) * 5;
+    	alpha[s,1,ot]  = Phi_approx( mu[ot, 1] + sigma[ot, 1] * alpha_pr[s,ot] );
+	    beta[s,1,ot]   = Phi_approx( mu[ot, 2] + sigma[ot, 2] * beta_pr[s,ot] ) * 5;
     	//I am not sure we need to transform the multipliers? They stand on their own, perhaps...
 	    for (r in 2:R){
     	  //Nate's suggestion
 	      alpha[s,r,ot]  = Phi_approx( 
-    	    mu_p[ot, 1] + sigma[ot, 1] * alpha_pr[s,ot] + 
-        	mu_p_rm[ot,r-1,1] + sigma_rm[ot, r-1, 1] * alpha_pr_rm[r-1,s,ot]);
+    	    mu[ot, 1] + sigma[ot, 1] * alpha_pr[s,ot] + 
+        	mu_rm[ot,r-1,1] + sigma_rm[ot, r-1, 1] * alpha_pr_rm[r-1,s,ot]);
 	      beta[s,r,ot]  = Phi_approx( 
-    	    mu_p[ot, 2] + sigma[ot, 2] * beta_pr[s,ot] + 
-        	mu_p_rm[ot,r-1,2] + sigma_rm[ot, r-1, 2] * beta_pr_rm[r-1,s,ot]);
+    	    mu[ot, 2] + sigma[ot, 2] * beta_pr[s,ot] + 
+        	mu_rm[ot,r-1,2] + sigma_rm[ot, r-1, 2] * beta_pr_rm[r-1,s,ot]);
     	}
   	}
 
@@ -97,13 +94,14 @@ model {
   real beta_rm_s;
   matrix[100,2] ev; 
   
+  
   // Hyperparameters
   for (ot in OT_MIN:OT_MAX){//cycle through outcome types
-    mu_p[ot]  ~ normal(0, 1);
+    mu[ot]  ~ normal(0, 1);
     sigma[ot] ~ cauchy(0, 5);
     
     for (r in 1:(R-1)){
-      mu_p_rm[ot,r]  ~ normal(0, 1);
+      mu_rm[ot,r]  ~ normal(0, 1);
       sigma_rm[ot,r] ~ cauchy(0, 5);
     }
   }
@@ -162,12 +160,12 @@ generated quantities {
   real log_lik[N];
 
   for (ot in OT_MIN:OT_MAX){
-	mu_alpha[1,ot]  = Phi_approx(mu_p[ot, 1]);
-	mu_beta[1,ot]   = Phi_approx(mu_p[ot, 2]) * 5;
+	mu_alpha[1,ot]  = Phi_approx(mu[ot, 1]);
+	mu_beta[1,ot]   = Phi_approx(mu[ot, 2]) * 5;
   
 	  for (r in 2:R){
-	    mu_alpha[r,ot] = Phi_approx( mu_p[ot, 1] + mu_p_rm[ot,r-1,1]);
-	    mu_beta[r,ot] = Phi_approx(  mu_p[ot, 2] + mu_p_rm[ot,r-1,2]) * 5;//not sure why we're multiplying by 5 here. 
+	    mu_alpha[r,ot] = Phi_approx( mu[ot, 1] + mu_rm[ot,r-1,1]);
+	    mu_beta[r,ot] = Phi_approx(  mu[ot, 2] + mu_rm[ot,r-1,2]) * 5;//not sure why we're multiplying by 5 here. 
 	  }
   }
   

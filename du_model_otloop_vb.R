@@ -1,5 +1,3 @@
-#Purposes:
-#1) See whether the reward-punishment difference observed for the beta values (inverse temperature) was an anomaly related to my full model or whether it seems genuine.
 
 #We will estimate both double update and double update_rp_rr
 #double update will be estimated separately, 4 times, for each of Run1_rew, run2_rew, Run1_pun, run2_pun.
@@ -13,18 +11,18 @@ source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
-models_to_run<-c("double_update_notrialpost","double_update_rpo_repeated_runs_notrialpost")
-estimation_methods<-ESTIMATION_METHOD.MCMC#c(as.character(ESTIMATION_METHOD.MCMC))#rev(ESTIMATION_METHODS)
+models_to_run<-c("double_update_rpo_repeated_runs_ntp_otmod","double_update_rpo_repeated_runs_notrialpost")
+estimation_methods<-ESTIMATION_METHOD.VariationalBayes#c(as.character(ESTIMATION_METHOD.MCMC))#rev(ESTIMATION_METHODS)
 
 subject_groups<-2:3
 
 
-times_to_run<-2
+times_to_run<-12
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_compare_all_runs_rp_separately_20171017.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_allruns_rp_otloop_vb12_20171023.RData")
 
-model.summaries <- vector("list", length(subject_groups)*times_to_run*(4+1))
-model.stanfits <- vector("list", length(subject_groups)*times_to_run*(4+1))
+model.summaries <- vector("list", length(subject_groups)*times_to_run*(2))
+model.stanfits <- vector("list", length(subject_groups)*times_to_run*(2))
 
 if(file.exists(summaryfilepath)){
   load(file=summaryfilepath)
@@ -69,9 +67,9 @@ if(any(sapply(model.summaries,is.null))){
                 rp=rp,
                 model_rp_separately=TRUE,model_runs_separately = TRUE, include_pain=FALSE,
                 fastDebug=FALSE,
-                fileSuffix=paste0("additional_iterations_20171016",as.character(t)),
+                fileSuffix=paste0("compare_otp_loop_vb_20171023",as.character(t)),
                 estimation_method = em,
-                bseed=t+599374823,#sample.int(.Machine$integer.max, 1)
+                bseed=t+2012941342,#sample.int(.Machine$integer.max, 1)
                 collateTrialData=FALSE,
                 chainNum = 12,
                 iterations = iterations,
@@ -91,7 +89,7 @@ if(any(sapply(model.summaries,is.null))){
               # first_empty_list_pos.extractedfit<-min(which(sapply(model.extractedfits,is.null)))
               # model.extractedfits[[first_empty_list_pos]]<-extractedfit
               
-              if(m %in% c("double_update_rpo_repeated_runs", "double_update_rpo_repeated_runs_notrialpost")){
+              if(m %in% c("double_update_rpo_repeated_runs", "double_update_rpo_repeated_runs_notrialpost", "double_update_rpo_repeated_runs_ntp_otmod")){
                 model.summaries[[first_empty_list_pos]]<-
                   list("summaryObj"=data_summarize_double_update_rpo_repeated_runs(extractedfit),
                        "g"=g,"m"=m,"t"=t,"EstimationMethod"=em,"elapsedTime"=fitpackage$general_info$estimation_duration)
