@@ -1,0 +1,27 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+$$ y=mx+c $$
+correct~ 
+              scale(reaction_time,scale = FALSE)+presentation_n_in_segment_minus5*reversal_trial+ #trial-level
+              MethUse+SexRisk+(1|subid)
+$$\begin{aligned}
+
+logit(Pr(y=1))= & \alpha_{s[i]}+\beta_{1}rt_i+\beta_2p_i+\beta_3rev_i+\beta_{4}p_i\times rev_i+\beta_5m_i+\beta_6x_i, \textrm{for }i=1,...,t \\
+\alpha_s\sim & \textrm{N}(\mu_{\alpha},\sigma^2_{subj}), \textrm{for }s=1,...,171
+
+\end{aligned}$$
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
