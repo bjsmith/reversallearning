@@ -29,7 +29,9 @@ rl.all.subjects.list.g1g2g3<-rl.all.subjects.list[RiskLabel!="Safe Meth"]
 
 # Subjects
 
-There were two runs of two different Motivation conditions, the Reward Motivation Condition and Punishment Motivation Condition. A few runs were not completed correctly because some subjects did not attend their second session, or data was lost, or for other reasons. The table below shows the number of subjects whose data we had for each condition.
+There were two runs of two different Motivation conditions, the Reward Motivation Condition and Punishment Motivation Condition. A few runs were not completed correctly because some subjects did not attend their second session, or data was lost, or for other reasons. 
+
+The table below shows the number of subjects whose data we had for each condition.
 
 ```{r MySubjectInfo, echo=FALSE}
 subjecttable<-rl.all.subjects.list.g1g2g3[,.(Subjects=length(unique(subid))),by=.(Motivation,runid,RiskLabel)] %>% spread(RiskLabel,Subjects)
@@ -41,7 +43,9 @@ knitr::kable(subjecttable)
 
 # Runs
 
-Within each of the two runs, for either reward or punishment, subjects saw 218 images in total; a total of 18 unique images per subject. There were up at least 5 and as many as 8 images before reversal. The table below shows the count of images for one particular subject, at each time point relative to that image's reversal. All subjects were given the same basic design as shown here.
+Within each of the two runs, for either reward or punishment, subjects saw 218 images in total; a total of 18 unique images per subject, per run, plus additional 'control' images at the start and end of the task which were never reversed. There were 5-8 presentations of each image before reversal and 5 presentations of the image after reversal. 
+
+The table below shows the count of images for one particular subject, at each time point relative to that image's reversal. All subjects were given the same basic design as shown here.
 
 
 
@@ -49,7 +53,7 @@ Within each of the two runs, for either reward or punishment, subjects saw 218 i
 knitr::kable(rl.all.subjects.list.g1g2g3[subid==113,.(.N),by=.(Motivation,runid,presentation_n_after_reversal)] %>% spread(presentation_n_after_reversal,N))
 ```
 
-Subjects received the same set of images for each of the motivations and runs; a random selection of three different subjects is shown below:
+Subjects received the same set of images for each of the motivations and runs; a random selection of image IDs for three different subjects is shown below:
 
 ```{r ImageInSegment2, echo=FALSE}
 
@@ -66,6 +70,7 @@ The first 40 image presentations are presented below. Pay attention to several t
  - There's about 3 seconds between each presentation
  - at the beginning and end, there are a few "Control" trials using images whose reinforcement contingencies are never reversed.
  - left and right key presses are counterbalanced across subjects
+ - This is data from one particular subject (Sub 146). The order is exactly the same for all subjects but the onsets will be slightly different and the responses and response times will of course be different.
  
 ```{r UniqueImages, echo=FALSE}
 #are images mapped directly from the image ID to the image itself
