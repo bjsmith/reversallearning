@@ -61,6 +61,11 @@ transformed parameters {
   vector<lower=0,upper=1>[N] alpha_r[R];
   vector<lower=0,upper=5>[N] beta_r[R];
   
+    // subject-level raw parameters
+  vector<lower=0,upper=1>[N] alpha;
+  vector<lower=0,upper=5>[N] beta;
+  
+  
   
   
   //Kruschke likes to draw from distributions directly centered on parameters
@@ -91,7 +96,11 @@ transformed parameters {
     }
   }//OK, so if we have done this, how do we get the values that are not specified for run, do we simply copy like
   
-  
+    #do we need these any more? maybe only as 'transformed parameters'
+  for (i in 1:N) {
+      alpha[i]  = Phi_approx( mu_p[1] + sigma_p[1] * alpha_s[i]); #not sure whether to use mu_p_r or alpha_r values here.
+      beta[i]   = Phi_approx( mu_p[2] + sigma_p[2] * beta_s[i]) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+  }
   #from a multi-level modeling principled perspective, is this right? I'm not sure.
   
   #seems **plausible** I guess.
@@ -166,10 +175,7 @@ model {
 }
 
 generated quantities {
-  // subject-level raw parameters
-  vector<lower=0,upper=1>[N] alpha;
-  vector<lower=0,upper=5>[N] beta;
-  
+
   // For group level parameters
   real<lower=0,upper=1> mu_alpha;
   real<lower=0,upper=5> mu_beta;
@@ -177,9 +183,5 @@ generated quantities {
   mu_alpha  = Phi_approx(mu_p[1]);
   mu_beta   = Phi_approx(mu_p[2]) * 5;
   
-  #do we need these any more? maybe only as 'transformed parameters'
-  for (i in 1:N) {
-      alpha[i]  = Phi_approx( mu_p[1] + sigma_p[1] * alpha_s[i]); #not sure whether to use mu_p_r or alpha_r values here.
-      beta[i]   = Phi_approx( mu_p[2] + sigma_p[2] * beta_s[i]) * 5; #not sure whether to use mu_p_r or alpha_r values here.
-  }
+
 }
