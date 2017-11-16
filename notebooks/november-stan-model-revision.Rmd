@@ -1,0 +1,91 @@
+---
+title: "Reversal learning Kruschke-inspired model"
+author: "Ben Smith"
+date: "10/31/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reversal learning
+
+I am thinking about throwing out my existing model, going back perhaps to the last double-update model from Nate and building up from there.
+
+Now that I've read more Kruschke, I have a better idea of how I think I'd do this. So, let's pseudocode it.
+
+At the first level, we are estimating $\alpha$ and $\beta$ parameters for each subject.
+
+Here's where I think Nate does this differently from Kruschke; Nate estimates the subject-levels means and standard deviations constructed algebraically from group means and group sigmas multiplied by individual parameters, Kruschke would model subject means as functions of group means and a sigma of group means, within the model.
+
+So each $\alpha_i$ and $\beta_i$ is drawn from a population-level distribution which has means $\mu_{\alpha}$ and $\mu_{\beta}$ and variances $\sigma_{\alpha}$ and $\sigma_{beta}$. As we are doing this, I need to make sure I've left enough variance to account for population-level variance and not just sample variance. 
+
+I think that is all we need to estimate parameters for the model itself.
+
+But we will want to extend the model to deal with:
+ - within-subject variance across 2 2-level factors, Run and Motivation. Run is ordinal-level data (though there's only two of them and we can model it just the same as nominal data) and Motivation is nominal data.
+ - between-subject variance, estimating across the three groups. This is still optional. It might be easiest to just estimate the model separately for each group and only pool the variance across groups later. But in theory, we'd get more power using a full model that pools variance across groups.
+ 
+The three groups could be modeled with a single three-level factor.
+
+With these considerations in mind, what actual parameters will we need to model here? Let's list them from bottom to top:
+
+ - Subject-level $\alpha_i$ and $\beta_i$. Each of those are from distributions with $\mu_{\alpha}$ and $\mu_{\beta}$ and variances $\sigma_{\alpha}$ and $\sigma_{beta}$. Consider using student's t distribution rather than a normal distribution to better model population-level variance (See Kruschke 2014, p458; this recommends student's t for a different reason).
+ - Using Kruschke's factorial ANOVA design, $\mu_{\alpha}, \mu_{\beta}$ are each calculated from sums of intercepts $\beta_0$, coefficients $\beta_m$ representing Motivation (reward vs. punishment) and $\beta_r$ representing run. Technically $\beta_r$ should be an ordinal parameter but as there are only two runs it doesn't make any difference whether we consider it ordinal or nominal.
+ - Each of those $\beta$ coefficients should be estimated from appropriate distributions. $\beta_0$ is drawn from a distribution with a mean equal to the *actual* population mean; we can call it $\mu_{beta_0}$. This is going to be a problem, because we don't actually know the mean learning rate and inverse temperature it in advance; we might have to estimate the distribution from which $\beta_0$ comes, which will legnthen our estimation time but will give us more flexibility. $\beta_m, \beta_r$ are estimated from distributions with a mean of 0 and a standard deviation of 1. Ther will be need to be some extra magic here because we need to implement $\beta$s as functions of $\alpha$s which have had a sum-to-zero transformation applied (see Kruschke, 2014, p556).
+ - That gives us our basic model! From there, we could add another level describing Subject Group, following guidelines in Kruschke (2014, chapter 19) for predicting a metric variable with one nominal predictor. If we wanted to ignore interaction effects with reward and punishment, perhaps we could simply estimate $\beta_0$ from separate distributions from each group. We would apply Kruschke's model for $n$ groups as we did at the previous level. The value $\mu_{beta_0}$ from the previous level calculated from a value $\beta_0$ plus the sum of the dot product of the group indicator vector and values for each group. 
+
+
+## Implementing in Stan
+
+In the end, I have gone with another approach to implementing this model in Stan.
+
+I've opted to take the approach that Nate Haines has used to get population-level estimates from subject-level estimates
+and add in intermediate values. Thus, we calculate parameters to be used in the model by adding mean parameters (multiplied by variance parameters of the next level), adding them all up together, and using these to generate parameters using a phi approximation.
+
+We can still add a separate parameter for runs, outcome types, and subjects, thus ensuring that we can capture random effects at each level while also allowing for shrinkage within the level.
+
+### Shrinkage
+
+Shrinkage is useful for tightening the estimates across sujbects in a principled way. In this model, we are estimating parameters across subjects based on a hierarchy that puts runs and outcome types within subjects. It models the random variance of runs and reward/punishment. In this way we helpfully model random variation across runs (it is possible subjects might perform a bit differently for each run!) and outcome types.
+
+However, we would also expect systematic differences *across subjects* for outcome types. This model--$double_update_nov_rev2_rp.stan$--may be underspecified for this because it fails to model shrinkage within run types. To rephrase, it does not assume that performance for punishment compared to reward may be systematically similar across subjects. In reality, this could well be the case. What could we do to model this?
+
+### Reward and punishment modeling.
+
+In order to deal model outcome type (reward vs. punishment) at the group level we can simply add a parameter for reward and punishment at the group level. These can be sampled from a distribution with mean and variance at the subject level.
+
+There are two questions to resolve after we do this:
+ 1. Since we have the Run random effect, modeling some kind of random effect across runs for each subject, do we still need to have a within-subject random effect for Outcome Type? I tend to think not, so long as we are not interested in separating out within-subject run varaibility and within-subject outcome type variability. I don't think we have any interest in that.
+ 2. How do we deal with the fact that run type is dichotomous and we want to avoid creating free parameters? Kruschke dealt with this by somehow fixing two levels of a factor to be orthogonal. I need to look up to see if that is in fact how we can manage this. What would that even look like in my stan modeL?
+ 
+Kruschke writes that four two groups, there is very little shrinkage and thus little point in estimating two groups hierarchically. Thus at this point, we might be able to get around these issues when estimating reward and punishment.
+
+On the other hand, we will be wanting to add in additional subject-level factors (Meth use vs. no meth use) and at that point, we have multiple factors and perhaps that caveat doesn't apply.
+
+At this point then there are three options:
+ 1. The simplest solution, if we were to do just two groups, without considering the issues of adding different subject groups into the model, is to replace the single group-level parameter with two group-level parameters, one which estimates reward and one which estimates punishment activity.
+ 2. Another, messier solution would be to add a single "punishment" parameters, similar to how we have done this in the past, which would determined the 'difference' between reward and punishment. Let's avoid this solution.
+ 3. A third solution would be to have separate factors for both reward and punishment and somehow orthogonalize them. Kruschke describes this conceptually in Pages 429-430 (Section 15.2.4.1). Importantly, the  overall baseline is constrained so that deflections (i.e., the beta values associated with each factor level within the factor) sum to zero. How is that implemented in a stan modeL? Kruschke says this can be implemented by subtracting the mean of the category values from the baseline, when calculating the baseline. He describes implementation of this in his book, pages 560-561, Section 19.3.1.
+
+This might be possible but for now, we can just deploy separate means for reward and punishment. We still have shared variance across these; we're just getting separate means for the two groups. For two groups this is mathematically equivalent to adding a nominal whose deflections sum to zero as Kruschke describes in the book sections referenced in the previous paragraph. We do lose some opportunity for shrinkage but Kruschke points out that shrinkage across two groups is expected to be minimal.
+
+# Trying out the model
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+source("visualization/geom_hdi.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+```
+
+
+Let's start with a basic model, doing a repeated variational bayes analysis of the model modeling random effects of different runs without reward and punishment.
+
+## Four runs random effects
+
