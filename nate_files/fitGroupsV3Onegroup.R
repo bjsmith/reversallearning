@@ -35,7 +35,8 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
                        iterations=NA,
                        collateTrialData=TRUE,
                        chainNum=NA,
-                       warmup_iter=NA
+                       warmup_iter=NA,
+                       rl_unique_runids=NA
                        ){
   fit_desc<-""
   dd<-localsettings$data.dir
@@ -79,6 +80,10 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
   if(!is.na(warmup_iter)){
     fit_desc<-paste0(fit_desc,"_wup",as.character(warmup_iter))
   }
+  if(!is.na(rl_unique_runids)){
+    fit_desc<-paste0(fit_desc,"_rluri",as.character(warmup_iter))
+  }
+  
   if(estimation_method!=ESTIMATION_METHOD.VariationalBayes){
     fit_desc<-paste0(fit_desc,"_",as.character(estimation_method))
   }
@@ -99,7 +104,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          iterations=NA,
                          collateTrialData=TRUE,
                          chainNum=NA,
-                         warmup_iter=NA){
+                         warmup_iter=NA,
+                         rl_unique_runids=NA){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -117,7 +123,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            iterations=iterations,
                            collateTrialData=collateTrialData,
                            chainNum=chainNum,
-                           warmup_iter=warmup_iter)
+                           warmup_iter=warmup_iter,
+                           rl_unique_runids=rl_unique_runids)
   if (file.exists(fit.fileid)){
     print("this has already been fit! Loading...")
     load(fit.fileid)
@@ -130,7 +137,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                              estimation_method=estimation_method,
                              bseed=bseed,iterations.set =iterations,collateTrialData=collateTrialData,
                              chainNum.set = chainNum,
-                             warmup_iter.set = warmup_iter)
+                             warmup_iter.set = warmup_iter,
+                             rl_unique_runids=rl_unique_runids)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -177,7 +185,8 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
                                     include_pain,fastDebug=FALSE,fileSuffix=fileSuffix,
                                 estimation_method=ESTIMATION_METHOD.VariationalBayes,
                                 bseed=sample.int(.Machine$integer.max, 1),iterations.set=NA,collateTrialData=TRUE,chainNum.set=NA,
-                                warmup_iter.set=NA){
+                                warmup_iter.set=NA,
+                                rl_unique_runids=FALSE){
   use_model<-model_to_use
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
@@ -300,6 +309,7 @@ for (i in 1:numSubjs) {
     curSubj      <- subjList[i]
     useTrials    <- Tsubj[i]
     if (curSubj %in% subj_ids_have) {
+      stop("This seems wrong!")
       tmp_brain <- read.csv(paste0("Data/Pain_Betas/", curSubj, "_punishment_r1.csv"))
     }
     tmp <- subset(rawdata, rawdata$subjID == curSubj)
@@ -308,7 +318,13 @@ for (i in 1:numSubjs) {
     cue[i, 1:useTrials]     <- as.numeric(as.factor(tmp$cue))
     cue_freq[i, 1:useTrials] <- tmp$cue_freq
     outcome_type[i, 1:useTrials] <- as.integer(tmp$Motivation=="punishment")+1
-    run_id[i, 1:useTrials] <- tmp$runid
+    #assign unique runids to the runs if necessary.
+    if (rl_unique_runids){
+      run_id[i, 1:useTrials] <- tmp$runid+as.numeric(tmp$Motivation=="punishment")*2
+    }else{
+      run_id[i, 1:useTrials] <- tmp$runid
+    }
+    
     reversal[i, 1:useTrials] <- as.numeric(tmp$reversal_trial)
     cue_pos[i, 1:useTrials] <- tmp$presentation_n_after_reversal
     trial[i, 1:useTrials] <- as.numeric(as.factor(tmp$onset_time_actual))
@@ -373,6 +389,8 @@ for (i in 1:numSubjs) {
     dataList[["run_id"]] = run_id
     dataList[["R"]] = numRuns
   }
+  #need to add an option to number runs from 1 to 4, including both punishment and reward
+  #
   cat("Building model...")
   model_text<-paste0(readLines(paste0(modelcode_rl,"Final_Models/", use_model,".stan")),collapse="\n")
   #check if a model under the name exists under "compiled models"
@@ -489,7 +507,8 @@ for (i in 1:numSubjs) {
                                      iterations=iterations.set,
                                      collateTrialData=collateTrialData,
                                      chainNum=chainNum.set,
-                                     warmup_iter = warmup_iter.set))
+                                     warmup_iter = warmup_iter.set,
+                                     rl_unique_runids = rl_unique_runids))
 
   cat("...model saved.\n")
   

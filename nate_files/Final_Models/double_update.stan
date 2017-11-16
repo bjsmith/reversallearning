@@ -19,16 +19,24 @@ parameters {
   // Hyper(group)-parameters
   vector[2] mu_p;
   vector<lower=0>[2] sigma;
+  #used to generate subject-level parameters with the phi approximation, across subjects
+  #drawn from a normal distribution
 
   // Subject-level raw parameters (for Matt trick)
   vector[N] alpha_pr;   // learning rate
   vector[N] beta_pr;  // inverse temperature
+    #drawn from a normal distribution
+  #multiplied by sigma to yield the subject alpha score
+
 }
 
 transformed parameters {
   // Transform subject-level raw parameters
   vector<lower=0,upper=1>[N] alpha;
   vector<lower=0,upper=5>[N] beta;
+  #interacts directly with the trial-level learning
+  #drawn from a phi-approximation from group-level mean and deviation multiplied by subject-level parameter
+  
 
   for (i in 1:N) {
     alpha[i]  = Phi_approx( mu_p[1] + sigma[1] * alpha_pr[i] );
