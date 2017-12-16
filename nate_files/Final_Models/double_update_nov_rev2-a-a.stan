@@ -16,6 +16,7 @@ data {
   
   #multiple runs, multiple reward type extension
   int<lower=1> R; //number of runs (max)
+  int<lower=1> R_N[N]; //number of runs for each subject
     #let's represent each reward and punishment as its own run within the collection of runs
     #which makes 4 runs altogether
     #unless this makes the model partially identified, but I dont' really expect that to be a problem.
@@ -64,61 +65,42 @@ transformed parameters {
     // subject-level raw parameters
   vector<lower=0,upper=1>[N] alpha;
   vector<lower=0,upper=5>[N] beta;
-  real subj_alpha=0;
-  real subj_beta=0;
-  
-  
-  
+  vector[N] subj_alpha_s;
+  vector[N] subj_beta_s;
   
   //Kruschke likes to draw from distributions directly centered on parameters
   //Nate hasn't designed the two levels like that
   //I've followed Nate's approach here but I think been very principled about how I distribute means and variances
   //we'll see if there's room for it or not!
   
-
   //how to connect these levels?
   //make alpha_s a function of mu_p_r somehow....
   
-
   //approximate subject-level means based on subject-level mean plus subject-level variance
   //multiplied by individual subject means
   //none of these parameters are at trial-level. They're all at subject-level or group-level
   //where do we insert trial-level estimates?
+  //we can do elementwise multiplication for thse vectors.
+  subj_alpha_s=mu_p[1] + sigma_p[1] * alpha_s;
+  subj_beta_s=mu_p[2] + sigma_p[2] * beta_s;
+  
+  //we should be able to vectorize the phi approximations across subjects, too
+  alpha  = Phi_approx(subj_alpha_s); #not sure whether to use mu_p_r or alpha_r values here.
+  beta   = Phi_approx(subj_beta_s) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+  
   for (i in 1:N) {
-    //save an operation by doing this just once here.
-    subj_alpha=mu_p[1] + sigma_p[1] * alpha_s[i];
-    subj_beta=mu_p[2] + sigma_p[2] * beta_s[i];
-        
-    alpha[i]  = Phi_approx( 
-      subj_alpha); #not sure whether to use mu_p_r or alpha_r values here.
-    beta[i]   = Phi_approx( 
-      subj_beta) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+  //iterating per subject because each subject has different numbers of runs.
     for (r in 1:R){
-      alpha_r[r,i]  = Phi_approx(
-        subj_alpha+
-        alpha_s_sigma[i] * alpha_s_r[r,i]); #not sure whether to use mu_p_r or alpha_r values here.
-        #TO DO: add outcome type as a parameter into here...probably just need a mean and variance parameter for outcome_type?
-      beta_r[r,i]   = Phi_approx(
-        subj_beta +
-        beta_s_sigma[i] * beta_s_r[r,i]) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+      if(r<=R_N[N]){
+        alpha_r[r,i]  = Phi_approx(subj_alpha_s[i]+alpha_s_sigma[i] * alpha_s_r[r,i]); #not sure whether to use mu_p_r or alpha_r values here.
+        beta_r[r,i]   = Phi_approx(subj_beta_s[i] +beta_s_sigma[i] * beta_s_r[r,i]) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+
+      }else{
+        alpha_r[r,i]=0;
+        beta_r[r,i]=0;
+      }
     }
-
-  }//OK, so if we have done this, how do we get the values that are not specified for run, do we simply copy like
-  
-  #seems **plausible** I guess.
-  #But I'm worried about not drawing each level directly from the one above it.
-  #might work regardless though. perhaps I should try this out.
-  
-  #so I guess...
-  #subject-level parameters alpha and beta can't be drawn directly from trial level parameters without 
-  #somehow inserting run-level and outcome-type parameters
-  #two ways to do this. Try to insert the run-level and outcome-type parameters as 'modifiers' or
-  #draw run-level parameters from subject-level parameters
-  #and draw subject-level parameters from run-level parameters
-  #idk man, need to look carefully at how Kruschke does it, 
-  #maybe try to attempt both and see what makes the most sense
-  #let's start by trying to do a big hierarchy.
-
+  }
 }
 
 model {
@@ -138,10 +120,19 @@ model {
   
   //run parameters
   // individual parameters
-  for (r1 in 1:R){
-    alpha_s_r[r1]  ~ normal(0,1);
-    beta_s_r[r1]   ~ normal(0,1);
+  for (i in 1:N){
+    for (r1 in 1:R){
+      if(r1<=R_N[i]){
+        alpha_s_r[r1,i]  ~ normal(0,1);
+        beta_s_r[r1,i]   ~ normal(0,1);
+      }#else{
+      #  alpha_s_r[r1,i] = 0;
+      #  beta_s_r[r1,i]  = 0;
+      #}
+      
+    }
   }
+  
 
   for (i in 1:N) {
     // Define values
@@ -163,8 +154,8 @@ model {
       r = run_id[i,t]; 
         
       if (choice[i,t]!=0) {
-        #choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta_r[r,i] );
-        choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
+        choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta_r[r,i] );
+        #choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
         // prediction error
         PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
         PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
@@ -179,14 +170,16 @@ model {
   }
 }
 
-generated quantities {
 
+generated quantities {
   // For group level parameters
   real<lower=0,upper=1> mu_alpha;
   real<lower=0,upper=5> mu_beta;
+  real<lower=0,upper=1> sigma_alpha;
+  real<lower=0,upper=5> sigma_beta;
 
   mu_alpha  = Phi_approx(mu_p[1]);
   mu_beta   = Phi_approx(mu_p[2]) * 5;
-  
-
+  sigma_alpha  = Phi_approx(sigma_p[1]);
+  sigma_beta   = Phi_approx(sigma_p[2]) * 5;
 }

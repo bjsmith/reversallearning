@@ -1,0 +1,199 @@
+---
+title: "R Notebook"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+The November model was hopefully an improvement on the earlier one. 
+
+I re-wrote the analysis for combining the multiple runs and reward vs. punishment categories.
+
+I want to see how these new analyses run.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+```
+
+
+
+```{r model_run_prep, message=FALSE, warning=FALSE, include=FALSE}
+source("du_model_revised_2aa_4runs_mcmc_firstniterations.R")
+```
+
+So we want to compare:
+
+What are the difference in alpha and beta estimate distributions for running a model with 4 runs rather than two?
+
+
+```{r getDataIntoTable, echo=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+```
+
+We have a summary comprised of all values. Let's take a look at alpha and beta mu distributions in turn.
+```{r AlphaBetaDistVisualize, echo=FALSE, message=FALSE, warning=FALSE}
+source("visualization/geom_hdi.R")
+
+m.mu<-model.summary.all[Statistic=="mu"]
+#table(m.reward.mu.run1$ModelName)
+#for clarity's sake...
+m.mu$ModelName<-sub("double_update","DU",m.mu$ModelName)
+
+  #plotly::ggplotly(p)
+  ggplot(m.mu[Parameter=="alpha"],aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(ModelName~Run)+
+    labs(title=paste0("mu statistic in reward and punishment rounds, alpha"))
+   
+  ggplot(m.mu[Parameter=="beta"],aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.9,credible_mass=0.95)+
+    facet_grid(ModelName~Run)+
+    labs(title=paste0("mu statistic in reward and punishment rounds, beta"))
+
+```
+
+
+Let's go back and explore the original double update model values. This will show us a the "control" condition - what hte data should look something like. 
+
+
+This is the simple one-run model:
+
+```{r DoubleUpdateOneRunModel, echo=FALSE, message=FALSE, warning=FALSE}
+source("visualization/geom_hdi.R")
+
+m.onerunmodel<-model.summary.all[ModelName=="double_update_notrialpost"]
+#table(m.reward.mu.run1$ModelName)
+#for clarity's sake...
+m.onerunmodel$ModelName<-sub("double_update","DU",m.onerunmodel$ModelName)
+
+#plot alpha, beta mu and sigma by group.
+
+
+
+  #plotly::ggplotly(p)
+  ggplot(m.onerunmodel[Parameter=="alpha"],aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Statistic~Run)+
+    labs(title=paste0("mu, sigma statistic in reward and punishment rounds, alpha, one run model"))
+   
+  ggplot(m.onerunmodel[Parameter=="beta"],aes(x=Value,fill=factor(Group),color=factor(Group)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.9,credible_mass=0.95)+
+    facet_grid(Statistic~Run)+
+    labs(title=paste0("mu, sigma statistic in reward and punishment rounds, beta, one run model"))
+
+  
+  
+```
+
+Very good. We only see overlap between groups, but that is OK - it may be that the groups in fact do not differ.
+
+However it is useful to see the groups independent of one another.
+
+The question here is: what do the within-run values look like? We'll focus on mu alpha values (not worry about their distributions for now)
+and ask the question: What do they look like between runs?
+
+```{r, echo=FALSE}
+m.onerunmodel$RunMotivation<-paste0(m.onerunmodel$Run,m.onerunmodel$Motivation)
+ggplot(m.onerunmodel[Parameter=="alpha" & Statistic=="mu"],aes(x=Value,fill=factor(RunMotivation),color=factor(RunMotivation)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(.~Group)+
+    labs(title=paste0("mu, sigma statistic in reward and punishment rounds, alpha, one run model, by group"))
+  
+
+ggplot(m.onerunmodel[Parameter=="beta" & Statistic=="mu"],aes(x=Value,fill=factor(RunMotivation),color=factor(RunMotivation)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(.~Group)+
+    labs(title=paste0("mu, sigma statistic in reward and punishment rounds, beta, one run model, by group"))
+  
+
+
+```
+
+Because of shrinkage, there should actually be a little bit less difference between runs in the multiple-run version
+
+
+```{r, echo=FALSE}
+m.allrunmodel<-model.summary.all[ModelName=="double_update_nov_rev2-a-a"]
+summary(m.allrunmodel$Motivation)
+ggplot(m.allrunmodel[Parameter=="alpha" & Statistic=="mu"],aes(x=Value #,fill=factor(Run),color=factor(Run)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(.~Group)+
+    labs(title=paste0("mu, sigma statistic (all rounds), alpha, variable number of runs model"))
+  
+
+ggplot(m.allrunmodel[Parameter=="beta" & Statistic=="mu"],aes(x=Value #,fill=factor(Run),color=factor(Run)
+                                                              ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(.~Group)+
+    labs(title=paste0("mu, sigma statistic (all rounds), beta, variable number of runs model"))
+
+```
+
+These are roughly in line with the other model, indicating that our models don't seem to be wildly diverging, a good sign.
+
+But can we extract the per-run values?
+
+As these are coded, reward runs are numbered as they are in the earlier model, and punishment runs are numbered two numbers up, i.e, Punishment Run 1 is numbered Run 3, and Punishment Run 4 is numbered Run 4.
+
+There's no estimate taken from each run. This is because there's not really a reason to assume distribution across runs.
+
+#Discussion 
+
+We also can't distinguish between the two groups here.
+
+Might be worth expanding this to look at group one; after that, though, I think we're done and need to expand the model.
+
+Ideally we want to expand the model to take into account a systematic difference across *all* subjects between between reward and punishment trials.
+
+
+
+
+
+
+

@@ -1,12 +1,15 @@
 ---
-title: "testing out stan MCMC vs. variational bayes"
+title: "MCMC and variational bayes Representativeness, Accuracy, and Efficiency"
 author: "Ben Smith"
 date: "9/27/2017"
-output: html_document
+output:
+  pdf_document: 
+    keep_tex: yes
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_chunk$set(echo = FALSE, tidy = TRUE)
 knitr::opts_knit$set(root.dir="../")
 
 ```
@@ -14,7 +17,7 @@ knitr::opts_knit$set(root.dir="../")
 ```{r setup2, include=FALSE}
 source("util/apply_local_settings.R")
 apply_local_settings()
-knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir, "knitrcache"), echo = FALSE)
 source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 library(data.table)
@@ -40,7 +43,7 @@ This time, we compare both the full, repeated-runs model as well as the simple d
 We'll run each model three times, run this for both Group 2 and Group 3, and run on both vb and MCMC, all as for the previous comparison. However, we will not be calculating trial posteriors, having shown how resource intensive that is.
 
 
-```{r model_run_prep, echo=TRUE, message=FALSE, warning=FALSE}
+```{r model_run_prep, echo=FALSE, message=FALSE, warning=FALSE}
 source("compare_notrialpost_du_du_rp_rr.R")
 ```
 
@@ -52,7 +55,7 @@ Here we are basically repeating the previous questions: how do vb and MCMC perfo
 
 ## MCMC and Variational Bayes: Reliability
 
-```{r getDataIntoTable, echo=TRUE}
+```{r getDataIntoTable, echo=FALSE}
 #arrange all the data into a single data table.
 model.summary.all<-NULL
 
@@ -70,13 +73,13 @@ for(ms.i in 1:length(model.summaries)){
   ms.summaryObj$AnalysisRepetition<-ms$t
   #because when we ran this, we hadn't explicitly recorded estimation methods; 
   #but these are distinguishable by the number of iterations.
-  if(mod(length(ms$summaryObj$iter),3992)==0){
+  if((length(ms$summaryObj$iter) %% 3992)==0){
     ms.summaryObj$EstimationMethod=as.character(ESTIMATION_METHOD.VariationalBayes)
     
-  }else if (mod(length(ms$summaryObj$iter),24000)==0){
+  }else if ((length(ms$summaryObj$iter) %% 24000)==0){
     ms.summaryObj$EstimationMethod=as.character(ESTIMATION_METHOD.MCMC)
   }
-  model.summaries[[i]]$EstimationMethod<-ms.summaryObj$EstimationMethod
+  model.summaries[[ms.i]]$EstimationMethod<-ms.summaryObj$EstimationMethod
   if(is.null(model.summary.all)){
     model.summary.all<-ms.summaryObj
   }else{
@@ -92,7 +95,7 @@ Estimations for Punishment data appeared to differ somewhat when both runs and w
 Is Variational bayes reliable?
 
 
-```{r VBReliability, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r VBReliability, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 source("visualization/geom_hdi.R")
 m.mu.run1<-model.summary.all[Motivation=="Punishment" & Statistic=="mu" & Run==1]
 #table(m.reward.mu.run1$ModelName)
@@ -116,7 +119,7 @@ How does MCMC do?
 
 Our test is of how consistently MCMC performs across repeated analyses.
 
-```{r MCMCReliability, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r MCMCReliability, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 
 ggplot(m.mu.run1[EstimationMethod=="MCMC"],aes(x=Value,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
     geom_freqpoly(alpha=0.5,binwidth=0.001)+
@@ -153,10 +156,11 @@ Considering the wide HDIs produced by our MCMC estimates, I want to take a close
 
 To assess Representativeness for an MCMC algorithm, we need to see whether chains have converged such that initial randomly-chosen priors are not related to final values. We can visually examine the trace plots below, and we can, examine teh density plots, and examine the Gelman-Rubin statistic (Gelman & Rubin, 1992) or the "potential scale reduction factor" or "shrink factor". In $rstan$, this is available as the statistic $\widehat{r}$.
 
-```{r StanTracePlot, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r StanTracePlot, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 #class(model.stanfits[[5]])
 
-for (i in 1:length(model.summaries)){
+#for (i in 1:length(model.summaries)){
+i<-5
   if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
     #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
     traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]])))
@@ -169,12 +173,12 @@ for (i in 1:length(model.summaries)){
     
     print(trace+labs(title=traceplot.title)+scale_color_discrete(guide=guide_legend(nrows=1))+theme(legend.position = "bottom"))#+title(traceplot.title))
   }
-}
+#}
 #
 ```
-Once again, these all look very stable.
+The figure above shows one representative trace plot for one model run. Parameter estimates for all models looked stable like the ones shown here.
 
-```{r StanPlotLogResults, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r StanPlotLogResults, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 #class(model.stanfits[[5]])
 
 for (i in 1:length(model.summaries)){
@@ -194,13 +198,15 @@ for (i in 1:length(model.summaries)){
 ```
 
 Do we see overlap of the chains, or do they not overlap very much? Given the traceplot, I'd expect high levels of overlap.
-```{r StanPlotDensity, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+
+
+```{r StanPlotDensity, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 #class(model.stanfits[[5]])
 
 for (i in 1:length(model.summaries)){
   if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
     #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
-    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]])))
+    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"\nvars=",length(names(model.stanfits[[i]])))
     #cols.to.process<-[names(model.stanfits[[i]]) %in% 
     cols.to.process<-names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
       return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
@@ -216,7 +222,7 @@ for (i in 1:length(model.summaries)){
 Visually, these seem pretty good, with the exception of Group 3, No Trial Posteriors. As for MSCE and ESS...
 
 
-```{r StanGeneralStats, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r StanGeneralStats, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 #class(model.stanfits[[5]])
 
 for (i in 1:length(model.summaries)){
@@ -256,7 +262,7 @@ We can view and measure autocorrelation in a number of ways:
  
  
 
-```{r StanAutocorrelation, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r StanAutocorrelationSetup, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
 get.model.title<-function(ms,i){
   return(paste("group=",ms$g,ms$m,ms$t,model.summary.all[,first(EstimationMethod),by=TestId][i,V1],"vars=",length(names(model.stanfits[[i]]))))
 }
@@ -265,6 +271,9 @@ get.cols.to.process<-function(i){
       return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
     })]
 }
+```
+
+```{r StanAutocorrelation, eval=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
 
 for (i in 1:length(model.summaries)){
   if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
@@ -297,7 +306,7 @@ or the standard formulation for standard error, but with effective sample size u
 We can view Monte Carlo Standard Error using the stan function `stan_mcse`.
 
 
-```{r StanMCSE, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r StanMCSE, eval=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
 for (i in 1:length(model.summaries)){
   if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
     
@@ -328,8 +337,9 @@ Do our diagnostic tools offer any insight into how we could improve variationalB
 
 A trace plot isn't particularly informative; because there's only one chain, we can't tell if there is convergence.
 
-```{r VBTraceplot, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
-for (i in 1:length(model.summaries)){
+```{r VBTraceplot, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+i<-5
+#for (i in 1:length(model.summaries)){
   if(model.summaries[[i]]$EstimationMethod=="variationalbayes"){
     
     #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
@@ -340,13 +350,13 @@ for (i in 1:length(model.summaries)){
     print(traceplot(model.stanfits[[i]],pars=cols.to.process,separate_chains = TRUE)+labs(title=model.title))
     
   }
-}
+#}
 
 ```
 
 The trace plots does tell us that estimates seem to be stable, which does suggest it's unlikely that we can improve performance by adding additional iterations.
 
-```{r VBStanGeneralStats, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r VBStanGeneralStats, eval=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
 #class(model.stanfits[[5]])
 
 for (i in 1:length(model.summaries)){
@@ -372,11 +382,9 @@ We don't really have the diagnostic tools available to diagnose variationalbayes
 
 Does the model estimate common-sense parameter values?
 
-
-
 I would hope to see that we get more variability across reward vs. punishment than across run1 vs. run2.
 
-```{r MCMCresultsGroupComparison, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r MCMCresultsGroupComparison, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE}
 
 m.MCMC.rp_rr<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_rpo_repeated_runs_notrialpost" & AnalysisRepetition==1]
 m.MCMC.basic<-model.summary.all[EstimationMethod=="MCMC" & ModelName=="double_update_notrialpost" & AnalysisRepetition==1]
@@ -401,7 +409,7 @@ ggplot(m.MCMC.basic,aes(x=Value,fill=factor(Group),color=factor(Group)))+
 
 ```
 
-```{r MCMCresultsRunComparison, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r MCMCresultsRunComparison, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE}
 
 ggplot(m.MCMC.rp_rr,aes(x=Value,fill=factor(Run),color=factor(Run)))+
     geom_freqpoly(alpha=0.5,binwidth=0.001)+
@@ -414,7 +422,7 @@ ggplot(m.MCMC.rp_rr,aes(x=Value,fill=factor(Run),color=factor(Run)))+
 
 ```
 
-```{r MCMCresultsMotivationComparison, echo=TRUE, message=FALSE, warning=FALSE,cache=TRUE, fig.cap=TRUE}
+```{r MCMCresultsMotivationComparison, echo=FALSE, fig.cap=TRUE, message=FALSE, warning=FALSE}
 
 ggplot(m.MCMC.rp_rr,aes(x=Value,fill=factor(Motivation),color=factor(Motivation)))+
     geom_freqpoly(alpha=0.5,binwidth=0.001)+

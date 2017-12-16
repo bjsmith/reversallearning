@@ -123,10 +123,8 @@ data_summarize_double_update_rev2_repeated_runs<- function(extracted.data,outcom
   grouplevel.df<-NULL
   #we want...
   #group level parameters
-  #not *really* interested in subject-level data at this stage.
-  #nor in run-level data.
-  #we should probably take a look but this is explicitly a "summary" function
-  #so--group level
+  
+  
   parameters=factor(c("alpha","beta"),ordered=TRUE)
   for (p in 1:length(parameters)){
     parameter<-parameters[p]
@@ -137,15 +135,18 @@ data_summarize_double_update_rev2_repeated_runs<- function(extracted.data,outcom
                  #"Motivation"=outcome_types[outcome.type],#no motivation
                  "Run"=run,
                  "Statistic"="mu",
-                 "Parameter"=as.factor(rep(parameter,item.count)),
+                 "Parameter"=as.factor(rep(parameter,sample.count)),
                  "Value"=extracted.data[[paste0("mu_",parameter)]]
       ),data.frame("iter"=1:sample.count,
                    #"Motivation"=outcome_types[outcome.type],#no motivation
                    "Run"=run,
                    "Statistic"="sigma",
-                   "Parameter"=as.factor(rep(parameter,item.count)),
+                   "Parameter"=as.factor(rep(parameter,sample.count)),
                    "Value"=extracted.data[[paste0("sigma_",parameter)]]
       ))
+    
+    
+    
     #add the data
     if(is.null(grouplevel.df)){
       grouplevel.df<-otr.df
@@ -155,6 +156,45 @@ data_summarize_double_update_rev2_repeated_runs<- function(extracted.data,outcom
   }
   return(data.table(grouplevel.df))
 }
+
+data_summarize_double_update_rev3<- function(extracted.data,outcome.type=NA,run=NA,comprehensive=FALSE,run.level.data=TRUE){
+  grouplevel.df<-NULL
+  #we want...
+  #group level parameters
+  
+  
+  parameters=factor(c("alpha","beta"),ordered=TRUE)
+  for (p in 1:length(parameters)){
+    parameter<-parameters[p]
+    sigma_vals <- extracted.data$sigma
+    sample.count<-dim(extracted.data$mu_p)[1]#how many iterations of the sample are we looking at?
+    otr.df<-rbind(
+      data.frame("iter"=1:sample.count,
+                 #"Motivation"=outcome_types[outcome.type],#no motivation
+                 "Run"=run,
+                 "Statistic"="mu",
+                 "Parameter"=as.factor(rep(parameter,sample.count)),
+                 "Value"=extracted.data[[paste0("mu_",parameter)]]
+      ),data.frame("iter"=1:sample.count,
+                   #"Motivation"=outcome_types[outcome.type],#no motivation
+                   "Run"=run,
+                   "Statistic"="sigma",
+                   "Parameter"=as.factor(rep(parameter,sample.count)),
+                   "Value"=extracted.data[[paste0("sigma_",parameter)]]
+      ))
+    
+    #now add the run level data if it is wanted.
+    
+    #add the data
+    if(is.null(grouplevel.df)){
+      grouplevel.df<-otr.df
+    }else{
+      grouplevel.df<-rbind(grouplevel.df,otr.df)
+    }
+  }
+  return(data.table(grouplevel.df))
+}
+
 
 data_summarize_double_update<- function(extracted.data,outcome.type=NA,run=NA,comprehensive=FALSE){
   print(outcome.type)

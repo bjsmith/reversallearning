@@ -9,12 +9,13 @@ data {
   int<lower=0,upper=100> cue[N,T];
   int trial[N,T];
   int cue_pos[N,T];
+  int cue_freq[N,T];
   int subjid[N,T];
   int cor_resp[N,T];
-  int cue_freq[N,T];
+  
   real outcome[N,T];
   
-  #multiple runs, multiple reward type extension
+  //multiple runs, multiple reward type extension
   int<lower=1> R; //number of runs (max)
     #let's represent each reward and punishment as its own run within the collection of runs
     #which makes 4 runs altogether
@@ -57,17 +58,15 @@ parameters {
 
 
 transformed parameters {
+  // subject-level raw parameters
+  vector<lower=0,upper=1>[N] alpha;
+  vector<lower=0,upper=5>[N] beta;
+  vector[N] subj_alpha_s;
+  vector[N] subj_beta_s;
+  
   // run-level raw parameters, somehow, hopefully!
   vector<lower=0,upper=1>[N] alpha_r[R];
   vector<lower=0,upper=5>[N] beta_r[R];
-  
-    // subject-level raw parameters
-  vector<lower=0,upper=1>[N] alpha;
-  vector<lower=0,upper=5>[N] beta;
-  real subj_alpha=0;
-  real subj_beta=0;
-  
-  
   
   
   //Kruschke likes to draw from distributions directly centered on parameters
@@ -75,50 +74,27 @@ transformed parameters {
   //I've followed Nate's approach here but I think been very principled about how I distribute means and variances
   //we'll see if there's room for it or not!
   
-
   //how to connect these levels?
   //make alpha_s a function of mu_p_r somehow....
   
-
   //approximate subject-level means based on subject-level mean plus subject-level variance
   //multiplied by individual subject means
   //none of these parameters are at trial-level. They're all at subject-level or group-level
   //where do we insert trial-level estimates?
-  for (i in 1:N) {
-    //save an operation by doing this just once here.
-    subj_alpha=mu_p[1] + sigma_p[1] * alpha_s[i];
-    subj_beta=mu_p[2] + sigma_p[2] * beta_s[i];
-        
-    alpha[i]  = Phi_approx( 
-      subj_alpha); #not sure whether to use mu_p_r or alpha_r values here.
-    beta[i]   = Phi_approx( 
-      subj_beta) * 5; #not sure whether to use mu_p_r or alpha_r values here.
-    for (r in 1:R){
-      alpha_r[r,i]  = Phi_approx(
-        subj_alpha+
-        alpha_s_sigma[i] * alpha_s_r[r,i]); #not sure whether to use mu_p_r or alpha_r values here.
-        #TO DO: add outcome type as a parameter into here...probably just need a mean and variance parameter for outcome_type?
-      beta_r[r,i]   = Phi_approx(
-        subj_beta +
-        beta_s_sigma[i] * beta_s_r[r,i]) * 5; #not sure whether to use mu_p_r or alpha_r values here.
-    }
-
-  }//OK, so if we have done this, how do we get the values that are not specified for run, do we simply copy like
+  //we can do elementwise multiplication for thse vectors.
+  subj_alpha_s=mu_p[1] + sigma_p[1] * alpha_s;
+  subj_beta_s=mu_p[2] + sigma_p[2] * beta_s;
   
-  #seems **plausible** I guess.
-  #But I'm worried about not drawing each level directly from the one above it.
-  #might work regardless though. perhaps I should try this out.
+  //we should be able to vectorize the phi approximations across subjects, too
+  alpha  = Phi_approx(subj_alpha_s); #not sure whether to use mu_p_r or alpha_r values here.
+  beta   = Phi_approx(subj_beta_s) * 5; #not sure whether to use mu_p_r or alpha_r values here.
   
-  #so I guess...
-  #subject-level parameters alpha and beta can't be drawn directly from trial level parameters without 
-  #somehow inserting run-level and outcome-type parameters
-  #two ways to do this. Try to insert the run-level and outcome-type parameters as 'modifiers' or
-  #draw run-level parameters from subject-level parameters
-  #and draw subject-level parameters from run-level parameters
-  #idk man, need to look carefully at how Kruschke does it, 
-  #maybe try to attempt both and see what makes the most sense
-  #let's start by trying to do a big hierarchy.
-
+  //for (i in 1:N) {
+  //we don't need to iterate across subjects because we can do this elementwise!
+  for (r in 1:R){
+    alpha_r[r]  = Phi_approx(subj_alpha_s+alpha_s_sigma .* alpha_s_r[r]); #not sure whether to use mu_p_r or alpha_r values here.
+    beta_r[r]   = Phi_approx(subj_beta_s +beta_s_sigma .* beta_s_r[r]) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+  }
 }
 
 model {
@@ -133,8 +109,6 @@ model {
   beta_s   ~ normal(0,1);
   alpha_s_sigma ~ cauchy(0, 5);
   beta_s_sigma ~ cauchy(0, 5);
-  
-  
   
   //run parameters
   // individual parameters
@@ -163,8 +137,8 @@ model {
       r = run_id[i,t]; 
         
       if (choice[i,t]!=0) {
-        #choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta_r[r,i] );
-        choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
+        choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta_r[r,i] );
+        #choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
         // prediction error
         PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
         PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
@@ -174,6 +148,10 @@ model {
         ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha_r[r,i] * PE;
         // ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
         // ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
+############TODO
+############eliminating alpha_r moves Gradient evaluation from about 5 s to about 0.47 s.
+############However the simple du model takes 0.005s - 100x faster
+############Somehow we should be able to get 100x the speed to at least 0.05
       }
    }
   }
