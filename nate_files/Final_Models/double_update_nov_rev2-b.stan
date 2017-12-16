@@ -49,8 +49,9 @@ parameters {
   vector[N] beta_s;  // inverse temperature
   
   // Run level raw parameters
-  vector[N] alpha_s_r[R];   // learning rate
-  vector[N] beta_s_r[R];  // inverse temperature
+  // See stan manual v2.17.0, Page 325, for a discussion on how to use matrices efficiently
+  matrix[R,N] alpha_s_r;   // learning rate
+  matrix[R,N] beta_s_r;  // inverse temperature
   vector<lower=0,upper=1>[N] alpha_s_sigma;
   vector<lower=0,upper=5>[N] beta_s_sigma;
 }
@@ -58,17 +59,14 @@ parameters {
 
 transformed parameters {
   // run-level raw parameters, somehow, hopefully!
-  vector<lower=0,upper=1>[N] alpha_r[R];
-  vector<lower=0,upper=5>[N] beta_r[R];
+  matrix<lower=0,upper=1>[R,N] alpha_r;
+  matrix<lower=0,upper=5>[R,N] beta_r;
   
     // subject-level raw parameters
   vector<lower=0,upper=1>[N] alpha;
   vector<lower=0,upper=5>[N] beta;
-  real subj_alpha=0;
-  real subj_beta=0;
-  
-  
-  
+  vector[N] subj_alpha_s;
+  vector[N] subj_beta_s;
   
   //Kruschke likes to draw from distributions directly centered on parameters
   //Nate hasn't designed the two levels like that
@@ -84,26 +82,24 @@ transformed parameters {
   //multiplied by individual subject means
   //none of these parameters are at trial-level. They're all at subject-level or group-level
   //where do we insert trial-level estimates?
-  for (i in 1:N) {
-    //save an operation by doing this just once here.
-    subj_alpha=mu_p[1] + sigma_p[1] * alpha_s[i];
-    subj_beta=mu_p[2] + sigma_p[2] * beta_s[i];
-        
-    alpha[i]  = Phi_approx( 
-      subj_alpha); #not sure whether to use mu_p_r or alpha_r values here.
-    beta[i]   = Phi_approx( 
-      subj_beta) * 5; #not sure whether to use mu_p_r or alpha_r values here.
-    for (r in 1:R){
-      alpha_r[r,i]  = Phi_approx(
-        subj_alpha+
-        alpha_s_sigma[i] * alpha_s_r[r,i]); #not sure whether to use mu_p_r or alpha_r values here.
-        #TO DO: add outcome type as a parameter into here...probably just need a mean and variance parameter for outcome_type?
-      beta_r[r,i]   = Phi_approx(
-        subj_beta +
-        beta_s_sigma[i] * beta_s_r[r,i]) * 5; #not sure whether to use mu_p_r or alpha_r values here.
-    }
+  //we can do elementwise multiplication for thse vectors.
+  subj_alpha_s=mu_p[1] + sigma_p[1] * alpha_s;
+  subj_beta_s=mu_p[2] + sigma_p[2] * beta_s;
+  
+  //we should be able to vectorize the phi approximations across subjects, too
+  alpha  = Phi_approx(subj_alpha_s); #not sure whether to use mu_p_r or alpha_r values here.
+  beta   = Phi_approx(subj_beta_s) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+  
+  //for (i in 1:N) {
+  //we don't need to iterate across subjects because we can do this elementwise!
+  //see page 325 of the manual - this is probably NOT going to be efficient.
+  for (r in 1:R){
+    alpha_r[r] = Phi_approx(subj_alpha_s + alpha_s_r[r] * alpha_s_sigma); #not sure whether to use mu_p_r or alpha_r values here.
+      #TO DO: add outcome type as a parameter into here...probably just need a mean and variance parameter for outcome_type?
+    beta_r[r]   = Phi_approx(subj_beta_s + beta_s_r[r] * beta_s_sigma) * 5; #not sure whether to use mu_p_r or alpha_r values here.
+  }
 
-  }//OK, so if we have done this, how do we get the values that are not specified for run, do we simply copy like
+  //}//OK, so if we have done this, how do we get the values that are not specified for run, do we simply copy like
   
   #seems **plausible** I guess.
   #But I'm worried about not drawing each level directly from the one above it.
@@ -134,8 +130,6 @@ model {
   alpha_s_sigma ~ cauchy(0, 5);
   beta_s_sigma ~ cauchy(0, 5);
   
-  
-  
   //run parameters
   // individual parameters
   for (r1 in 1:R){
@@ -143,7 +137,7 @@ model {
     beta_s_r[r1]   ~ normal(0,1);
   }
 
-  for (i in 1:N) {
+  for (s in 1:N) {
     // Define values
     matrix[100,2] ev;
     real PEnc; // fictitious prediction error (PE-non-chosen)
@@ -153,27 +147,28 @@ model {
     ev[,1] = rep_vector(0, 100); // initial ev values
     ev[,2] = rep_vector(0, 100); // initial ev values
 
-    for (t in 1:(Tsubj[i])) {
+    for (t in 1:(Tsubj[s])) {
       // compute action probabilities
         // NB: In this algorithm, should exploit the fact that 
         // accumulation of updated values occurs independently for runs and outcome_types, i.e.,
         // no images occur across runs or outcome_types
         
       //get the particular run we are dealing with this time.
-      r = run_id[i,t]; 
+      r = run_id[s,t]; 
         
-      if (choice[i,t]!=0) {
-        #choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta_r[r,i] );
-        choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[i] );
+      if (choice[s,t]!=0) {
+        choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta_r[r,s] );
+        #choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta[s] );
         // prediction error
-        PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
-        PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
+        PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
+        PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
   
         // value updating (learning)
-        ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha_r[r,i] * PEnc;
-        ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha_r[r,i] * PE;
-        // ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
-        // ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
+        ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha_r[r,s] * PEnc;
+        ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha_r[r,s] * PE;
+        // ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha[s] * PEnc;
+        // ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha[s] * PE;
+
       }
    }
   }
