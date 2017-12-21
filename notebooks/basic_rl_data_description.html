@@ -123,7 +123,8 @@ $(document).ready(function () {
 <p>This is a basic description of the reversal learning dataset.</p>
 <div id="subjects" class="section level1">
 <h1>Subjects</h1>
-<p>There were two runs of two different Motivation conditions, the Reward Motivation Condition and Punishment Motivation Condition. A few runs were not completed correctly because some subjects did not attend their second session, or data was lost, or for other reasons. The table below shows the number of subjects whose data we had for each condition.</p>
+<p>There were two runs of two different Motivation conditions, the Reward Motivation Condition and Punishment Motivation Condition. A few runs were not completed correctly because some subjects did not attend their second session, or data was lost, or for other reasons.</p>
+<p>The table below shows the number of subjects whose data we had for each condition.</p>
 <table>
 <thead>
 <tr class="header">
@@ -173,7 +174,8 @@ $(document).ready(function () {
 </div>
 <div id="runs" class="section level1">
 <h1>Runs</h1>
-<p>Within each of the two runs, for either reward or punishment, subjects saw 218 images in total; a total of 18 unique images per subject, per run, plus additional ‘control’ images at the start and end of the task which were never reversed. There were 5-8 presentations of each image before reversal and 5 presentations of the image after reversal. The table below shows the count of images for one particular subject, at each time point relative to that image’s reversal. All subjects were given the same basic design as shown here.</p>
+<p>Within each of the two runs, for either reward or punishment, subjects saw 218 images in total; a total of 18 unique images per subject, per run, plus additional ‘control’ images at the start and end of the task which were never reversed. There were 5-8 presentations of each image before reversal and 5 presentations of the image after reversal.</p>
+<p>The table below shows the count of images for one particular subject, at each time point relative to that image’s reversal. All subjects were given the same basic design as shown here.</p>
 <table>
 <thead>
 <tr class="header">
@@ -276,9 +278,9 @@ $(document).ready(function () {
 <tr class="header">
 <th align="left">Motivation</th>
 <th align="right">runid</th>
-<th align="left">subid 207</th>
-<th align="left">subid 223</th>
-<th align="left">subid 260</th>
+<th align="left">subid 218</th>
+<th align="left">subid 326</th>
+<th align="left">subid 338</th>
 </tr>
 </thead>
 <tbody>
@@ -999,6 +1001,50 @@ $(document).ready(function () {
 </tr>
 </tbody>
 </table>
+</div>
+<div id="hierarchy" class="section level1">
+<h1>Hierarchy</h1>
+<pre><code>##      subid punishment reward
+##   1:   105          1      2
+##   2:   106          1      2
+##   3:   107          1      2
+##   4:   108          2      2
+##   5:   109          2      2
+##  ---                        
+## 160:   364          2      2
+## 161:   365          0      2
+## 162:   366          2      2
+## 163:   390          2      2
+## 164:   392          0      2</code></pre>
+<pre><code>##      subid punishment reward
+##   1:   105          1      2
+##   2:   106          1      2
+##   3:   107          1      2
+##   4:   108          2      2
+##   5:   109          2      2
+##  ---                        
+## 160:   364          2      2
+## 161:   365          0      2
+## 162:   366          2      2
+## 163:   390          2      2
+## 164:   392          0      2</code></pre>
+<p>In order to model the RL task hierarchically it is important to grasp the levels we need to model. These are:</p>
+<ul>
+<li>Subjects are organized into three groups, with around 50 subjects per group. The groups are Safe Sex, Risky Sex No Meth, and Risky Sex Meth. Between-group comparisons may have interesting implications for sexual health or drug abuse research.</li>
+<li>There are two types of sessions, Reward and Punishment. Most subjects have done two sessions of each, i.e., four sessions per subject. However, there’s quite a lot of missing data. Overall, 142 subjects have four sessions, 7 have three sessions (all of which include both a punishment and a reward session), and 15subjects have only two sessions (4 of which are subjects with only reward sessions; 11 are subjects with only punishment sessions).</li>
+</ul>
+<p>Within each session:</p>
+<ul>
+<li>We model two parameters:
+<ul>
+<li>learning rate <span class="math inline">\(\alpha\)</span></li>
+<li>inverse temperature <span class="math inline">\(\beta\)</span></li>
+</ul></li>
+<li>A delta learning rule uses the learning rate parameter and performs learning of each item’s value after performance in the task.</li>
+<li>A softmax algorithm uses the inverse temperature to determine the choice in each trial probabilistically based on the previously learned information.</li>
+<li>There is no current integration of ROI or other neural signals but I want to do this eventually. I’m working on getting surface-based ROIs which should be higher-fidelity than 3D-space ROIs.</li>
+<li>No current modeling of confusion between stimuli. Brandon and I have discussed this. I am uncertain how much variance this would explain over treating discriminability as random error.</li>
+</ul>
 </div>
 
 

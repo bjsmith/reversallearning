@@ -1,3 +1,4 @@
+
 #Purposes:
 #1) Compare the non-centered parameterization of 
 print("initializing...")
@@ -6,19 +7,19 @@ options(mc.cores = get_my_preferred_cores())
 #options(mc.cores = NULL)
 #source files
 source("nate_files/fitGroupsV3Onegroup.R")
-debugSource("data_summarize.R")
+source("data_summarize.R")
 
 #set settings.
 models_to_run<-c("double_update_rev3a",#"double_update_nov_rev2-d",#"double_update_nov_rev2-c",
                  "double_update_nov_rev2-a-a")
-estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))#rev(ESTIMATION_METHODS)
+estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC))#rev(ESTIMATION_METHODS)
 
 subject_groups<-2:3
 
 
 times_to_run<-1
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_compare_rev2aa_rev3_vb.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_compare_rev2aa_rev3_mcmc.Rdata")
 
 models.with.4.separate.runs.count<-0
 models.with.runs.considered.together.count<-2
@@ -82,7 +83,7 @@ if(any(sapply(model.summaries,is.null))){
                 run=runs,groups_to_fit=g, model_to_use=m,includeSubjGroup = FALSE,
                 rp=rp,
                 model_rp_separately=FALSE,model_runs_separately = TRUE, include_pain=FALSE,
-                fastDebug=TRUE,
+                fastDebug=FALSE,
                 fileSuffix=paste0("rev2aa_20171206",as.character(t)),
                 estimation_method = em,
                 bseed=t+2028347558,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)

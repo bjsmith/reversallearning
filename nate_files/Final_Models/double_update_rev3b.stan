@@ -1,8 +1,11 @@
+//update Rev3b: The prior version, Rev3a and all prior Rev3, did not use suitable distributions
+//Here I've taken care to make sure these distributions are suitable; we'll see where that gets us!
 //adaptation using multiple runs, but not usign a non-centered paramterization.
 //this version uses simplified within-run distributions. Basically we assume that all subjects have the same
 //within-run distribution of scores.
 //This is a simplifying assumption I used to avoid buliding in an extra level, 
 //but i think it shouldn't make the model too much more complicated.
+
 data {
   int<lower=1> N;
   int<lower=1> T;
@@ -16,6 +19,7 @@ data {
   int cor_resp[N,T];
   int cue_freq[N,T];
   real outcome[N,T];
+  int sample_from_prior;
   
   //multiple runs, multiple reward type extension
   int<lower=1> R; //number of runs (max)
@@ -58,8 +62,14 @@ model {
   int run = -1; //an iterator
   
   //mean and variance of the subject mean, i.e., the group level mean and SD
-  s_mu_g_mu~normal(0,1); #this doesn't make sense in an untransformed model. we don't expect mean learning rate to be normally distributed between zero and 1!
-  s_mu_g_sigma~cauchy(0,5);#so we're expecting an SD of 5...
+  s_mu_g_mu~beta(2,2); #this doesn't make sense in an untransformed model. we don't expect mean learning rate to be normally distributed between zero and 1! As for inverse temperature, this should also be between zero and 1.
+  s_mu_g_kappa~cauchy(0,5);#so we're expecting a variance of 5; this is a bit strange.
+    //this is variance in LR and IT across subjects. What do we really expect from this value?
+    //also, we probably don't really want to define this until we have worked out on what *distribution*
+    //we are modeling the variance. If it's the beta distribution then...how do we work sample size into this?
+    
+    //so alternatively, we start at the bottom, modeling alpha and beta for each *run* with a beta distribution
+    //and see what kind of hypers we need to use to do that justice.
   
   //mean and variance of the subject-level variance
   //we're assuming constant subject-level variance so no need for this.
@@ -67,19 +77,19 @@ model {
   //s_sigma_g_sigma~cauchy(0,5);//maybe this should be lower...
   
   //sample the subject means
-  alpha_s_mu~normal(s_mu_g_mu[1],s_mu_g_sigma[1]);
-  beta_s_mu~normal(s_mu_g_mu[2],s_mu_g_sigma[2]);
+  alpha_s_mu~beta(s_mu_g_mu[1]*s_mu_g_kappa[1],(1-s_mu_g_mu[1])*s_mu_g_kappa[1]);
+  beta_s_mu~beta(s_mu_g_mu[2]*s_mu_g_kappa[2],(1-s_mu_g_mu[2])*s_mu_g_kappa[2]);
   
   //sample the subject standard deviations
   //alpha_s_sigma~cauchy(0,s_mu_g_sigma[1])//cauchy(s_sigma_g_mu[1],s_sigma_g_sigma[1]);
   //beta_s_sigma~cauchy(0,s_sigma_g_sigma[2]);
-  alpha_s_sigma~cauchy(0,5);//cauchy(s_sigma_g_mu[1],s_sigma_g_sigma[1]);
-  beta_s_sigma~cauchy(0,5);
+  alpha_s_kappa~cauchy(0,5);//cauchy(s_sigma_g_mu[1],s_sigma_g_sigma[1]);
+  beta_s_kappa~cauchy(0,5);
   
   for (s in 1:N){//reparameterize this across subjects if possible
   //only generate values within the range of runs for this subject.
-    alpha[1:R_N[s],s]~normal(alpha_s_mu[s],alpha_s_sigma);
-    beta[1:R_N[s],s]~normal(beta_s_mu[s],beta_s_sigma);
+    alpha[1:R_N[s],s]~beta(alpha_s_mu[s]*alpha_s_kappa,(1-alpha_s_mu[s])*alpha_s_kappa);
+    beta[1:R_N[s],s]~beta(beta_s_mu[s]*beta_s_kappa,(1-beta_s_mu[s])*beta_s_kappa);
   }
   
   for (i in 1:N) {
@@ -102,17 +112,17 @@ model {
       run = run_id[i,t]; 
         
       if (choice[i,t]!=0) {
-        choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[run,i] );
+        if(sample_from_prior!=1){
+          choice[i,t] ~ categorical_logit( to_vector(ev[cue[i,t],]) * beta[run,i] );
         
-        // prediction error
-        PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
-        PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
-  
-        // value updating (learning)
-        ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[run,i] * PEnc;
-        ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[run,i] * PE;
-        // ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[i] * PEnc;
-        // ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[i] * PE;
+          // prediction error
+          PE   =  outcome[i,t] - ev[cue[i,t],choice[i,t]];
+          PEnc = -outcome[i,t] - ev[cue[i,t],3-choice[i,t]];
+    
+          // value updating (learning)
+          ev[cue[i,t],3-choice[i,t]] = ev[cue[i,t],3-choice[i,t]] + alpha[run,i] * PEnc;
+          ev[cue[i,t],choice[i,t]] = ev[cue[i,t],choice[i,t]] + alpha[run,i] * PE;
+        }
       }
    }
   }

@@ -1,0 +1,100 @@
+---
+title: "Comparing rev2aa and Rev3 models"
+output: html_notebook
+---
+
+Rev2aa and Rev3 are two attempts at a model that estimates a single hyperparameter estimates from multiple runs.
+
+Rev3 was written from scratch and, from the logs of the variational bayes calculations, there seems to be some problems. In this report I want to examine the results from this.
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+```
+
+##Variational Bayes: posterior comparison
+```{r }
+source("du_model_rev2aa_compare_rev3_vb.R")
+```
+
+```{r getDataIntoTable, echo=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+```
+
+```{r }
+table(model.summary.all$ModelName)
+table(model.summary.all$EstimationMethod)
+
+```
+
+
+
+```{r, echo=FALSE}
+
+
+ggplot(model.summary.all[Parameter=="alpha" & Statistic=="mu"],aes(x=Value #,fill=factor(Run),color=factor(Run)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(ModelName~Group,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), alpha, variable number of runs model"))
+  
+
+ggplot(m.allrunmodel[Parameter=="beta" & Statistic=="mu"],aes(x=Value #,fill=factor(Run),color=factor(Run)
+                                                              ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(ModelName~Group)+
+    labs(title=paste0("mu statistic (all rounds), beta, variable number of runs model"))
+
+```
+
+This is surprising because it's the 2aa model, which was previously shown to yield parameter estimates in the acceptable range, rather than rev3, which is giving poor values. Rev3a on first glance seems to perform acceptably, unless the labels have been somehow swapped.
+
+
+
+
+# MCMC
+
+##Variational Bayes: posterior comparison
+
+#Next steps

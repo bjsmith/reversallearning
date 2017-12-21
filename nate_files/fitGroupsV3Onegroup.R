@@ -37,7 +37,8 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
                        chainNum=NA,
                        warmup_iter=NA,
                        rl_unique_runids=NA,
-                       variable_run_lengths=NA
+                       variable_run_lengths=NA,
+                       sample_from_prior=NA
                        ){
   fit_desc<-""
   dd<-localsettings$data.dir
@@ -87,6 +88,9 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
   if(!is.na(variable_run_lengths)){
     fit_desc<-paste0(fit_desc,"_vrl",as.character(variable_run_lengths))
   }
+  if(!is.na(sample_from_prior)){
+    fit_desc<-paste0(fit_desc,"_priorsample",as.character(sample_from_prior))
+  }
   
   if(estimation_method!=ESTIMATION_METHOD.VariationalBayes){
     fit_desc<-paste0(fit_desc,"_",as.character(estimation_method))
@@ -94,6 +98,7 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
   if(collateTrialData==FALSE){
     fit_desc<-paste0(fit_desc,"_noTrialData")
   }
+  
   
   fit_desc<-paste0(fit_desc,fileSuffix)
   fit_desc<-paste0(fit_desc,".RData")
@@ -110,7 +115,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          chainNum=NA,
                          warmup_iter=NA,
                          rl_unique_runids=NA,
-                         variable_run_lengths=NA){
+                         variable_run_lengths=NA,
+                         sample_from_prior=NA){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -130,7 +136,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            chainNum=chainNum,
                            warmup_iter=warmup_iter,
                            rl_unique_runids=rl_unique_runids,
-                           variable_run_lengths=variable_run_lengths)
+                           variable_run_lengths=variable_run_lengths,
+                           sample_from_prior=sample_from_prior)
   if (file.exists(fit.fileid)){
     print(paste0("file ", fit.fileid, " has already been fit! Loading..."))
     load(fit.fileid)
@@ -145,7 +152,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                              chainNum.set = chainNum,
                              warmup_iter.set = warmup_iter,
                              rl_unique_runids=rl_unique_runids,
-                             variable_run_lengths=variable_run_lengths)
+                             variable_run_lengths=variable_run_lengths,
+                             sample_from_prior=sample_from_prior)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -194,7 +202,8 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
                                 bseed=sample.int(.Machine$integer.max, 1),iterations.set=NA,collateTrialData=TRUE,chainNum.set=NA,
                                 warmup_iter.set=NA,
                                 rl_unique_runids=FALSE,
-                                variable_run_lengths=FALSE){
+                                variable_run_lengths=FALSE,
+                                sample_from_prior=FALSE){
   use_model<-model_to_use
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
@@ -404,6 +413,10 @@ for (i in 1:numSubjs) {
   if(variable_run_lengths){
     dataList[["R_N"]] = subj_runCounts
   }
+  
+  if(sample_from_prior){
+    dataList[["sample_from_prior"]] = 1
+  }
   #need to add an option to number runs from 1 to 4, including both punishment and reward
   #
   cat("Building model...")
@@ -524,7 +537,8 @@ for (i in 1:numSubjs) {
                                      chainNum=chainNum.set,
                                      warmup_iter = warmup_iter.set,
                                      rl_unique_runids = rl_unique_runids,
-                                     variable_run_lengths=variable_run_lengths))
+                                     variable_run_lengths=variable_run_lengths,
+                                     sample_from_prior=sample_from_prior))
 
   cat("...model saved.\n")
   

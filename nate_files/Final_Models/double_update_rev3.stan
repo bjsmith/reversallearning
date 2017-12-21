@@ -1,4 +1,5 @@
-//adaptation using multiple runs, but not usign a non-centered paramterization.
+//Rev3: adaptation using multiple runs, but not using a non-centered paramterization.
+//This is adapted from double_update.stan
 data {
   int<lower=1> N;
   int<lower=1> T;

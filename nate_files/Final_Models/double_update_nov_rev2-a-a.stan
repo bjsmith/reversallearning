@@ -1,5 +1,7 @@
+//Rev2-a-a:
 //a fresh adaptation of the double update model
 //following Kruschke's textbook guidelines for developing multiple levels.
+//It uses non-centered parameterizations as Nate did.
 data {
   int<lower=1> N;
   int<lower=1> T;

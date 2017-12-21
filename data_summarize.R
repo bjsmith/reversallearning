@@ -157,7 +157,7 @@ data_summarize_double_update_rev2_repeated_runs<- function(extracted.data,outcom
   return(data.table(grouplevel.df))
 }
 
-data_summarize_double_update_rev3<- function(extracted.data,outcome.type=NA,run=NA,comprehensive=FALSE,run.level.data=TRUE){
+data_summarize_double_update_rev3<- function(extracted.data,outcome.type=NA,comprehensive=FALSE,run.level.data=TRUE){
   grouplevel.df<-NULL
   #we want...
   #group level parameters
@@ -167,23 +167,44 @@ data_summarize_double_update_rev3<- function(extracted.data,outcome.type=NA,run=
   for (p in 1:length(parameters)){
     parameter<-parameters[p]
     sigma_vals <- extracted.data$sigma
-    sample.count<-dim(extracted.data$mu_p)[1]#how many iterations of the sample are we looking at?
+    sample.count<-dim(extracted.data$s_mu_g_mu)[1]#how many iterations of the sample are we looking at?
     otr.df<-rbind(
       data.frame("iter"=1:sample.count,
                  #"Motivation"=outcome_types[outcome.type],#no motivation
-                 "Run"=run,
+                 "Run"="All",
                  "Statistic"="mu",
                  "Parameter"=as.factor(rep(parameter,sample.count)),
-                 "Value"=extracted.data[[paste0("mu_",parameter)]]
+                 "Value"=extracted.data$s_mu_g_mu[,p]
       ),data.frame("iter"=1:sample.count,
                    #"Motivation"=outcome_types[outcome.type],#no motivation
-                   "Run"=run,
+                   "Run"="All",
                    "Statistic"="sigma",
                    "Parameter"=as.factor(rep(parameter,sample.count)),
-                   "Value"=extracted.data[[paste0("sigma_",parameter)]]
+                   "Value"=extracted.data$s_mu_g_sigma[,p]
       ))
     
     #now add the run level data if it is wanted.
+    if(run.level.data){
+      for (r in 1:2){
+        otr.df<-cbind(
+          otr.df,
+          rbind(
+            data.frame("iter"=1:sample.count,
+                       #"Motivation"=outcome_types[outcome.type],#no motivation
+                       "Run"="All",
+                       "Statistic"="mu",
+                       "Parameter"=as.factor(rep(parameter,sample.count)),
+                       "Value"=extracted.data$s_mu_g_mu[,p]
+            ),data.frame("iter"=1:sample.count,
+                         #"Motivation"=outcome_types[outcome.type],#no motivation
+                         "Run"="All",
+                         "Statistic"="sigma",
+                         "Parameter"=as.factor(rep(parameter,sample.count)),
+                         "Value"=extracted.data$s_mu_g_sigma[,p]
+            )))
+      }
+      
+    }
     
     #add the data
     if(is.null(grouplevel.df)){

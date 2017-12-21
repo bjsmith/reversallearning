@@ -106,4 +106,35 @@ knitr::kable(by_trial[(dim(by_trial)[1]-40):dim(by_trial)[1],])
 ```
 
 
+#Hierarchy
 
+
+```{r, include=FALSE}
+runcountmatrix<-rl.all.subjects.list.g1g2g3[,.("Run"=paste0(runid,Motivation)),by=.(subid,runid,Motivation)] %>% .[,.(RunCount=.N),by=subid]
+
+runcounttable<-table(runcountmatrix$RunCount)
+
+runcountmatrix.bymotivation<-rl.all.subjects.list.g1g2g3[,.("Run"=paste0(runid,Motivation)),by=.(subid,runid,Motivation)] %>% .[,.(RunCount=.N),by=.(subid,Motivation)] %>% spread(Motivation,RunCount)
+runcountmatrix.bymotivation[is.na(punishment),punishment:=0]
+runcountmatrix.bymotivation[is.na(reward),reward:=0]
+
+runcounttable.bymotivation<- table(runcountmatrix.bymotivation[,.(punishment,reward)])
+```
+
+In order to model the RL task hierarchically it is important to grasp the levels we need to model. These are:
+
+ * Subjects are organized into three groups, with around 50 subjects per group. The groups are Safe Sex, Risky Sex No Meth, and Risky Sex Meth. Between-group comparisons may have interesting implications for sexual health or drug abuse research.
+ * There are two types of sessions, Reward and Punishment. Most subjects have done two sessions of each, i.e., four sessions per subject. However, there's quite a lot of missing data. Overall, `r runcounttable[3] ` subjects have four sessions, `r runcounttable[2] ` have three sessions (all of which include both a punishment and a reward session), and `r runcounttable[1] `subjects have only two sessions (`r runcounttable.bymotivation[3,1] ` of which are subjects with only reward sessions; `r runcounttable.bymotivation[1,3] ` are subjects with only punishment sessions). 
+ 
+ 
+
+Within each session:
+
+ * We model two parameters:
+    + learning rate $\alpha$
+    + inverse temperature $\beta$
+ * A delta learning rule uses the learning rate parameter and performs learning of each item's value after performance in the task.
+ * A softmax algorithm uses the inverse temperature to determine the choice in each trial probabilistically based on the previously learned information.
+ * There is no current integration of ROI or other neural signals but I want to do this eventually. I'm working on getting surface-based ROIs which should be higher-fidelity than 3D-space ROIs.
+ * No current modeling of confusion between stimuli. Brandon and I have discussed this. I am uncertain how much variance this would explain over treating discriminability as random error.
+  
