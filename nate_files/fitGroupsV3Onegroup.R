@@ -38,7 +38,9 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
                        warmup_iter=NA,
                        rl_unique_runids=NA,
                        variable_run_lengths=NA,
-                       sample_from_prior=NA
+                       sample_from_prior=NA,
+                       subj_level_params=NA,
+                       include_run_ot=NA
                        ){
   fit_desc<-""
   dd<-localsettings$data.dir
@@ -92,6 +94,10 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
     fit_desc<-paste0(fit_desc,"_priorsample",as.character(sample_from_prior))
   }
   
+  if(!is.na(subj_level_params)){
+    fit_desc<-paste0(fit_desc,"_subj_level_params",as.character(subj_level_params))
+  }
+  
   if(estimation_method!=ESTIMATION_METHOD.VariationalBayes){
     fit_desc<-paste0(fit_desc,"_",as.character(estimation_method))
   }
@@ -116,7 +122,9 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          warmup_iter=NA,
                          rl_unique_runids=NA,
                          variable_run_lengths=NA,
-                         sample_from_prior=NA){
+                         sample_from_prior=NA,
+                         subj_level_params=NA,
+                         include_run_ot=NA){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -137,7 +145,9 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            warmup_iter=warmup_iter,
                            rl_unique_runids=rl_unique_runids,
                            variable_run_lengths=variable_run_lengths,
-                           sample_from_prior=sample_from_prior)
+                           sample_from_prior=sample_from_prior,
+                           subj_level_params=subj_level_params,
+                           include_run_ot=include_run_ot)
   if (file.exists(fit.fileid)){
     print(paste0("file ", fit.fileid, " has already been fit! Loading..."))
     load(fit.fileid)
@@ -153,7 +163,9 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                              warmup_iter.set = warmup_iter,
                              rl_unique_runids=rl_unique_runids,
                              variable_run_lengths=variable_run_lengths,
-                             sample_from_prior=sample_from_prior)
+                             sample_from_prior=sample_from_prior,
+                             subj_level_params=subj_level_params,
+                             include_run_ot=include_run_ot)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -203,7 +215,9 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
                                 warmup_iter.set=NA,
                                 rl_unique_runids=FALSE,
                                 variable_run_lengths=FALSE,
-                                sample_from_prior=FALSE){
+                                sample_from_prior=FALSE,
+                                subj_level_params=FALSE,
+                                include_run_ot=FALSE){
   use_model<-model_to_use
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
@@ -321,6 +335,8 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   cor_resp <- array(0, c(numSubjs, maxTrials) )
   pain <- array(0, c(numSubjs, maxTrials) )
   
+  run_id_ot <- array(0, c(numSubjs,4))#because 4 is the max number of runs.
+  
   subj_ids_have <- as.numeric(gsub(x = list.files("Data/Pain_Betas"), pattern = "_.*_*.csv", replacement = ""))
   
 for (i in 1:numSubjs) {
@@ -335,15 +351,53 @@ for (i in 1:numSubjs) {
     
     cue[i, 1:useTrials]     <- as.numeric(as.factor(tmp$cue))
     cue_freq[i, 1:useTrials] <- tmp$cue_freq
+    #two problems here! 
+    #1) in instances where there's only one Reward run, we potentially get runs numbered 1 through 4, but 
+    #a count of only 3 runs. This might not work with the double update model as I've set it up.
+    #2) After I've resolved that issue, just need to figure a neat way to pass in run_ot.
+    
+    #re-number the outcome types for the trials, 
+
+    
+    rew_runcount <- length(unique(tmp$runid[tmp$Motivation=="reward"]))
+    pun_runcount <- length(unique(tmp$runid[tmp$Motivation=="punishment"]))
+    #arbitrarily starting with the reward trials, then the punishment trials
+    #so the reward motivation trial IDs are simple. they're always numbered 1 and 2.
+    
+    #if there are fewer than 2 reward runs we need to renumber the punishment trials
+    tmp$runmotiveid<-tmp$runid
+    
+    tmp$runmotiveid[tmp$Motivation=="punishment"] <- 
+      tmp$runid[tmp$Motivation=="punishment"]+rew_runcount#this will increment the run motive ID by the number of reward runs.
+    
+    #record a variable keeping track of what the runs are.
+    #subj_run_ot<-rep(NA,rew_runcount+pun_runcount)
+    if(rew_runcount==1){
+      run_id_ot[i,1]<-1
+    }else if(rew_runcount==2){
+      run_id_ot[i,1]<-1
+      run_id_ot[i,2]<-1
+    }
+    if(pun_runcount==1){
+      run_id_ot[i,min(which(run_id_ot[i,]==0))]<-2
+    }else if(pun_runcount==2){
+      run_id_ot[i,min(which(run_id_ot[i,]==0)):(min(which(run_id_ot[i,]==0))+1)]<-2
+    }
+
     outcome_type[i, 1:useTrials] <- as.integer(tmp$Motivation=="punishment")+1
     #assign unique runids to the runs if necessary.
     if (rl_unique_runids){
-      run_id[i, 1:useTrials] <- tmp$runid+as.numeric(tmp$Motivation=="punishment")*2
+      run_id[i, 1:useTrials] <- tmp$runmotiveid
     }else{
       run_id[i, 1:useTrials] <- tmp$runid
+      if (include_run_ot){
+        stop("include_run_ot can only be used with rl_unique_runids")
+      }
     }
+
     #create the run length record per subject
     subj_runCounts[i] <- length(unique(run_id[i, 1:useTrials]))
+    #print(unique(run_id[i, 1:useTrials]))
     
     reversal[i, 1:useTrials] <- as.numeric(tmp$reversal_trial)
     cue_pos[i, 1:useTrials] <- tmp$presentation_n_after_reversal
@@ -372,6 +426,7 @@ for (i in 1:numSubjs) {
       outcome[i, 1:useTrials] <- tmp$outcome#ifelse(tmp$outcome==1, 0, tmp$outcome)
     }
   }
+  #print(run_id_ot)
   
   trial[which(is.na(trial))] <- 0
   
@@ -416,7 +471,21 @@ for (i in 1:numSubjs) {
   
   if(sample_from_prior){
     dataList[["sample_from_prior"]] = 1
+  }else{
+    dataList[["sample_from_prior"]] = 0
   }
+  
+  if(subj_level_params){
+    dataList[["subj_level_params"]] = 1
+  }else{
+    dataList[["subj_level_params"]] = 0
+  }
+  
+  if(include_run_ot){
+    dataList[["run_ot"]] = run_id_ot
+  }
+  
+  
   #need to add an option to number runs from 1 to 4, including both punishment and reward
   #
   cat("Building model...")
@@ -424,7 +493,7 @@ for (i in 1:numSubjs) {
   #check if a model under the name exists under "compiled models"
   #only for this particular system [intended to pick out an individual system; not completely fool-proof but should do the trick]
   #in instances where there are different systems 
-  compile.environ<-gsub("[(). -#-]","",paste0(Sys.getenv("R_PLATFORM"),Sys.info()["version"],Sys.getenv("USER"),Sys.info()["nodename"]))
+  compile.environ<-gsub("[\\/(). -#-]","",paste0(Sys.getenv("R_PLATFORM"),Sys.info()["version"],Sys.getenv("USER"),Sys.info()["nodename"]))
   precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", compile.environ,use_model)
   model.loaded<-FALSE
   if (file.exists(paste0(precompiled.location,".stan"))){
@@ -538,7 +607,9 @@ for (i in 1:numSubjs) {
                                      warmup_iter = warmup_iter.set,
                                      rl_unique_runids = rl_unique_runids,
                                      variable_run_lengths=variable_run_lengths,
-                                     sample_from_prior=sample_from_prior))
+                                     sample_from_prior=sample_from_prior,
+                                     subj_level_params=subj_level_params,
+                                     include_run_ot=include_run_ot))
 
   cat("...model saved.\n")
   

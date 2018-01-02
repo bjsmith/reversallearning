@@ -9,7 +9,7 @@ debugSource("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
-models_to_run<-c("double_update_rev3b"#,"double_update_nov_rev2-d",#"double_update_nov_rev2-c",
+models_to_run<-c("double_update_rev5"#,"double_update_nov_rev2-d",#"double_update_nov_rev2-c",
                  #"double_update_nov_rev2-a-a"
                  )
 estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))#rev(ESTIMATION_METHODS)
@@ -19,10 +19,10 @@ subject_groups<-2:3
 
 times_to_run<-3
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev3_vb_sampleprior.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev5_vb_sampleprior.RData")
 
 models.with.4.separate.runs.count<-0
-models.with.runs.considered.together.count<-2
+models.with.runs.considered.together.count<-1
 total.models.count<-length(estimation_methods)*times_to_run*length(subject_groups)*(models.with.4.separate.runs.count*4+models.with.runs.considered.together.count)
 model.summaries <- vector("list", total.models.count)
 model.stanfits <- vector("list", total.models.count)
@@ -30,8 +30,6 @@ model.stanfits <- vector("list", total.models.count)
 if(file.exists(summaryfilepath)){
   load(file=summaryfilepath)
 }
-
-
 
 #print("Starting main loop...")
 if(any(sapply(model.summaries,is.null))){
@@ -55,14 +53,18 @@ if(any(sapply(model.summaries,is.null))){
           if(m %in% c("double_update_rpo_repeated_runs_notrialpost", "double_update_rpo_repeated_runs_ntp_otmod",
                       "double_update_nov_rev2","double_update_nov_rev2-a-a","double_update_nov_rev2-b",
                       "double_update_nov_rev2-c","double_update_nov_rev2-d",
-                      "double_update_rev3b")){
+                      "double_update_rev3b",
+                      "double_update_rev4",
+                      "double_update_rev5")){
             runlist<-list(c(1,2))
             rp_list<-list(c(1,2))
             if(m %in% c("double_update_nov_rev2","double_update_nov_rev2-a-a","double_update_nov_rev2-b",
                         "double_update_nov_rev2-c","double_update_nov_rev2-d",
-                        "double_update_rev3b")){
+                        "double_update_rev3b",
+                        "double_update_rev4",
+                        "double_update_rev5")){
               rl_unique_runids=TRUE
-              if(m %in% c("double_update_nov_rev2-a-a","double_update_rev3b")){
+              if(m %in% c("double_update_nov_rev2-a-a","double_update_rev3b", "double_update_rev4","double_update_rev5")){
                 variable_run_lengths=TRUE
               }
             }
@@ -86,16 +88,18 @@ if(any(sapply(model.summaries,is.null))){
                 rp=rp,
                 model_rp_separately=FALSE,model_runs_separately = TRUE, include_pain=FALSE,
                 fastDebug=FALSE,
-                fileSuffix=paste0("rev2aa_20171206",as.character(t)),
+                fileSuffix=paste0("rev_20171230",as.character(t)),
                 estimation_method = em,
-                bseed=t+1741449179,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+                bseed=t+675360608,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
                 collateTrialData=FALSE,
                 chainNum = 12,
                 iterations = iterations,
                 warmup_iter = warmup_iter,
                 rl_unique_runids=TRUE,
                 variable_run_lengths=variable_run_lengths,
-                sample_from_prior=FALSE
+                sample_from_prior=FALSE,
+                subj_level_params=FALSE,
+                include_run_ot=TRUE
               )
 
               cat("...model loaded. Extracting...")
@@ -130,7 +134,17 @@ if(any(sapply(model.summaries,is.null))){
               }else if(m %in% c("double_update_rev3a")){
                 model.summaries[[first_empty_list_pos]]<-
                   list("summaryObj"=data_summarize_double_update_rev3(extractedfit,comprehensive=FALSE,
-                                                                                    outcome.type = rp),
+                                                                      outcome.type = rp),
+                       "g"=g,"m"=m,"t"=t,"EstimationMethod"=em,"elapsedTime"=fitpackage$general_info$estimation_duration)
+              }else if(m %in% c("double_update_rev4")){
+                model.summaries[[first_empty_list_pos]]<-
+                  list("summaryObj"=data_summarize_double_update_rev4(extractedfit,comprehensive=FALSE,
+                                                                      outcome.type = rp),
+                       "g"=g,"m"=m,"t"=t,"EstimationMethod"=em,"elapsedTime"=fitpackage$general_info$estimation_duration)
+              }else if(m %in% c("double_update_rev5")){
+                model.summaries[[first_empty_list_pos]]<-
+                  list("summaryObj"=data_summarize_double_update_rev5(extractedfit,comprehensive=FALSE,
+                                                                      outcome.type = rp),
                        "g"=g,"m"=m,"t"=t,"EstimationMethod"=em,"elapsedTime"=fitpackage$general_info$estimation_duration)
               }else{
                 print(m)

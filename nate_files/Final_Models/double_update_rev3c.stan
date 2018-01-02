@@ -5,7 +5,6 @@
 //within-run distribution of scores.
 //This is a simplifying assumption I used to avoid buliding in an extra level, 
 //but i think it shouldn't make the model too much more complicated.
-
 data {
   int<lower=1> N;
   int<lower=1> T;
@@ -33,28 +32,38 @@ transformed data {
 parameters {
 // Declare all parameters as vectors for vectorizing
   // Hyper(group)-parameters
-  vector[2] s_mu_g_mu; //group-level means of subject means
-  #vector<lower=0>[2] s_mu_g_kappa; //variance within the group, across subjects
-  vector[2] s_mu_g_kappa; //variance within the group, across subjects
-  
-  //vector[2] s_sigma_g_mu; //group-level means of subject variance
-  //vector<lower=0>[2] s_sigma_g_sigma; //group-level variance of subject variance
+  vector[2] group_pr_mu; //group-level means of subject means
+  vector[2] group_pr_sigma; //variance within the group, across subjects
   
   // Subject-level raw parameters. 
-  vector[N] alpha_s_mu;   // learning rate, subject average across runs
-  vector[N] beta_s_mu;  // inverse temperature, subject average across runs
+  vector[N] alpha_s_mu_pr;   // learning rate, subject average across runs
+  vector[N] beta_s_mu_pr;  // inverse temperature, subject average across runs
   //these are not vectors because we make a simplifying assumption they're the same for all subjects.
-  real alpha_s_kappa;   // learning rate, subject variance across runs
-  real beta_s_kappa;  // inverse temperature, subject variance across runs
+  real alpha_s_sigma;   // learning rate, subject variance across runs
+  real beta_s_sigma;  // inverse temperature, subject variance across runs
   
   // Run level raw parameters
-  vector[N] alpha[R];   // learning rate, run estimate
-  vector[N] beta[R];  // inverse temperature, run estimate
+  // using probit transform
+  vector[N] alpha_pr[R];   // learning rate, run estimate
+  vector[N] beta_pr[R];  // inverse temperature, run estimate
 }
 
-
 transformed parameters {
+// here is where we take that normally distributed parameter 
+// and phi-approximate it into a range.
 
+  // Transform subject-level raw parameters
+  vector<lower=0,upper=1>[N] alpha;
+  vector<lower=0,upper=5>[N] beta;
+  #interacts directly with the trial-level learning
+  #drawn from a phi-approximation from group-level mean and deviation multiplied by subject-level parameter
+
+  for (i in 1:N) {
+    alpha[i]  = Phi_approx( alpha_pr[i] );
+    beta[i]   = Phi_approx( beta_pr[i] ) * 14; 
+      #I am not sure if this is high enough. 
+      #This is double what we found in the recent paper using the same model
+  }
 }
 
 model {
@@ -62,41 +71,19 @@ model {
   int run = -1; //an iterator
   
   //mean and variance of the subject mean, i.e., the group level mean and SD
-  s_mu_g_mu[1]~beta(1,1);
-  s_mu_g_mu[2]~cauchy(0,7);
-    #This is effectively a uniform distribution between 0 and 1.
-    #This is what we want for alpha.
-    #For beta we want beta to be up to a higher value???
-  #Not sure of the right scale to use here.
-  #we probably want a fairly uninormative prior for the SD of the beta distribution
-  #what would that be?
-  s_mu_g_var[1]~beta(2,2)*.28867;#SD between 0 and a uniform distribution.
-  
-  //mean and variance of the subject-level variance
-  //we're assuming constant subject-level variance so no need for this.
-  //s_sigma_g_mu~normal(0,1);
-  //s_sigma_g_sigma~cauchy(0,5);//maybe this should be lower...
-  
-  //sample the subject means
-  
-  
+  group_pr_mu ~ norm(0, 1);
+  group_pr_sigma ~ cauchy(0, 7); # now this is of course going to be transformed.
+
+  #subject level.
   for (s in 1:N){
-    #this looks complicated and htere must be a better way.
-    #Is there not another distribution that will take thse 'natively'?
-    #like a beta distriubtion
-    #possibly inverse_logit or phi_approx. Got to look into thsi a bit!
-    #really need to dig in and understand distributions. Might be worth reading up a bit. Is there a primer online?
-    real alpha=(s_mu_g_mu[1]*s_mu_g_mu[1]*(1-s_mu_g_mu[1])/s_mu_g_var[1]^2-1);
-    real beta=(1-s_mu_g_mu[1])*s_mu_g_mu[1]*(1-s_mu_g_mu[1]/s_mu_g_var[1]^2-1);
-    alpha_s_mu[s]~beta(alpha,beta);
-    alpha=s_mu_g_mu[2]*s_mu_g_mu[2]*(1-s_mu_g_mu[2])/s_mu_g_var[2]^2-1;
-    beta=(1-s_mu_g_mu[2])*s_mu_g_mu[2]*(1-s_mu_g_mu[2]/s_mu_g_var[2]^2-1);
-    beta_s_mu[s]~beta(alpha,beta);
+    alpha_s_mu_pr[s] = Phi_approx( group_pr_mu[1] + norm(0,group_pr_sigma[1]);
+    beta_s_mu_pr[s] = Phi_approx( group_pr_mu[2] + norm(0,group_pr_sigma[2]);
   }
   
-  //sample the subject standard deviations
-  //alpha_s_sigma~cauchy(0,s_mu_g_sigma[1])//cauchy(s_sigma_g_mu[1],s_sigma_g_sigma[1]);
-  //beta_s_sigma~cauchy(0,s_sigma_g_sigma[2]);
+  #run level
+  
+  
+  
   alpha_s_kappa~cauchy(0,5);//cauchy(s_sigma_g_mu[1],s_sigma_g_sigma[1]);
   beta_s_kappa~cauchy(0,5);
   
