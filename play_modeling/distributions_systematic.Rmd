@@ -1,0 +1,224 @@
+---
+title: "Untitled"
+author: "Ben Smith"
+date: "12/23/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+# Systematic distributions
+
+I need to educate myself about useful distributions. Let's do an overview of the different distributions available and what they might be useful for in stan. 
+
+Specific applications are:
+
+ * How to model a uniform distribution between 0 and 1
+ * How to specify an interpretable mean and variance for that distribution.
+ * In my current hierarchical model I have:
+    - alpha (theoretically bounded from 0 to 1)
+    - beta (theoretically with practically uninformative prior centered on around 7)
+ - So we need:
+    * Mean of alpha across runs within subject
+    * Mean of beta across runs within subject
+    * Standard deviation of alpha across runs within subject
+    * Standard deviation of beta across runs within subject
+ - Then we need hyperparameters to describe that mean and standard deviation
+    * Mean of alpha and beta run means
+    * Variance across subjects of those means
+    * It is permissible just to get a point estimate of the standard deviation of alpha and beta across runs within subject. The estimate will still need a suitable prior for its mean and variance.
+
+
+#General rules for setting priors in stan
+
+It is important to extend support throughout the range of a parameter's constraints. If constraints specify `lower=0, upper=1`, don't give it a distribution that only stretches from 0 to 0.5. (Stan reference p. 128).
+ 
+On the other hand, we can use 'truncated priors' to limit the extent of a prior over its actual distribution. For instance:
+
+
+```
+real<lower=0> sigma;
+```
+
+with the prior set as
+
+```
+sigma ~ normal(0,10);
+```
+
+Gives a half-normal prior.
+
+
+Conjugate priors are useful because their posterior distributions are the same as their prior probability distributions.
+
+#Choosing priors for a hierarchical model
+
+See example on p139 of the stan reference manual for an example of building a hierarchical model.
+
+For a description of choosing priors for coefficients and scales, see the Stan Reference Manual 2.17, Section 9.3; Gelman (2006):
+
+Gelman, A. (2006). Prior distributions for variance parameters in hierarchical models. Bayesian Analysis, 1(3):515–534. 127, 129, 131
+
+
+#Distributions 
+
+We can use transformed parameters, or we can find distributions that suit these directly. Let's proceed in turn.
+
+
+## Uniform distribution
+
+Uniform distributions can be used in stan by declaring a variable, setting upper and lower bounds, and not specifying any other particular distribution. This would only be suitable at the top level, however, because we'll want lower levels to take values from the higher ones.
+
+Use code like:
+
+```
+real<lower=0, upper=1> mu;
+```
+```{r}
+scalevals<-seq(0,1,0.001)
+ggplot(data.frame(x=scalevals,y=dunif(scalevals,0,1)),aes(x,y))+geom_line()
+```
+
+
+##NORMAL
+ * Cumulative unit normal distribution function $\Phi$, `Phi`.
+
+```{r}
+scalevals<-seq(-3,3,0.001)
+dist<-dnorm(scalevals,0,1)
+ggplot(data.frame(x=scalevals,y=dist),aes(x,y))+geom_line()
+```
+
+We can take sample from a normal distribution and use it to sample the mean parameter for another normal distribution (this makes it a conjugate distribution, right?):
+
+```{r}
+newdata<-data.frame(x=scalevals)
+new.priors<-seq(min(scalevals),max(scalevals),(max(scalevals)-min(scalevals))/10)
+
+for (i in 1:10){
+  newdata[paste0("y",i)]<-dnorm(scalevals,new.priors[i],1)
+}
+newdatalong<-tidyr::gather(newdata,"yname","y",2:dim(newdata)[2])
+
+ggplot(newdatalong,aes(x,y,colour=yname))+geom_line()
+```
+
+But how to get sensible values for a standard deviation of a normally distributed variable?
+
+We can use half-cauchy, but it must be centered on zero; we generate SD from the same
+ 
+```{r}
+scalevals<-seq(0,10,0.001)
+dist<-dcauchy(scalevals,0,5)
+cauchyres<-mean(abs(rcauchy(1000000,0,5)))
+ggplot(data.frame(x=scalevals,y=dist),aes(x,y))+geom_line()
+
+#cauchy resists defining here!
+
+
+
+
+```
+
+Cauchy seems to be a conjugate in the same way that a normal distribution is.
+
+```{r secondlevelcauchy}
+newdata<-data.frame(x=scalevals)
+new.priors<-seq(min(scalevals),max(scalevals),(max(scalevals)-min(scalevals))/10)
+
+for (i in 1:10){
+  newdata[paste0("y=",new.priors[i])]<-dcauchy(scalevals,0,new.priors[i])
+}
+newdatalong<-tidyr::gather(newdata,"yname","y",2:dim(newdata)[2])
+
+ggplot(newdatalong,aes(x,y,colour=yname))+geom_line()
+```
+
+So it seems feasible we could get the scale parameter of a cauchy distribution from a cauchy distribution itself.
+
+OK. So what about the beta distribution? I've been struggling and struggling away to get that right.
+
+The beta distribution is useful for modeling the probability density for a Bernoulli likelihood. We probably wouldn't use it for a hierarchical model with all continuous parameters.
+
+If we were directly estimating, in our model, correct and incorrect trials, w'ed have a binary outcome and then we might be considering the Bernoulli likelihood.
+
+But our model estimates learning parameters that then produce the correct and incorrect trials. It's a bit different.
+
+
+## Logistic and probit regression
+
+These map ($-\infty, \infty$) to ($0, 1$).
+
+They include:
+
+ * Bernoulli logit, `bernoulli_logit`, or `bernoulli(inv_logit(x))`.
+ * Probit regression, `~bernoulli(Phi(x))`.
+
+These are probably quite useful for my purposes.
+
+#exponential
+
+```{r}
+-log(0.0001)/5
+-log(0.000)
+-log(1)/5
+```
+
+#beta
+
+```{r}
+newdata<-data.frame(x=scalevals)
+new.priors<-seq(min(scalevals),max(scalevals),(max(scalevals)-min(scalevals))/10)
+
+for (i in 1:10){
+  newdata[paste0("y",i)]<-dnorm(scalevals,new.priors[i],1)
+}
+newdatalong<-tidyr::gather(newdata,"yname","y",2:dim(newdata)[2])
+
+ggplot(newdatalong,aes(x,y,colour=yname))+geom_line()
+```
+
+NEED TO RE-READ GELMAN CHAPTER 5, P 101 ON HIERARCHICAL MODELS
+
+#phi_approx
+
+`phi_approx` is a stan approximation of unit probit regression
+
+
+$`phi_approx`(x)=logit^{-1}(0.07056x^2+1.59676x)$
+
+
+```{r}
+
+require(boot)
+#we have scale.
+scalevals<-seq(-3,3,0.001)
+Phi_approx<- function(x){
+  return(inv.logit(0.0756*x^3+1.5976*x))
+}
+
+#get a normal distribution
+
+nsample<-rnorm(10000,0,1)
+nsample_phi_approx<-Phi_approx(nsample)
+hist(nsample_phi_approx)
+
+
+nsample<-rnorm(10000,0,0.5)
+nsample_phi_approx<-Phi_approx(nsample)
+hist(nsample_phi_approx)
+
+```
+
+This `phi` approximation transformation, as implemented in the double updated model, 
+effectively allows uniformly distributed parameters to be estimated on a normal curve.
+
+This is quite useful; but let's keep in mind that this is the interpretation in the model.
+
+##half normal distribution
+```{r}
+mean(rnorm(100000,0,sqrt(5))^2)
+```

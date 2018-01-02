@@ -145,8 +145,6 @@ data_summarize_double_update_rev2_repeated_runs<- function(extracted.data,outcom
                    "Value"=extracted.data[[paste0("sigma_",parameter)]]
       ))
     
-    
-    
     #add the data
     if(is.null(grouplevel.df)){
       grouplevel.df<-otr.df
@@ -204,6 +202,97 @@ data_summarize_double_update_rev3<- function(extracted.data,outcome.type=NA,comp
             )))
       }
       
+    }
+    
+    #add the data
+    if(is.null(grouplevel.df)){
+      grouplevel.df<-otr.df
+    }else{
+      grouplevel.df<-rbind(grouplevel.df,otr.df)
+    }
+  }
+  return(data.table(grouplevel.df))
+}
+
+data_summarize_double_update_rev4<- function(extracted.data,outcome.type=NA,comprehensive=FALSE,run.level.data=TRUE){
+  grouplevel.df<-NULL
+  #we want...
+  #group level parameters
+  
+  parameters=factor(c("alpha","beta"),ordered=TRUE)
+  for (p in 1:length(parameters)){
+    parameter<-parameters[p]
+    sigma_vals <- extracted.data$sigma
+    sample.count<-dim(extracted.data$group_mu_alpha)[1]#how many iterations of the sample are we looking at?
+    otr.df<-rbind(
+      data.frame("iter"=1:sample.count,
+                 "Run"="All",
+                 "Statistic"="mu",
+                 "Parameter"=as.factor(rep(parameter,sample.count)),
+                 "Value"=extracted.data[[paste0("group_mu_",parameter)]]
+      ),data.frame("iter"=1:sample.count,
+                   "Run"="All",
+                   "Statistic"="sigma",
+                   "Parameter"=as.factor(rep(parameter,sample.count)),
+                   "Value"=extracted.data[[paste0("group_sigma_",parameter)]]
+      ))
+    
+    #now add the run level data if it is wanted.
+    if(run.level.data){
+      for (r in 1:2){
+        otr.df<-cbind(
+          otr.df,
+          rbind(
+            data.frame("iter"=1:sample.count,
+                       "Run"="All",
+                       "Statistic"="mu",
+                       "Parameter"=as.factor(rep(parameter,sample.count)),
+                       "Value"=extracted.data[[paste0("group_mu_",parameter)]]
+            ),data.frame("iter"=1:sample.count,
+                         "Run"="All",
+                         "Statistic"="sigma",
+                         "Parameter"=as.factor(rep(parameter,sample.count)),
+                         "Value"=extracted.data[[paste0("group_sigma_",parameter)]]
+            )))
+      }
+      
+    }
+    
+    #add the data
+    if(is.null(grouplevel.df)){
+      grouplevel.df<-otr.df
+    }else{
+      grouplevel.df<-rbind(grouplevel.df,otr.df)
+    }
+  }
+  return(data.table(grouplevel.df))
+}
+
+
+data_summarize_double_update_rev5<- function(extracted.data,outcome.type=NA,comprehensive=FALSE){
+  grouplevel.df<-NULL
+  #we want...
+  #group level parameters
+  
+  parameters=factor(c("alpha","beta"),ordered=TRUE)
+  for (p in 1:length(parameters)){
+    parameter<-parameters[p]
+    sigma_vals <- extracted.data$sigma
+    sample.count<-dim(extracted.data$group_mu_alpha)[1]#how many iterations of the sample are we looking at?
+    otr.df<-NULL
+    for (stat in c("mu", "sigma", "rew_mu","pun_mu")){
+      otr.df.set<-
+        data.frame("iter"=1:sample.count,
+         "Run"="All",
+         "Statistic"=stat,
+         "Parameter"=as.factor(rep(parameter,sample.count)),
+         "Value"=extracted.data[[paste0("group_",stat,"_",parameter)]]
+      )
+      if (is.null(otr.df)){
+        otr.df<-otr.df.set
+      }else{
+        otr.df<-rbind(otr.df,otr.df.set)
+      }
     }
     
     #add the data
