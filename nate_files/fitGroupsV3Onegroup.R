@@ -545,7 +545,7 @@ for (i in 1:numSubjs) {
   }else if (estimation_method==ESTIMATION_METHOD.MCMC){
     if (fastDebug==TRUE){
       warning("\nFast debugging enabled. Results will be highly unreliable and should only be used for debugging purposes.\n")
-      fit <- sampling(m1, data = dataList, iter=100,warmup=warmup_iter,
+      fit <- sampling(m1, data = dataList, iter=60,warmup=30,chains=4,
                       sample_file=paste0(localsettings$data.dir,"MCMCSample"),
                       diagnostic_file=paste0(localsettings$data.dir,"MCMCdiagnostic"),
                       seed=bseed,
