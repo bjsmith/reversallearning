@@ -7,12 +7,22 @@ require(data.table)
 #install.packages("tidyr")
 require(tidyr)
 require(ggplot2)
-pwd<-getwd()
-source("/Users/benjaminsmith/Documents/msm-project/ranalysis/data-preprocessing-compilation/load_aggregated_game_data.R")
-all.subject.data<-load_aggregated_game_data()[,c(1,10:35,541:567,988:1024)]
-setwd(pwd)
 source("util/apply_local_settings.R")
 apply_local_settings()
+
+
+pwd<-getwd()
+aggregated.game.data.path<-paste0(localsettings$data.dir,"aggregated_game_data.Rdata")
+if (file.exists(aggregated.game.data.path)){
+  load(aggregated.game.data.path)
+}else{
+  source("/Users/benjaminsmith/Documents/msm-project/ranalysis/data-preprocessing-compilation/load_aggregated_game_data.R")
+  all.subject.data<-load_aggregated_game_data()[,c(1,10:35,541:567,988:1024)]
+  save(all.subject.data,file = aggregated.game.data.path)
+}
+
+
+setwd(pwd)
 
 #install.packages("corrplot")
 require(corrplot)
