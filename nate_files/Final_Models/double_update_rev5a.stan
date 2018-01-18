@@ -1,3 +1,8 @@
+//rev5a:
+//previous version had a bug where it was relying on the output of the group_pr_rpdiff_mu to calculate the group reward and punishment values,
+//but this value wasn't actually connected to the estimation process
+
+//rev5:
 //This builds on rev4 but also supports a separate parameter to differentiate reward and punishment runs.
 //Needs to support people who only had one of those two.
 //How do we handle this hierarchically?
@@ -108,10 +113,10 @@ model {
     alpha_s_pr_mu[s] ~ normal(group_pr_mu[1],group_pr_sigma[1]);
     beta_s_pr_mu[s] ~ normal(group_pr_mu[2],group_pr_sigma[2]);
     
-    // alpha_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[1],group_pr_rpdiff_sigma[1]); 
-    // beta_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[2],group_pr_rpdiff_sigma[2]); 
-    alpha_s_pr_rpdiff_mu[s] ~ normal(0, 1); 
-    beta_s_pr_rpdiff_mu[s] ~ normal(0, 1); 
+    alpha_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[1],group_pr_rpdiff_sigma[1]); 
+    beta_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[2],group_pr_rpdiff_sigma[2]); 
+    //alpha_s_pr_rpdiff_mu[s] ~ normal(0, 1); 
+    //beta_s_pr_rpdiff_mu[s] ~ normal(0, 1); 
     
     //record the kind of runs this subject has
     sub_has_rew_runs = 0;

@@ -1,3 +1,4 @@
+
 //a fresh adaptation of the double update model
 //following Kruschke's textbook guidelines for developing multiple levels.
 data {

@@ -5,25 +5,26 @@ source("util/get_my_preferred_cores.R")
 options(mc.cores = get_my_preferred_cores())
 #options(mc.cores = NULL)
 #source files
-debugSource("nate_files/fitGroupsV3Onegroup.R")
+source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
-models_to_run<-c("double_update_rev5"#,"double_update_nov_rev2-d",#"double_update_nov_rev2-c",
-                 #"double_update_nov_rev2-a-a"
-                 )
-estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))#rev(ESTIMATION_METHODS)
+models_to_run<-c("double_update_rev5")
 
-subject_groups<-2:3
+estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC),as.character(ESTIMATION_METHOD.VariationalBayes))
+
+subject_groups<-1:3
 
 
 times_to_run<-3
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev5_vb_sampleprior.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev5.RData")
 
 models.with.4.separate.runs.count<-0
 models.with.runs.considered.together.count<-1
-total.models.count<-length(estimation_methods)*times_to_run*length(subject_groups)*(models.with.4.separate.runs.count*4+models.with.runs.considered.together.count)
+total.models.count<-length(estimation_methods)*
+  times_to_run*length(subject_groups)*
+  (models.with.4.separate.runs.count*4+models.with.runs.considered.together.count)
 model.summaries <- vector("list", total.models.count)
 model.stanfits <- vector("list", total.models.count)
 
@@ -88,9 +89,9 @@ if(any(sapply(model.summaries,is.null))){
                 rp=rp,
                 model_rp_separately=FALSE,model_runs_separately = TRUE, include_pain=FALSE,
                 fastDebug=FALSE,
-                fileSuffix=paste0("rev_20171230",as.character(t)),
+                fileSuffix=paste0("rev_20180101",as.character(t)),
                 estimation_method = em,
-                bseed=t+675360608,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+                bseed=t+1187913262,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
                 collateTrialData=FALSE,
                 chainNum = 12,
                 iterations = iterations,
@@ -101,20 +102,20 @@ if(any(sapply(model.summaries,is.null))){
                 subj_level_params=FALSE,
                 include_run_ot=TRUE
               )
-
+              
               cat("...model loaded. Extracting...")
               #save just the output we want.
               first_empty_list_pos<-min(which(sapply(model.summaries,is.null)))
               print(paste("first_empty_list_pos is", as.character(first_empty_list_pos)))
-
+              
               #get the non-extracted fit, and the stanfit
               first_empty_list_pos.stanfits<-min(which(sapply(model.stanfits,is.null)))
               model.stanfits[[first_empty_list_pos]]<-fitpackage$fit
-
+              
               extractedfit<-rstan::extract(fitpackage$fit)
               # first_empty_list_pos.extractedfit<-min(which(sapply(model.extractedfits,is.null)))
               # model.extractedfits[[first_empty_list_pos]]<-extractedfit
-
+              
               if(m %in% c("double_update_rpo_repeated_runs", "double_update_rpo_repeated_runs_notrialpost")){
                 model.summaries[[first_empty_list_pos]]<-
                   list("summaryObj"=data_summarize_double_update_rpo_repeated_runs(extractedfit,comprehensive=FALSE),
@@ -154,7 +155,7 @@ if(any(sapply(model.summaries,is.null))){
               rm(fitpackage)
               print("...summary data extracted.")
               # first_empty_list_pos<-min(which(sapply(model.summaries,is.null)))
-
+              
             }
           }
         }

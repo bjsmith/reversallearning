@@ -1,8 +1,13 @@
 ---
+<<<<<<< HEAD:notebooks/rev5_exploration.Rmd
 title: "Comparing rev2aa and Rev3 models"
 output:
   html_document: default
   html_notebook: default
+=======
+title: "Exploring Revision 5 vb"
+output: html_notebook
+>>>>>>> 57447518989457aa89567e85e106c2a51abad1f7:notebooks/rev5_exploration_vb.Rmd
 ---
 
 Revision 5 has the following features:

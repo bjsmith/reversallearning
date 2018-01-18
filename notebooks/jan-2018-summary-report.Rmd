@@ -1,0 +1,32 @@
+---
+title: "Summary of reversal learning behavioral model evidence to-date"
+output: html_notebook
+---
+
+This is a summary of reversal learning findings to date.
+
+I have so far:
+
+ - using hierarchical logistic regression, modelled the proportion correct for each run in a hierarchical linear model across all groups.
+ - using Bayesian hierarchical modeling, modelled the learning rate and inverse temperature for each run in a hierarchical Bayesian model, with each group modeled separately.
+ 
+I have found:
+ - In the hierarchical logistic regression, there was a robust effect of meth use and some evidence of an effect of sexually risky decision-making, although this disappeared when covariates were controlled for (see below).
+ - In the Bayesian hierarchical model, there are no differences observable between reward and punishment or between the three groups in terms of the 95% credible density estimates.
+
+Moving forward, I need to
+ - reconcile these two findings. Why do we see an effect in the hierarchical logistic regression, but not in the Bayesian hierarchical model?
+ - Extract neural signatures suitable for integrating into a hierarchical model.
+ - Find a way to do multivariate 95% credible density estimates - there is some sign that this *will* allow us to see distinctions between our experimental groups.
+ - Consider a hierarchical model that estimates effects of all three groups together?
+ - Work with Brandon on a DE-MCMC implementation.
+
+# Hierarchical logistic regression.
+
+I initially tried predicting the simple likelihood of each trial being correct within each run using hierarchical logistic regression.
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).

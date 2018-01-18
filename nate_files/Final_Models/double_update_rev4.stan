@@ -31,7 +31,7 @@ parameters {
 // Declare all parameters as vectors for vectorizing
   // Hyper(group)-parameters
   vector[2] group_pr_mu; //group-level means of subject means
-  vector[2] group_pr_sigma; //variance within the group, across subjects
+  vector<lower=0>[2] group_pr_sigma; //variance within the group, across subjects
   
   // Subject-level raw parameters. 
   vector[N] alpha_s_pr_mu;   // learning rate, subject average across runs
