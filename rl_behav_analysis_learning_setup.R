@@ -7,6 +7,10 @@ require(data.table)
 #install.packages("tidyr")
 require(tidyr)
 require(ggplot2)
+pwd<-getwd()
+source("/Users/benjaminsmith/Documents/msm-project/ranalysis/data-preprocessing-compilation/load_aggregated_game_data.R")
+all.subject.data<-load_aggregated_game_data()[,c(1,10:35,541:567,988:1024)]
+setwd(pwd)
 source("util/apply_local_settings.R")
 apply_local_settings()
 
@@ -163,6 +167,8 @@ for (condition in c(
 
 subgroupdata<-get_risk_group()
 rl.all.subjects.list<-merge(rl.all.subjects.list,subgroupdata,by.x="subid",by.y="Adjusted_subid")
+all.subject.data$SUBID_ADJ_I<-as.integer(all.subject.data$SUBID_ADJ)
+rl.all.subjects.list<-merge(rl.all.subjects.list,all.subject.data,by.x="subid",by.y="SUBID_ADJ_I")[, !"SUBID_ADJ", with=FALSE]
 rl.all.subjects.list[,presentation_n_over_segments:=presentation_n_in_segment]
 last_nonreversal<-max(rl.all.subjects.list[reversal_trial==FALSE,presentation_n_in_segment])
 #aligns so that for every subject, we give the same index to the first reversal trial

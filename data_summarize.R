@@ -302,6 +302,9 @@ data_summarize_double_update_rev5<- function(extracted.data,outcome.type=NA,comp
       grouplevel.df<-rbind(grouplevel.df,otr.df)
     }
   }
+  
+  #we oughtta do a comprehensive analysis. What would per-subject data look like?
+  #or maybe for this, we don't need the summary, we need the original fits.
   return(data.table(grouplevel.df))
 }
 

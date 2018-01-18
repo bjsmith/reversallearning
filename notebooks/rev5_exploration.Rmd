@@ -1,6 +1,8 @@
 ---
 title: "Comparing rev2aa and Rev3 models"
-output: html_notebook
+output:
+  html_document: default
+  html_notebook: default
 ---
 
 Revision 5 has the following features:
@@ -13,8 +15,6 @@ So...
 is our estimation for these stable?
 
 Let's find out!....
-
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
@@ -172,7 +172,148 @@ ggplot(model.summary.all.groupcompare,aes(x=Group3_minus_Group2 ,fill=factor(Ana
 
 These all look like plausible estimates of group-level parameters.
 
-## Exploring the structure of the parameters
+## Exploring subject variance and data
 
-Can we take a peak at how 
+Can we take a peak at how this looks for the distribution for individual subjects?
 
+```{r, echo=FALSE}
+extractedfit<-rstan::extract(model.stanfits[[4]])
+  # for(i in 1:length(extractedfit)){
+  #   print(names(extractedfit)[i])
+  #   print(dim(extractedfit[[i]]))
+  # }
+  
+  library(boot)
+  Phi_approx<-function(x){inv.logit(0.07056*x^3+1.5976*x)}
+  
+  #what's a good way to look at data?
+  
+  #we could (a) take a randomly selected estimation, or (b) take the average of all estimations, and present them.
+  #riter<-sample(1:dim(extractedfit$group_pr_mu)[1],1)
+  
+  #what are the estimates for each subject?
+  #these are only going to be the normally distributed values, I forgot to write in generated quantities for these.
+  
+  ggplot(data.frame("subj_alpha_mu"=Phi_approx(apply(extractedfit$alpha_s_pr_mu,2,mean)),
+                    "subj_beta_mu"=Phi_approx(apply(extractedfit$beta_s_pr_mu,2,mean))*14,
+                    "label"=paste0("S",1:length(extractedfit$beta_s_pr_mu[1,]))
+                    ),aes(x=subj_alpha_mu,y=subj_beta_mu))+
+    #geom_point()+
+    geom_label(aes(label=label,fontface="bold"),alpha=0.5,size=2.5)+
+    geom_hdi()+
+    labs(title=paste0("α and β values for each subject, mean across all iterations "))
+  
+  alpha_lower<-Phi_approx(mean(apply(extractedfit$alpha_s_pr_mu,2,mean))-sd(apply(extractedfit$alpha_s_pr_mu,2,mean))*1.96)
+  
+  alpha_upper<-Phi_approx(mean(apply(extractedfit$alpha_s_pr_mu,2,mean))+sd(apply(extractedfit$alpha_s_pr_mu,2,mean))*1.96)
+  
+```
+
+The graph indicates that the highest density interval for alpha values stretches from approximately 0.03 to 0.55.
+
+Of the alpha values, based on the mean and standard deviation of individual subject means across subjects, we should expect 95% of subjects with alpha values within within `r alpha_lower` and `r alpha_upper` - a slightly larger range than we find for the comparable HDI for alpha values.
+               
+
+```{r}
+    #alternatively we can take a deep dive into the distribution for a particular subject.
+  rsub<-sample(1:dim(extractedfit$alpha_s_pr_mu)[2],1)
+  
+  ggplot(data.frame("subj_alpha_mu"=Phi_approx(extractedfit$alpha_s_pr_mu[,rsub]),
+                    "subj_beta_mu"=Phi_approx(extractedfit$beta_s_pr_mu[,rsub])*14,
+                    "label"=paste0("S",1:length(extractedfit$beta_s_pr_mu[,rsub]))
+  ),aes(x=subj_alpha_mu,y=subj_beta_mu))+
+    geom_point()
+```
+
+
+
+```{r, echo=FALSE}
+  #What is the HDI width of the group estimate compared to the individual subject estimates?
+  for (mod_i in 1:6){
+    extractedfit<-rstan::extract(model.stanfits[[mod_i]])
+    HDI.width<-function(x){
+      HDIofMCMC(x)[2]-HDIofMCMC(x)[1]
+    }
+    print(paste0("mu HDI width: ",round(HDI.width(extractedfit$group_mu_alpha),2),", ",
+    "95% of subjects: ", round(median(apply(Phi_approx(extractedfit$alpha_s_pr_mu),2,HDI.width)),2)))
+  }
+```
+
+
+Thus, the HDI of the group estimate is considerably narrower than
+the HDI for each subject. 
+
+Thus, our subjects individually span a much larger range than does the *expected* value of the group. This is unsurprising.
+
+We could also look at the estimated subject variance:
+
+
+```{r}
+
+ggplot(model.summary.all[Statistic %in% c("mu","sigma")] %>% tidyr::spread(Statistic,Value),
+       aes(x=mu,y=sigma ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)
+                                                               ))+
+    geom_point(alpha=0.9)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Parameter~Group,scales = "free")+
+    
+    labs(title=paste0("A look at alpha and beta stats with their estimated across-subject distribution"))
+
+
+```
+
+
+For alpha values, sigma is estimated at around 0.8. This is seemingly on the log scale - but how could you get a sigma of 0.8 after transforming to the log scale?
+
+```{r}
+
+hist(model.summary.all[Statistic=="sigma" & Parameter=="alpha",Value])
+
+Phi_approx(.8)
+hist(rstan::extract(model.stanfits[[3]])$group_pr_sigma[,1])
+```
+
+One way to more intuitively interpret the variance is to calculate a 95% interval of values. This is not an HDI of the mean; rather, on the normal distribution, we calculate an interval centered around the mean to find the interval within which 95% of the subjects' mean values are situated.
+
+This can be represented as
+
+$$CI=\bar x \pm 1.96 \sigma$$
+
+We can then identify the $\phi$-transform positions for these points on the normal distribution and compare this to the actual distributions estimated across subjects.
+
+
+For model 3:
+
+```{r}
+m1<-rstan::extract(model.stanfits[[4]])
+upper<-Phi_approx(m1$group_pr_mu+1.96*m1$group_pr_sigma)
+lower<-Phi_approx(m1$group_pr_mu-1.96*m1$group_pr_sigma)
+
+par(mfrow=c(2,2))
+hist(lower[,1],main="alpha (lower)")#alpha
+hist(upper[,1],main="alpha (upper)")#alpha
+
+
+hist(lower[,2]*14,main="beta (lower)")#alpha
+hist(upper[,2]*14,main="beta (upper)")#alpha
+
+est.interval<-apply(upper-lower,2,mean)
+
+
+```
+
+These can be compared to the distribution of actual subject means (here, the median posterior estimate across all iterations is shown for each subject):
+
+```{r}
+
+par(mfrow=c(1,2))
+
+hist(Phi_approx(apply(m1$alpha_s_pr_mu,2,median)))
+hist(Phi_approx(apply(m1$beta_s_pr_mu,2,median)))
+
+
+```
+
+These are in the range I expect from constructing the theoeretical population distribution from the group-level parameter. In other words, subjects appear to have a very high distribution of learning rates and inverse temperatures.
+
+This is consistent with what we already found and displayed in the plot above showing estimated $\mu_{\alpha}$ and $\mu_{\beta}$ values for each subject.
