@@ -41,6 +41,7 @@ mA2c<-glmer(correct~
             data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="bobyqa"))
 summary(mA2c)
 
+
 coef(mA2c)
 fixef(mA2c)
 ranef(mA2c)

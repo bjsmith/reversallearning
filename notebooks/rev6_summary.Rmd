@@ -1,0 +1,294 @@
+---
+title: "Exploring Revision 5a MCMC and vb"
+output: html_notebook
+---
+
+Revision 6 is the first here to include reaction time. It uses unscaled reaction time as a multiplier of inverse temperature. The reaction time is recorded in seconds. The maximum reaction time is 1.0 s, so the model should converge on inverse temperature having a value representing a theoretical temperature where reaction time is 1.0, and we can thus expect the inverse temperature parameter $\beta$ to be somewhat higher than in Revision 5a.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+source("visualization/geom_hdi.R")
+```
+
+##Variational Bayes: posterior comparison
+
+Though we have already done a variational Bayes estimate (see rev5_exploration-vb.Rmd), here, these are presented side-by-side with MCMC analyses for comparison.
+```{r }
+source("du_model_rev6_vb_test.R")
+```
+
+
+```{r getDataIntoTable, echo=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+#table(model.summary.all$TestId,model.summary.all$EstimationMethod)
+```
+
+
+
+```{r, echo=FALSE}
+
+
+ggplot(model.summary.all[Statistic=="mu" & EstimationMethod=="variationalbayes"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
+
+
+
+ggplot(model.summary.all[Statistic=="rew_mu" & EstimationMethod=="variationalbayes"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), Reward Runs Only"))
+
+ggplot(model.summary.all[Statistic=="pun_mu" & EstimationMethod=="variationalbayes"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), Punishment Runs Only"))
+
+
+```
+
+
+These all look plausible. I think for the first time, I've got a model that estimates repeated runs and reward and punishment within the same model, and yields separate estimates for reward and punishment by using a parameter that separates the two.
+
+While they all look *plausible*, estimates vary widely, indicating that we need to look at MCMC in order to calculate the outcomes for these values. Fortunately, this current model isn't unwieldy and I should be able to run through MCMC analyses in a tractable period of time.
+
+## Differences
+
+I want to take a look at differences:
+
+ - between reward and punishment runs
+ - between Group 2 and Group 3
+ - An interaction of those differences.
+
+```{r, echo=FALSE}
+
+#to get difference between reward and punishment runs, need to get rew_* and pun_*, reshape to put them on the same col, then calculate difference.
+model.summary.all.rewpun<-model.summary.all[Statistic %in% c("rew_mu","pun_mu")] %>% tidyr::spread(Statistic,Value)
+
+model.summary.all.rewpun[,rew_minus_pun_mu:=rew_mu-pun_mu]
+
+ggplot(model.summary.all.rewpun[EstimationMethod=="variationalbayes"],aes(x=rew_minus_pun_mu ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), alpha, Reward Minus Punishment"))
+
+#graph reward vs. punishment
+
+ggplot(model.summary.all.rewpun[Parameter=="alpha" & EstimationMethod=="variationalbayes"],aes(x=rew_mu,y=pun_mu ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_point(alpha=0.1)+
+    facet_grid(.~Group,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), alpha, Reward and Punishment"))
+
+ggplot(model.summary.all.rewpun[Parameter=="beta" & EstimationMethod=="variationalbayes"],aes(x=rew_mu,y=pun_mu ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_point(alpha=0.1)+
+    facet_grid(.~Group,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), beta, Reward and Punishment"))
+
+```
+
+
+
+```{r}
+
+#group 2 compared to group 3.
+model.summary.all.notestid<-model.summary.all[,TestId:=NULL] 
+
+model.summary.all.groupcompare<- tidyr::spread(model.summary.all.notestid,Group,Value,sep="")
+model.summary.all.groupcompare$Group3_minus_Group2<-
+  model.summary.all.groupcompare$Group3-model.summary.all.groupcompare$Group2
+
+ggplot(model.summary.all.groupcompare[EstimationMethod=="variationalbayes"],aes(x=Group3_minus_Group2 ,fill=factor(ModelName),color=factor(ModelName)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Statistic~Parameter,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), Group 3 Minus Group 2"))
+
+
+```
+
+These all look like plausible estimates of group-level parameters.
+
+## Exploring the structure of the parameters
+
+Can we take a peak at how .....
+
+
+# MCMC results
+
+Let's take a look at the same distributions using MCMC.
+
+
+```{r, echo=FALSE,cache=FALSE}
+
+
+ggplot(model.summary.all[Statistic=="mu" & EstimationMethod=="MCMC"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
+
+
+
+
+ggplot(model.summary.all[Statistic %in% c("rew_mu","pun_mu") & EstimationMethod=="MCMC"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Statistic~Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), Reward and Punishment Runs"))
+
+
+```
+
+
+
+```{r, echo=FALSE}
+
+#to get difference between reward and punishment runs, need to get rew_* and pun_*, reshape to put them on the same col, then calculate difference.
+ggplot(model.summary.all.rewpun[EstimationMethod=="MCMC"],aes(x=rew_minus_pun_mu ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), alpha, Reward Minus Punishment"))
+
+#graph reward vs. punishment
+
+ggplot(model.summary.all.rewpun[Parameter=="alpha" & EstimationMethod=="MCMC"],aes(x=rew_mu,y=pun_mu ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+    geom_point(alpha=0.1)+
+    facet_grid(.~Group,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), alpha, Reward and Punishment"))
+
+ggplot(model.summary.all.rewpun[Parameter=="beta" & EstimationMethod=="MCMC"],aes(x=rew_mu,y=pun_mu ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)))+
+    geom_point(alpha=0.1)+
+    facet_grid(.~Group,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), beta, Reward and Punishment"))
+
+```
+
+Need to check the scale these reward and punishment parameters are on. Are they transformed into the actual space there implemented within?
+
+
+```{r}
+
+#group 2 compared to group 3.
+model.summary.all.notestid<-model.summary.all[,TestId:=NULL] 
+
+model.summary.all.groupcompare<- tidyr::spread(model.summary.all.notestid,Group,Value,sep="")
+model.summary.all.groupcompare$Group3_minus_Group2<-
+  model.summary.all.groupcompare$Group3-model.summary.all.groupcompare$Group2
+
+
+ggplot(model.summary.all.groupcompare[EstimationMethod=="MCMC"],aes(x=Group3_minus_Group2 ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Statistic~Parameter,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), Group 3 Minus Group 2"))
+head(model.summary.all.groupcompare)
+
+model.summary.all.g3g2compare.bypar<- 
+  tidyr::spread(
+    model.summary.all.groupcompare[,.(iter,Run,Statistic,Parameter,ModelName,AnalysisRepetition,
+                                   EstimationMethod,Group3_minus_Group2)],
+    Parameter,
+    Group3_minus_Group2)
+
+ggplot(model.summary.all.g3g2compare.bypar[
+  EstimationMethod=="MCMC" & 
+  Statistic %in% c("mu","rew_mu","pun_mu")
+                                              ],aes(x=alpha,y=beta 
+                                                    #,fill=factor(Statistic),color=factor(Statistic)
+                                                    ))+
+    geom_point(alpha=0.1)+
+    facet_grid(~Statistic,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), Group 3 Minus Group 2"))
+
+
+```
+
+
+
+
+```{r}
+
+#group 1 compared to group 2
+model.summary.all.groupcompare$Group2_minus_Group1<-
+  model.summary.all.groupcompare$Group2-model.summary.all.groupcompare$Group1
+
+ggplot(model.summary.all.groupcompare[EstimationMethod=="MCMC"],aes(x=Group2_minus_Group1 ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Statistic~Parameter,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), Group 2 Minus Group 1"))
+
+
+
+model.summary.all.g2g1compare.bypar<- 
+  tidyr::spread(
+    model.summary.all.groupcompare[,.(iter,Run,Statistic,Parameter,ModelName,AnalysisRepetition,
+                                   EstimationMethod,Group2_minus_Group1)],
+    Parameter,
+    Group2_minus_Group1)
+
+ggplot(model.summary.all.g2g1compare.bypar[
+  EstimationMethod=="MCMC" & 
+  Statistic %in% c("mu","rew_mu","pun_mu")
+                                              ],aes(x=alpha,y=beta))+
+    geom_point(alpha=0.02)+
+    facet_grid(~Statistic,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), Group 2 Minus Group 1"))
+
+
+```
+

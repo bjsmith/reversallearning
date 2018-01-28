@@ -1,3 +1,14 @@
+
+if (!exists("nonResponseTimeAsNA")){
+  warning("This codes non-response items as not correct, which could cause problems interpteting the data. do not use the 'correct' column unless you do not wish to distinguish between incorrect and false. Alternatively you can set 'nonResponseTimeAsNA' to TRUE to alleviate this issue.")
+}else if (nonResponseTimeAsNA==FALSE){
+  warning("This codes non-response items as not correct, which could cause problems interpteting the data. do not use the 'correct' column unless you do not wish to distinguish between incorrect and false. Included only for backwards compatibility.")
+}
+
+# a<-readline("This codes non-response items as not correct, which could cause problems interpteting the data. Enter 'disregard' to ignore or any other reponse to cancel.")
+# if(tolower(a)!="disregard"){
+#   stop("Cancelled execution due to potential code problems.")
+# }
 #install.packages("R.matlab")
 require(R.matlab)
 #install.packages('data.table')
@@ -30,20 +41,10 @@ require(corrplot)
 source("get_risk_group.R")
 
 rl.all.subjects.list<-NULL
-for (condition in c(
-  "reward",
-  "punishment"
-)){
+for (condition in c("reward","punishment")){
   #condition<-"reward"
   
-  
-  break.labels=c("1\nPre-reversal",2:8,"1\nReversal",2:5)
-  reversal_learning_timeline_ggplot_commands<-
-    list(scale_x_continuous(breaks=-8:4,labels=break.labels),
-         labs(x="Presentation"),
-         theme(axis.text.x = element_text(hjust=0),
-               axis.text = element_text(face="bold")#left-align presentation labels
-         ))
+  source("util/graphics.R")
   if (condition=="reward"){
     filename.pattern<-"^rlr_sub[0-9]+_run[0-9]+_.*\\.mat"
     filename.prefix<-"/rlr_sub"
@@ -186,6 +187,12 @@ rl.all.subjects.list[reversal_trial==TRUE,presentation_n_over_segments:=presenta
 # rl.all.subjects.list[1:100]
 # length(unique(rl.all.subjects.list[Motivation=="reward",subid]))
 # length(unique(rl.all.subjects.list[Motivation=="punishment",subid]))
+if (exists("nonResponseTimeAsNA")){
+  if(nonResponseTimeAsNA){
+    rl.all.subjects.list[reaction_time==0,reaction_time:=NA]
+  }
+}
+
 
 break.labels=c("1\nPre-reversal",2:8,"1\nReversal",2:5)
 

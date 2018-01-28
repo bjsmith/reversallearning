@@ -309,6 +309,45 @@ data_summarize_double_update_rev5<- function(extracted.data,outcome.type=NA,comp
 }
 
 
+data_summarize_double_update_rev6a<- function(extracted.data,outcome.type=NA,comprehensive=FALSE){
+  grouplevel.df<-NULL
+  #we want...
+  #group level parameters
+  
+  parameters=factor(c("alpha","beta1","beta2"),ordered=TRUE)
+  for (p in 1:length(parameters)){
+    parameter<-parameters[p]
+    sigma_vals <- extracted.data$sigma
+    sample.count<-dim(extracted.data$group_mu_alpha)[1]#how many iterations of the sample are we looking at?
+    otr.df<-NULL
+    for (stat in c("mu", "sigma", "rew_mu","pun_mu")){
+      otr.df.set<-
+        data.frame("iter"=1:sample.count,
+                   "Run"="All",
+                   "Statistic"=stat,
+                   "Parameter"=as.factor(rep(parameter,sample.count)),
+                   "Value"=extracted.data[[paste0("group_",stat,"_",parameter)]]
+        )
+      if (is.null(otr.df)){
+        otr.df<-otr.df.set
+      }else{
+        otr.df<-rbind(otr.df,otr.df.set)
+      }
+    }
+    
+    #add the data
+    if(is.null(grouplevel.df)){
+      grouplevel.df<-otr.df
+    }else{
+      grouplevel.df<-rbind(grouplevel.df,otr.df)
+    }
+  }
+  
+  #we oughtta do a comprehensive analysis. What would per-subject data look like?
+  #or maybe for this, we don't need the summary, we need the original fits.
+  return(data.table(grouplevel.df))
+}
+
 data_summarize_double_update<- function(extracted.data,outcome.type=NA,run=NA,comprehensive=FALSE){
   print(outcome.type)
   print(run)

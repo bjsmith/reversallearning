@@ -40,7 +40,8 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
                        variable_run_lengths=NA,
                        sample_from_prior=NA,
                        subj_level_params=NA,
-                       include_run_ot=NA
+                       include_run_ot=NA,
+                       pass_rt=NA
                        ){
   fit_desc<-""
   dd<-localsettings$data.dir
@@ -97,6 +98,9 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
   if(!is.na(subj_level_params)){
     fit_desc<-paste0(fit_desc,"_subj_level_params",as.character(subj_level_params))
   }
+  if(!is.na(pass_rt)){
+    fit_desc<-paste0(fit_desc,"_incRT",as.character(subj_level_params))
+  }
   
   if(estimation_method!=ESTIMATION_METHOD.VariationalBayes){
     fit_desc<-paste0(fit_desc,"_",as.character(estimation_method))
@@ -124,7 +128,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          variable_run_lengths=NA,
                          sample_from_prior=NA,
                          subj_level_params=NA,
-                         include_run_ot=NA){
+                         include_run_ot=NA,
+                         pass_rt=NA){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -147,7 +152,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            variable_run_lengths=variable_run_lengths,
                            sample_from_prior=sample_from_prior,
                            subj_level_params=subj_level_params,
-                           include_run_ot=include_run_ot)
+                           include_run_ot=include_run_ot,
+                           pass_rt=pass_rt)
   if (file.exists(fit.fileid)){
     print(paste0("file ", fit.fileid, " has already been fit! Loading..."))
     load(fit.fileid)
@@ -165,7 +171,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                              variable_run_lengths=variable_run_lengths,
                              sample_from_prior=sample_from_prior,
                              subj_level_params=subj_level_params,
-                             include_run_ot=include_run_ot)
+                             include_run_ot=include_run_ot,
+                             pass_rt=pass_rt)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -217,7 +224,8 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
                                 variable_run_lengths=FALSE,
                                 sample_from_prior=FALSE,
                                 subj_level_params=FALSE,
-                                include_run_ot=FALSE){
+                                include_run_ot=FALSE,
+                                pass_rt=FALSE){
   use_model<-model_to_use
   #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
   #setwd("nate_files")
@@ -334,6 +342,7 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   cue_pos <- array(0, c(numSubjs, maxTrials) )
   cor_resp <- array(0, c(numSubjs, maxTrials) )
   pain <- array(0, c(numSubjs, maxTrials) )
+  rt <- array(0, c(numSubjs,maxTrials))
   
   run_id_ot <- array(0, c(numSubjs,4))#because 4 is the max number of runs.
   
@@ -348,6 +357,7 @@ for (i in 1:numSubjs) {
     }
     tmp <- subset(rawdata, rawdata$subjID == curSubj)
     choice[i, 1:useTrials]  <- tmp$choice
+    rt[i,1:useTrials] <- tmp$reaction_time
     
     cue[i, 1:useTrials]     <- as.numeric(as.factor(tmp$cue))
     cue_freq[i, 1:useTrials] <- tmp$cue_freq
@@ -484,6 +494,9 @@ for (i in 1:numSubjs) {
   if(include_run_ot){
     dataList[["run_ot"]] = run_id_ot
   }
+  if(pass_rt){
+    dataList[["rt"]] = rt
+  }
   
   
   #need to add an option to number runs from 1 to 4, including both punishment and reward
@@ -609,7 +622,8 @@ for (i in 1:numSubjs) {
                                      variable_run_lengths=variable_run_lengths,
                                      sample_from_prior=sample_from_prior,
                                      subj_level_params=subj_level_params,
-                                     include_run_ot=include_run_ot))
+                                     include_run_ot=include_run_ot,
+                                     pass_rt=pass_rt))
 
   cat("...model saved.\n")
   

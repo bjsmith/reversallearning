@@ -36,14 +36,7 @@ accuracy.by.pres_seg.subid.finalpc<-
 accuracy.by.pres_seg.subid<-merge(accuracy.by.pres_seg.subid,accuracy.by.pres_seg.subid.finalpc,by=c("subid","Motivation"))
 
 
-reversal_learning_timeline_ggplot_commands<-
-  list(scale_x_continuous(breaks=1:length(break.labels),labels=break.labels),
-       labs(x="Presentation"),
-       theme(axis.text.x = element_text(hjust=0),
-             axis.text = element_text(face="bold"),#left-align presentation labels
-             strip.text = element_text(face="bold"),
-             legend.position = "bottom"
-       ))
+source("util/graphics.R")
 #accuracy.by.pres_seg.subid.finalpc<-accuracy.by.pres_seg.subid[presentation_n_over_segments==13,.(final.prop.correct=prop.correct),subid]
 #accuracy.by.pres_seg.subid<-merge(accuracy.by.pres_seg.subid,accuracy.by.pres_seg.subid.finalpc,by="subid")
 

@@ -1,0 +1,17 @@
+
+  data {
+    real N ;
+    real y[N] ;
+    real x[N] ;
+  }
+  parameters {
+    #parameter we have to estimate - what's the bias on this?
+    real norm_mu;
+  }
+
+  model {
+    norm_mu ~ normal(0,5);
+    x ~ normal(norm_mu,1);
+    y ~ categorical_logit(Phi_approx(x)) ;
+  }
+
