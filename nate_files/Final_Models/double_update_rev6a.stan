@@ -187,7 +187,7 @@ model {
         if(sample_from_prior!=1){
           #do we need a model simulating time taken here? if it's greater than x delay then we do nothing
           #if it's less than the delay then we act, otherwise we don't.
-          choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * (beta_1[s, run] + beta_2[s, run]* rt[s,t] );
+          choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * (beta_1[s, run] + beta_2[s, run]* rt[s,t]) );
         
           // prediction error
           PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
