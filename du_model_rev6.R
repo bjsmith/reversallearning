@@ -116,8 +116,7 @@ if(any(sapply(model.summaries,is.null))){
                 variable_run_lengths=variable_run_lengths,
                 sample_from_prior=FALSE,
                 subj_level_params=FALSE,
-                include_run_ot=TRUE,
-                pass_rt=TRUE
+                include_run_ot=TRUE
               )
 
               cat("...model loaded. Extracting...")

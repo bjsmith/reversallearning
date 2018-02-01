@@ -314,7 +314,7 @@ data_summarize_double_update_rev6a<- function(extracted.data,outcome.type=NA,com
   #we want...
   #group level parameters
   
-  parameters=factor(c("alpha","beta1","beta2"),ordered=TRUE)
+  parameters=factor(c("alpha","beta_1","beta_2"),ordered=TRUE)
   for (p in 1:length(parameters)){
     parameter<-parameters[p]
     sigma_vals <- extracted.data$sigma

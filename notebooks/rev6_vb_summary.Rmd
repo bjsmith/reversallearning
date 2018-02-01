@@ -69,7 +69,7 @@ ggplot(model.summary.all[Statistic=="mu" & EstimationMethod=="variationalbayes"]
     geom_freqpoly(alpha=0.9,binwidth=0.001)+
      geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
     facet_grid(Group~Parameter,scales = "free")+
-    
+  coord_cartesian(ylim=c(0,100))+
     labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
 
 
@@ -79,7 +79,7 @@ ggplot(model.summary.all[Statistic=="rew_mu" & EstimationMethod=="variationalbay
     geom_freqpoly(alpha=0.9,binwidth=0.001)+
      geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
     facet_grid(Group~Parameter,scales = "free")+
-    
+  coord_cartesian(ylim=c(0,100))+
     labs(title=paste0("mu statistic (all rounds), Reward Runs Only"))
 
 ggplot(model.summary.all[Statistic=="pun_mu" & EstimationMethod=="variationalbayes"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)
@@ -87,17 +87,13 @@ ggplot(model.summary.all[Statistic=="pun_mu" & EstimationMethod=="variationalbay
     geom_freqpoly(alpha=0.9,binwidth=0.001)+
      geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
     facet_grid(Group~Parameter,scales = "free")+
-    
-    labs(title=paste0("mu statistic (all rounds), Punishment Runs Only"))
+  coord_cartesian(ylim=c(0,100))+
+  labs(title=paste0("mu statistic (all rounds), Punishment Runs Only"))
 
 
 ```
 
-
-These all look plausible. I think for the first time, I've got a model that estimates repeated runs and reward and punishment within the same model, and yields separate estimates for reward and punishment by using a parameter that separates the two.
-
-While they all look *plausible*, estimates vary widely, indicating that we need to look at MCMC in order to calculate the outcomes for these values. Fortunately, this current model isn't unwieldy and I should be able to run through MCMC analyses in a tractable period of time.
-
+Repeated variational bayes estimates do not show larger differences when we simply add in reaction time as a product of $\beta$. Where we separate $\beta$ into $\beta_1$ and $\beta_2$ components, then there may be some evidence that the model changes - it appears that the posterior distribution for the learning rate declines, somehow. More importantly, distributions for $\beta_1$ and $\beta_2$ vary widely, suggesting that the models settled on local minima that do not represent prior distributions that truely represent the data well.
 ## Differences
 
 I want to take a look at differences:
@@ -131,6 +127,15 @@ ggplot(model.summary.all.rewpun[Parameter=="beta" & EstimationMethod=="variation
     facet_grid(.~Group,scales = "free")+
     labs(title=paste0("mu statistic (all rounds), beta, Reward and Punishment"))
 
+ggplot(model.summary.all.rewpun[Parameter=="beta_1" & EstimationMethod=="variationalbayes"],aes(x=rew_mu,y=pun_mu ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_point(alpha=0.1)+
+    facet_grid(.~Group,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), beta_1, Reward and Punishment"))
+
+ggplot(model.summary.all.rewpun[Parameter=="beta_2" & EstimationMethod=="variationalbayes"],aes(x=rew_mu,y=pun_mu ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_point(alpha=0.1)+
+    facet_grid(.~Group,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), beta_2, Reward and Punishment"))
 ```
 
 

@@ -13,18 +13,18 @@ source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
-models_to_run<-c("double_update_rev5a","double_update_rev6","double_update_rev6a")
+models_to_run<-c("double_update_rev5a", "double_update_rev6","double_update_rev6a")
 #models_to_run<-c("double_update_rev6")
-#estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC),as.character(ESTIMATION_METHOD.VariationalBayes))
-estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))
+estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC),as.character(ESTIMATION_METHOD.VariationalBayes))
+#estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))
 
 subject_groups<-1:3
 
 
-times_to_run.mcmc<-0
+times_to_run.mcmc<-1
 times_to_run.vb<-6
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev6a_v_rev6_v_rev5a_vb.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev6a_v_rev6.RData")
 
 models.with.4.separate.runs.count<-0
 models.with.runs.considered.together.count<-length(models_to_run)-models.with.4.separate.runs.count
@@ -59,6 +59,7 @@ if(any(sapply(model.summaries,is.null))){
         for (g in subject_groups){
           print (paste0("g:",g,";m:",m,";t:",t,collapse=", "))
           variable_run_lengths=FALSE
+          pass_rt=NA
           #we will loop just once for the model that handles everything at once
           #but four times for the model that needs to process runs and reward/punishment separately.
           if(m %in% c("double_update_rpo_repeated_runs_notrialpost", "double_update_rpo_repeated_runs_ntp_otmod",
@@ -86,6 +87,10 @@ if(any(sapply(model.summaries,is.null))){
                           "double_update_rev6",
                           "double_update_rev6a")){
                 variable_run_lengths=TRUE
+                if(m %in% c("double_update_rev6",
+                            "double_update_rev6a")){
+                  pass_rt=TRUE
+                }
               }
             }
           }else if (m %in% c("double_update_notrialpost")){
@@ -108,9 +113,9 @@ if(any(sapply(model.summaries,is.null))){
                 rp=rp,
                 model_rp_separately=FALSE,model_runs_separately = TRUE, include_pain=FALSE,
                 fastDebug=FALSE,
-                fileSuffix=paste0("rev_20180121",as.character(t)),
+                fileSuffix=paste0("rev_20180110",as.character(t)),
                 estimation_method = em,
-                bseed=t+1485960246,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+                bseed=t+605055105,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
                 collateTrialData=FALSE,
                 chainNum = 12,
                 iterations = iterations,
@@ -120,7 +125,7 @@ if(any(sapply(model.summaries,is.null))){
                 sample_from_prior=FALSE,
                 subj_level_params=FALSE,
                 include_run_ot=TRUE,
-                pass_rt=TRUE
+                pass_rt=pass_rt
               )
 
               cat("...model loaded. Extracting...")
