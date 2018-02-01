@@ -1,4 +1,4 @@
-if(length(grep("nate_files",getwd()))>0){
+  if(length(grep("nate_files",getwd()))>0){
   source("../util/apply_local_settings.R")
   modelcode_rl<-""
   apply_local_settings("../")
