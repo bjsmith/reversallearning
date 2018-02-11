@@ -6,25 +6,25 @@ apply_local_settings()
 
 
 write_fsfast_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=format(Sys.time(), "%Y%m%dT%H%M%OS"),
-                                     combinePresentationFeedback=FALSE,
-                                     combineAcrossImages=FALSE,
-                                     combineAcrossSections=FALSE,
-                                     distinguishCorrectAndIncorrect=TRUE,
-                                     minTrialTime=0){
-  
+                                      combinePresentationFeedback=FALSE,
+                                      combineAcrossImages=FALSE,
+                                      combineAcrossSections=FALSE,
+                                      distinguishCorrectAndIncorrect=TRUE,
+                                      minTrialTime=0){
+
   if(is.null(datetimestamp)){
     datetimestamp=format(Sys.time(), "%Y%m%dT%H%M%OS")
   }
-  
+
   #actionlist <- rl.all.subjects.list
   #combinePresentationFeedback=FALSE;combineAcrossImages=FALSE;combineAcrossSections=FALSE;distinguishCorrectAndIncorrect=FALSE;minTrialTime=0
   
-  #right, we have the right scope.
-  #let's record PRESENTATION and FEEDBACK 
-  #stim_dur=1; (or as long as the user took to respond, whichever is less)
-  #feedback_dur=0.7;
-  #exclude:
-  #"PreR" or "PostR" according to reversal_trial
+      #right, we have the right scope.
+      #let's record PRESENTATION and FEEDBACK 
+      #stim_dur=1; (or as long as the user took to respond, whichever is less)
+      #feedback_dur=0.7;
+      #exclude:
+      #"PreR" or "PostR" according to reversal_trial
   #actionlist=rl.all.subjects.list
   # table(actionlist$reversal_trial)#NA reversal trials are "control" trials.
   # table(is.na(actionlist$reversal_trial))
@@ -37,7 +37,7 @@ write_fsfast_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=form
   # table(actionlist[,.(Condition)])
   # table(actionlist[,.(Condition,reversal_trial_trimws)])
   # table(actionlist[,.(Condition,reversal_trial_trimws)])
-  
+
   #correct OR error OR nonresponse (according to score)
   
   actionlist[,score_trimws:=trimws(score)]
@@ -48,38 +48,38 @@ write_fsfast_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=form
     actionlist[score_trimws==1,behaviorcode:="resp"]
     actionlist[score_trimws==-1,behaviorcode:="resp"]
   }
-  
+
   actionlist[score_trimws==0,behaviorcode:="nonresp"]
   table(actionlist[,.(score_trimws,score,behaviorcode)])
+
+      
+      #....
+      # Codes Stimulus Schedule (and Weight)
+      # Four Columns
+      # Onset Time (Since Acq of 1st Saved Volume)
+      # Stimulus Code (0, 1, 2 ,3 …)
+      # Stimulus Duration 
+      # Stimulus Weight (default is 1)
+      # Any other columns ignored
+      # Simple Text File
+      # Code 0 Always Fixation/NULL
+      # Weight for parametric modulation
+      
+      #conditions should be:
+      #0=null
+      # we actually in this, need a condition individually for every single separate event. 
+      # so all of the unique codes I have already coded will be used.
+      # I think we can just use them verbatim, as they are.
+      #columns:
+      # - onset time - we already have
+      # - stimulus code
+      # - Stimulus duration
+      # - Stimulus weight
+      
   
-  
-  #....
-  # Codes Stimulus Schedule (and Weight)
-  # Four Columns
-  # Onset Time (Since Acq of 1st Saved Volume)
-  # Stimulus Code (0, 1, 2 ,3 …)
-  # Stimulus Duration 
-  # Stimulus Weight (default is 1)
-  # Any other columns ignored
-  # Simple Text File
-  # Code 0 Always Fixation/NULL
-  # Weight for parametric modulation
-  
-  #conditions should be:
-  #0=null
-  # we actually in this, need a condition individually for every single separate event. 
-  # so all of the unique codes I have already coded will be used.
-  # I think we can just use them verbatim, as they are.
-  #columns:
-  # - onset time - we already have
-  # - stimulus code
-  # - Stimulus duration
-  # - Stimulus weight
-  
-  
-  
-  #Pres or Fdbk
-  # presentation_lines=""
+      
+      #Pres or Fdbk
+      # presentation_lines=""
   
   actionlist[is.na(score),PresentationDuration:=1]    
   actionlist[!is.na(score),PresentationDuration:=reaction_time]
@@ -132,18 +132,18 @@ write_fsfast_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=form
   
   
   eventlist[,itemduration_str:=as.character(max(minTrialTime,as.numeric(itemduration)))]
+
+    eventlist[Condition==2,condition_val:="pl_"]
   
-  eventlist[Condition==2,condition_val:="pl_"]
-  
-  eventlist[,event_Stimcode:=paste0(
+    eventlist[,event_Stimcode:=paste0(
     condition_val,
     paste(
       #c(
-      revtrialcode,
-      stimtypevalue,
-      paste0("i",image),#image
-      segmentNum,
-      behaviorcode#)
+        revtrialcode,
+        stimtypevalue,
+        paste0("i",image),#image
+        segmentNum,
+        behaviorcode#)
       ,sep="_"))]
   eventlist[,weight:=1]
   eventlist[,event_StimID:=as.integer(as.factor(event_Stimcode))]
@@ -183,17 +183,109 @@ write_fsfast_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=form
           eventlist.stimfilecols<-eventlist_srm_all[,.(onset_str,event_StimID,itemduration_str,weight,event_Stimcode)]
           
           fname=paste0(localsettings$data.dir,"runfiles/fsfast_paradigmfile/",
-                       filePrefix,"runfile",
-                       datetimestamp,
-                       "_s",s,"_",m,"_r",r,".txt")
+            filePrefix,"runfile",
+            datetimestamp,
+            "_s",s,"_",m,"_r",r,".txt")
           print(paste0("writing ",fname))
           
+<<<<<<< HEAD
+          #Pres or Fdbk
+          presentation_lines=""
+          stimtypes=c("Pres","Fdbk")
+          if(combinePresentationFeedback){
+            stimtypes<-c("PsFb")
+          }
+          for (stimtype in stimtypes){
+            #need to set the time.
+            item_duration<-""
+            if(stimtype=="Pres"){
+              if (is.na(r[["score"]])){
+                itemduration=1
+              }else {
+                itemduration=r[["reaction_time"]]
+              }
+              presduration=itemduration#counter so that we append the duration for this item for the next feedback.
+              itemtime=r[["onset_time_actual"]]
+              itemduration=as.numeric(itemduration)-0.010
+            }else if(stimtype=="PsFb"){
+              if (is.na(r[["score"]])){
+                itemduration=1
+              }else {
+                itemduration=r[["reaction_time"]]
+              }
+              itemduration=as.numeric(itemduration)+0.7
+              presduration=itemduration#counter so that we append the duration for this item for the next feedback.
+              itemtime=r[["onset_time_actual"]]
+            }else if (stimtype=="Fdbk"){
+              itemduration="0.7"
+              itemtime=as.numeric(r[["onset_time_actual"]])+as.numeric(presduration)
+            }else{
+              stop("unknown stimtype")
+            }
+            condition_val=""
+            if (r[["Condition"]]==2){#mark off Condition==2
+              condition_val="placeholder_"
+            }
+            segmentNum<-r[["presentation_n_in_segment"]]#presentation_n_in_segment
+            if(combineAcrossImages){
+              segmentNum<-"allimg"
+            }
+            if(combineAcrossImages){
+              segmentNum<-"alli"
+            }
+            if(combineAcrossSections){
+              revtrialcode<-"AllS"
+            }
+            if(as.numeric(itemduration)<0.05){
+              warning(paste0(" a presentation",sid," trial was removed because it wasn't shown."))
+              next
+            }
+            itemtime_str<-trimws(as.character(itemtime))
+            itemduration_str<-trimws(as.character(max(minTrialTime,as.numeric(itemduration))))
+            event_Stimcode<-paste0(
+              condition_val,
+              paste(
+                c(
+                  revtrialcode,
+                  behaviorcode,
+                  stimtype,
+                  paste0("i",r[["image"]]),#image
+                  segmentNum)
+                ,collapse="_")) 
+            #OK. Do we actually need to sync these up, if we're just trying to grab a unique value for each timepoint? Possibly not.
+            #If I was doing a group-level analysis or even combining runs, I'd need to make sure stimcodes match across runs.
+            #But because I'm not, I think we can get our numeric stimcode simply by doing an as.factor over the written stimcode.
+            #should be all we need!
+            presentation_lines=paste0(c(
+              presentation_lines,
+              paste0(c(itemtime_str,
+                       event_Stimcode,#these need to be changed to be numeric. But in order to do that, I need to get a list of ALL in EVERY file so that the stimulus codes are coded the same for all subjects.
+                       #do we code NULL times? I'm not sure.
+                       itemduration_str,
+                       "1",event_Stimcode)
+                     ,collapse = "\t"),"\n"))
+          }
+          return(presentation_lines)
+        }))
+        runfiletext<-paste0(
+          c(#"Stim,Onset,Duration\n",#no header in in fsfast
+            applyval))
+        writeoutput<-paste0(runfiletext,collapse="")
+        #we want one file per session.
+        write(writeoutput ,file=
+                 paste0(localsettings$data.dir,
+                   "runfiles/",
+                   "fsfast_paradigmfile",filePrefix,
+                   datetimestamp,
+                   "_s",sid,"_",m,"_r",r,".txt"))
+=======
           write.table(eventlist.stimfilecols,file = fname,sep=",",
                       quote=FALSE,row.names=FALSE,col.names=FALSE)
         },error= function(e){
           print(eventlist_srm)
           stop(e)
         })
+>>>>>>> 2da32e838176d05853f3fa0e0762d651f15ee8ef
       }
     }
   }
