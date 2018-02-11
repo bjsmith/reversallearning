@@ -1,0 +1,145 @@
+---
+title: "Exploring Revision 5a MCMC and vb"
+output: html_notebook
+---
+
+This comparison examines three models:
+
+ - Revision 5, which does not include reaction time
+ - Revision 6, which includes unscaled reaction time as a multiplier of inverse temperature.
+ - Revision 6a, which includes beta1 and beta2 inverse temperatures, one which is scaled by inverse temperature and one which is not.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+source("visualization/geom_hdi.R")
+```
+
+##Variational Bayes: posterior comparison
+
+Though we have already done a variational Bayes estimate (see rev5_exploration-vb.Rmd), here, these are presented side-by-side with MCMC analyses for comparison.
+```{r }
+source("du_model_rev6_6a.R")
+```
+
+
+```{r getDataIntoTable, echo=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+#table(model.summary.all$TestId,model.summary.all$EstimationMethod)
+
+summary(model.summary.all[EstimationMethod=="MCMC"])
+
+```
+
+```{r reOrganizeData, echo=FALSE}
+#model.summary.all$ParameterClass<-model.summary.all$Parameter
+#model.summary.all$ParameterModel<-paste0(model.summary.all$Parameter,model.summary.all$ModelName)
+
+```
+## Exploring the structure of the parameters
+
+Let's take a look at these MCMC results.
+
+# MCMC results
+
+Let's take a look at the same distributions using MCMC.
+
+
+```{r, echo=FALSE,cache=FALSE}
+
+ggplot(model.summary.all[Statistic=="mu" & EstimationMethod=="MCMC"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(~Parameter,scales = "free")+
+    coord_cartesian(ylim = c(0,3000))+
+    labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
+
+ggplot(model.summary.all[Statistic %in% c("rew_mu","pun_mu") & EstimationMethod=="MCMC"],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Statistic~Parameter,scales = "free")+
+    coord_cartesian(ylim = c(0,2000))+
+    labs(title=paste0("mu statistic (all rounds), Reward and Punishment Runs"))
+
+
+```
+
+The posterior estimate of $\beta_2$ encompassing zero could indicate that reaction time has no relationship with determining the choices people make. 
+
+Is $\beta_1$ higher than $\beta_2$?
+```{r}
+
+#model.summary.all.notestid<-model.summary.all[,TestId:=NULL]
+
+model.summary.betas<-model.summary.all[EstimationMethod=="MCMC" & Parameter %in% c("beta_1","beta_2")]%>% tidyr::spread(Parameter,Value)
+model.summary.betas$beta_2_minus_beta_1<-model.summary.betas$beta_2-model.summary.betas$beta_1
+hist(model.summary.betas$beta_2)
+
+ggplot(model.summary.betas,aes(x=beta_2_minus_beta_1 ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(~Statistic,scales = "free")+
+    coord_cartesian(ylim = c(0,3000))+
+    labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
+
+```
+
+The evidence definitely shows that $\beta_2$ is lower than $\beta_1$.
+
+And why do we see a few $\beta_1$ values in the 8-10 range, while most are in the 0-2 range?
+
+
+```{r}
+
+#model.summary.all.notestid<-model.summary.all[,TestId:=NULL]
+
+#model.summary.betas<-model.summary.all[EstimationMethod=="MCMC" & Parameter %in% c("beta_1","beta_2")]%>% tidyr::spread(Parameter,Value)
+#model.summary.betas$beta_2_minus_beta_1<-model.summary.betas$beta_2-model.summary.betas$beta_1
+#hist(model.summary.betas$beta_2)
+
+ggplot(model.summary.all[EstimationMethod=="MCMC" & Parameter %in% c("beta_1","beta_2")],aes(x=Value,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(~Statistic,scales = "free")+
+    coord_cartesian(ylim = c(0,3000))+
+    labs(title=paste0("beta_1 and beta_2, variable number of runs model"))
+
+```
+
+The across-subject variance of $\beta_1$ and $\beta_2$ is fairly high, but the means are low, and consistent with zero.

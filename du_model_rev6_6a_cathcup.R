@@ -113,6 +113,11 @@ if(any(sapply(model.summaries,is.null))){
               #don't load if we have already loaded this (can happen if we loaded up a partially complete dataset)
               if (is.null(model.summaries[[current_list_pos]])){
                 #run the model
+                if(em==as.character(ESTIMATION_METHOD.VariationalBayes)){
+                  lookupOnlyVal=FALSE
+                }else{
+                  lookupOnlyVal=TRUE
+                }
                 
                 fitpackage<-lookupOrRunFit(
                   run=runs,groups_to_fit=g, model_to_use=m,includeSubjGroup = FALSE,
@@ -132,7 +137,7 @@ if(any(sapply(model.summaries,is.null))){
                   subj_level_params=FALSE,
                   include_run_ot=TRUE,
                   pass_rt=pass_rt,
-                  lookupOnly=TRUE
+                  lookupOnly=lookupOnlyVal
                 )
                 
                 

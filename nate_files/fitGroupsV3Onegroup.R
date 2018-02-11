@@ -129,7 +129,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          sample_from_prior=NA,
                          subj_level_params=NA,
                          include_run_ot=NA,
-                         pass_rt=NA){
+                         pass_rt=NA,
+                         lookupOnly=FALSE){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -159,7 +160,7 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
     load(fit.fileid)
     #fit_data <- list(fit = fit, plot_object = for_plot)
     return(fit_data)
-  }else{
+  }else if (lookupOnly==FALSE){
     print("This has not been previously fit. Running full model...")
     fit<-fitGroupsV3Onegroup(run,groups_to_fit,model_to_use,includeSubjGroup,rp,model_rp_separately,model_runs_separately,
                              include_pain,fastDebug=fastDebug,fileSuffix=fileSuffix,
@@ -175,6 +176,9 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                              pass_rt=pass_rt)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
+  }
+  else{
+    return(NA)
   }
 }
 

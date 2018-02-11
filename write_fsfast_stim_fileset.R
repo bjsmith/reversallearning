@@ -131,7 +131,11 @@ write_fsfast_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=form
                   stimtype,
                   paste0("i",r[["image"]]),#image
                   segmentNum)
-                ,collapse="_"))
+                ,collapse="_")) 
+            #OK. Do we actually need to sync these up, if we're just trying to grab a unique value for each timepoint? Possibly not.
+            #If I was doing a group-level analysis or even combining runs, I'd need to make sure stimcodes match across runs.
+            #But because I'm not, I think we can get our numeric stimcode simply by doing an as.factor over the written stimcode.
+            #should be all we need!
             presentation_lines=paste0(c(
               presentation_lines,
               paste0(c(itemtime_str,
@@ -149,8 +153,8 @@ write_fsfast_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=form
         writeoutput<-paste0(runfiletext,collapse="")
         #we want one file per session.
         write(writeoutput ,file=
-                 paste0(
-                   "../data/runfiles/",
+                 paste0(localsettings$data.dir,
+                   "runfiles/",
                    "fsfast_paradigmfile",filePrefix,
                    datetimestamp,
                    "_s",sid,"_",m,"_r",r,".txt"))
