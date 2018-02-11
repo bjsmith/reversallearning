@@ -30,7 +30,7 @@ source("visualization/geom_hdi.R")
 
 Though we have already done a variational Bayes estimate (see rev5_exploration-vb.Rmd), here, these are presented side-by-side with MCMC analyses for comparison.
 ```{r }
-source("du_model_rev6_6a.R")
+debugSource("du_model_rev6_6a.R")
 ```
 
 

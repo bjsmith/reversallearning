@@ -1,0 +1,63 @@
+---
+title: "Progress report February 12 2018"
+output: html_notebook
+---
+
+
+\DeclareMathOperator{\logit}{logit}
+
+
+This is a report on what I'm currently workign on with the reversal learning joint model.
+
+# Decisions to make
+
+We recently discussed a number of points to move on.
+
+The main question to address today: in the last discussion we had, Brandon questioned whether, considering the performance of the hierarchical model in stan, we'd get anything out of an DE-MCMC implementation.
+
+There are a few things we agreed that might improve performance of the model, and not all of them could be implemented in stan.
+
+So we need to decide - do we:
+
+ - keep working in stan and only proceed to DE-MCMC if we can find performance in the stan model?
+ - Conclude now DE-MCMC will probably not work?
+ - What are the things we need to try now?
+
+
+# Things I'm currently working on
+
+## Freesurfer ROI extraction
+
+I'm extracting ROIs from the raw data. I've created design matrices and will be extracting these soon.
+
+I'm using surface-based smoothing. This extracts data from the surface of the cortex and reports ROI activity within small ROIs on the surface. I think this method will be superior to volume-based ROIs.
+
+## Trying out reaction_time as a regressor
+
+I ran a model with reaction time as a regressor. I tried two different designs.
+
+The first treats reaction time as a static variable:
+
+```{r design1, eval=FALSE}
+choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * beta[s, run] * rt[s,t] );
+```
+
+$$ logit(\pi)=\mathbf{c}_{s,t}\times(\beta_{s,r} rt_{s,t}) $$
+The second allows it to vary:
+
+```{r design2, eval=FALSE}
+choice[s,t] ~ categorical_logit( to_vector(ev[cue[s,t],]) * (beta_0[s, run] + beta_1[s, run]* rt[s,t]) );
+```
+
+$$ logit(\pi)=\mathbf{c}_{s,t}\times(\beta_{0,s,r}+\beta_{1,s,r}rt_{s,t}) $$
+
+### Result
+
+
+# Details to discuss
+
+
+
+## Distributions in the stan model
+
+
