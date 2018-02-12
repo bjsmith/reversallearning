@@ -128,7 +128,7 @@ get_param_col_means<-function(x){
 #alpha
 sim_group_pr_mu_1<- -0.4325632
 sim_group_pr_sigma_1 <- 0.9589362
-sim_group_pr_rpdiff_mu_1 <- 0.02228016+2
+sim_group_pr_rpdiff_mu_1 <- 0.02228016
 sim_group_pr_rpdiff_sigma_1 <- 0.32770447
 
 #beta
@@ -308,7 +308,7 @@ main.prop.cor.ggplot<-
   #scale_x_continuous(breaks=-8:4,labels=break.labels)+
   labs(#x="Presentation",
     y="Proportion correct across all users by image",
-    title=paste0("proportion correct across all users by image\n from start to finish of reversal learning"))+
+    title=paste0("proportion correct across all users by image (Modeled)\n from start to finish of reversal learning"))+
   geom_line(data=accuracy.by.pres_seg.subid.summary,aes(x=presentation_n_over_segments,y=prop.correct.m,group=NULL))+
   facet_grid(Motivation ~ .)+
   #theme(strip.text.y=element_text(colour="orange"))+

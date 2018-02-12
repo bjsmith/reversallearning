@@ -1,10 +1,9 @@
 ---
 title: "Progress report February 12 2018"
-output: html_notebook
+output:
+  html_document: default
+  html_notebook: default
 ---
-
-
-\DeclareMathOperator{\logit}{logit}
 
 
 This is a report on what I'm currently workign on with the reversal learning joint model.
@@ -32,6 +31,10 @@ I'm extracting ROIs from the raw data. I've created design matrices and will be 
 
 I'm using surface-based smoothing. This extracts data from the surface of the cortex and reports ROI activity within small ROIs on the surface. I think this method will be superior to volume-based ROIs.
 
+I haven't used freesurfer before and it is taking some time to extract these.
+
+\emph{Question}: I don't really understand why it would be difficult to use these in stan? 
+
 ## Trying out reaction_time as a regressor
 
 I ran a model with reaction time as a regressor. I tried two different designs.
@@ -54,10 +57,179 @@ $$ logit(\pi)=\mathbf{c}_{s,t}\times(\beta_{0,s,r}+\beta_{1,s,r}rt_{s,t}) $$
 ### Result
 
 
-# Details to discuss
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+source("visualization/geom_hdi.R")
+```
+
+The single-value beta model is called "rev6" while the double-value model is called "rev6-a".
+
+You can see that:
+
+ - In the "rev6" model the estimate for $\beta$ is slightly higher than in "rev5" (where reaction time was not considered at all). This is expected: reaction time is between 0 and 1 so when we use it as a simple multiplier of $\beta$, we expect the estimate of $\beta$ to go up to reflect hte fact it's been weighted down.
+ - In the rev6a model, $\beta_1$ has a similar range to $\beta$ in the rev5 model. The 95% HDI of $\beta_2$ falls to zero very easily. So this model is probably not particularly useful.
+ - It might be helpful to try a model in the vein Brandon has suggested.
+ 
+```{r, include=FALSE}
+source("du_model_rev6_6a.R")
+```
 
 
+```{r getDataIntoTable, include=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+#table(model.summary.all$TestId,model.summary.all$EstimationMethod)
+
+summary(model.summary.all[EstimationMethod=="MCMC"])
+
+```
+
+```{r}
+
+ggplot(model.summary.all[Statistic %in% c("rew_mu","pun_mu") & EstimationMethod=="MCMC" & Parameter %in% c("beta","beta_1","beta_2")],aes(x=Value ,fill=factor(ModelName),color=factor(ModelName)))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Parameter~Statistic)+
+    coord_cartesian(ylim = c(0,1500))+
+    labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
+
+
+
+```
 
 ## Distributions in the stan model
+
+I want to just go over the way I've generated priors. From the model "rev6", here are the prior samples and transformations:
+
+At the group level:
+```{stan output.var="stanout0", eval=FALSE}
+
+model {
+  
+  #group mean
+  group_pr_mu ~ normal(0, 1);
+  group_pr_sigma ~ cauchy(0, 5); 
+  
+  #difference between reward and punishment
+  group_pr_rpdiff_mu ~ normal(0, 1);
+  group_pr_rpdiff_sigma ~ cauchy(0, 5);
+  
+  #estimates of within-subject run-level variability
+  alpha_s_pr_sigma ~ cauchy(0, 5);
+  beta_s_pr_sigma ~ cauchy(0, 5);
+  
+}
+```
+
+At the subject level:
+
+```{stan output.var="stanout1", eval=FALSE}
+
+//subject level:
+model{
+for (s in 1:N){
+    alpha_s_pr_mu[s] ~ normal(group_pr_mu[1],group_pr_sigma[1]);
+    beta_s_pr_mu[s] ~ normal(group_pr_mu[2],group_pr_sigma[2]);
+    
+    //parameter representing the difference between reward and punishment runs.
+    alpha_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[1],group_pr_rpdiff_sigma[1]); 
+    beta_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[2],group_pr_rpdiff_sigma[2]); 
+}
+}
+
+
+```
+
+
+And at the run level:
+
+
+
+```{stan output.var="stanout2", eval=FALSE}
+model{
+  //r_ot_multiplier is set to either 0.5 or -0.5 depending on whether this run is reward or punishment.
+  
+  for (s in 1:N){
+    for (r in 1:R){
+        if(run_motivation=="reward") {run_ot_multiplier=0.5}else{run_ot_multiplier=-0.5}
+        alpha_pr[s,r] ~ normal(alpha_s_pr_mu[s]+run_ot_multiplier*alpha_s_pr_rpdiff_mu[s],alpha_s_pr_sigma);
+        beta_pr[s,r] ~ normal(beta_s_pr_mu[s]+run_ot_multiplier*beta_s_pr_rpdiff_mu[s],beta_s_pr_sigma);
+      }
+  }
+}
+
+transformed parameters {
+//...
+  for (s in 1:N) {
+    for (r in 1:R){
+      alpha[s, r]  = Phi_approx( alpha_pr[s, r]);
+      beta[s, r]   = Phi_approx( beta_pr[s, r]) * 14; 
+    }
+  }
+}
+```
+
+# Sampler
+
+Brandon, you were interested in seeing the plain-R generative model I wrote as a sanity check this was working OK. This is entitled "create_simulated_dataset.R". To show the code I really need to take you through it.
+
+However, here is some simulated data that was generated. This draws on values estimated from the model rev5a and generates data for each subject over time. 
+
+It looks pretty similar to the actual data displayed over time, although there are some subtle issues. It doesn't quite so well capture the correlation between subjects doing well at the end and subjects doing well the first time around.
+
+```{r}
+source("create_simulated_dataset.R")
+
+print(main.prop.cor.ggplot)
+```
+
+## Other discussion
+
+We did discuss in the email whether to integrate groups into a single model. From our discussion I think this won't buy us much, and it's probably low on the priority list.
+
+What do you think?
+
+
+# Next planned steps
+
+ - Try out another reaction time model?
+ - Keep working on freesurfer ROIs.
+    * Do we need to prepare for DE-MCMC for this or not?
+    
 
 
