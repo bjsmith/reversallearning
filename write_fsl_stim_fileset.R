@@ -4,8 +4,10 @@ source("util/apply_local_settings.R")
 apply_local_settings()
 #source("rl_behav_analysis_learning_setup.R")
 
+#FSL needs a separate file for each contrast.
 
-write_fsfast_stim_fileset<- function(actionlist,filePrefix="",
+
+write_fsl_stim_fileset<- function(actionlist,filePrefix="",
                                      datetimestamp=format(Sys.time(), "%Y%m%dT%H%M%OS"),
                                      combinePresentationFeedback=FALSE,
                                      combineAcrossImages=FALSE,
