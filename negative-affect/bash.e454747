@@ -1,0 +1,3 @@
+from: can't read /var/mail/pain_regression_allsubjs
+main_nps_allsubjs_server-feb2018.py: line 2: syntax error near unexpected token `('
+main_nps_allsubjs_server-feb2018.py: line 2: `rlPain=RLPain()'

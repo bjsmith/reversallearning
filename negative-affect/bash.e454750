@@ -1,0 +1,29 @@
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/ndimage/interpolation.py:462: UserWarning: The behaviour of affine_transform with a one-dimensional array supplied for the matrix parameter has changed in scipy 0.18.0.
+  "The behaviour of affine_transform with a one-dimensional "
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nltools/data.py:363: RuntimeWarning: invalid value encountered in true_divide
+  t_out.data = b / stderr
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:879: RuntimeWarning: invalid value encountered in greater
+  return (self.a < x) & (x < self.b)
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:879: RuntimeWarning: invalid value encountered in less
+  return (self.a < x) & (x < self.b)
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:1735: RuntimeWarning: invalid value encountered in greater_equal
+  cond2 = (x >= self.b) & cond0
+/expdata/bensmith/joint-modeling/code/msm/behavioral-analysis/reversallearning/negative-affect/pain_regression_allsubjs.py:175: UserWarning: Just a friendly FYI: expected number of rows is 360 but this subject had 326. Probably this subject got cut off the task half-way through.
+  rowcount) + ". Probably this subject got cut off the task half-way through.")
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nilearn/image/resampling.py:481: UserWarning: Casting data from int16 to float32
+  warnings.warn("Casting data from %s to %s" % (data.dtype.name, aux))
+Traceback (most recent call last):
+  File "main_nps_allsubjs_server_feb2018.py", line 20, in <module>
+    rlPain.process_detailed_regressors(range(125,500))
+  File "/expdata/bensmith/joint-modeling/code/msm/behavioral-analysis/reversallearning/negative-affect/pain_regression_allsubjs.py", line 98, in process_detailed_regressors
+    msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
+  File "/expdata/bensmith/joint-modeling/code/msm/behavioral-analysis/reversallearning/negative-affect/pain_regression_allsubjs.py", line 156, in get_trialtype_pain_regressors
+    runLength=msmrl1.shape()[0]
+  File "/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nltools/file_reader.py", line 60, in onsets_to_dm
+    df['Onset'] = df['Onset'].apply(lambda x: int(np.floor(x/TR)))
+  File "/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/pandas/core/series.py", line 2355, in apply
+    mapped = lib.map_infer(values, f, convert=convert_dtype)
+  File "pandas/_libs/src/inference.pyx", line 1574, in pandas._libs.lib.map_infer (pandas/_libs/lib.c:66645)
+  File "/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nltools/file_reader.py", line 60, in <lambda>
+    df['Onset'] = df['Onset'].apply(lambda x: int(np.floor(x/TR)))
+ValueError: cannot convert float NaN to integer
