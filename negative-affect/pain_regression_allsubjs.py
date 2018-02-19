@@ -15,6 +15,7 @@ from nltools.plotting import plotBrain
 import os.path
 import csv
 import pickle
+import warnings
 
 """
 Created on Sat Aug 19 19:05:48 2017
@@ -167,10 +168,16 @@ class RLPain:
                 print('deleting '+ str(c))
                 del onsets_convolved[c]
 
-        onsets_convolved['linearterm']=range(1,361)
+
+        rowcount=onsets_convolved.__len__()
+        if rowcount != 360:
+            warnings.warn("Just a friendly FYI: expected number of rows is 360 but this subject had " + str(
+                rowcount) + ". Probably this subject got cut off the task half-way through.")
+        onsets_convolved['linearterm'] = range(1, rowcount + 1)
+
         onsets_convolved['quadraticterm']=[pow(x,2) for x in onsets_convolved['linearterm']]
         onsets_convolved['cubicterm']=[pow(x,3) for x in onsets_convolved['linearterm']]
-        onsets_convolved['ones']=[1]*360
+        onsets_convolved['ones']=[1]*rowcount
         msmrl1.X=onsets_convolved
         print("convolved onsets; regressing...")
         #regress the file on each of the onsets. So then, when we compare similarity to the regression, we'll be getting the
