@@ -4,6 +4,7 @@ write_nltools_stim_fileset<- function(actionlist,filePrefix="",datetimestamp=for
                                       combineAcrossSections=FALSE,
                                       minTrialTime=0){
   #source("rl_behav_analysis_learning_setup.R")
+  actionlist<-actionlist[!is.na(onset_time_actual)]
   if(is.null(datetimestamp)){
     datetimestamp=format(Sys.time(), "%Y%m%dT%H%M%OS")
   }

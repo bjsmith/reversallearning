@@ -14,5 +14,5 @@ rlPain.onset_file_version='20171020T012118'
 #    rid) + '.txt'
 #print(rlPain.get_trialtype_pain_regressors(nifti_file,onset_file))
 
-rlPain.process_detailed_regressors(range(127,129))
+rlPain.process_detailed_regressors(range(144,1146))
 #rlPain.process_detailed_regressors()
