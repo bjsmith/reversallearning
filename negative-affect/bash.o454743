@@ -1,0 +1,50 @@
+/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks
+we have a match; /expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles/runfiledetail20171020T012118_s125_punishment_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from nps...
+/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks
+we have a match; /expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles/runfiledetail20171020T012118_s125_punishment_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i96_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from nps...
+/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks
+we have a match; /expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles/runfiledetail20171020T012118_s126_punishment_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from nps...
+/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks
+we have a match; /expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles/runfiledetail20171020T012118_s126_punishment_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i96_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from nps...
+/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks
+we have a match; /expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles/runfiledetail20171020T012118_s127_punishment_r1.txt
+importing nifti
+importing onsets
+deleting PreR_nonresponse_PsFb_i70_6_c0
+deleting placeholder_PreR_error_PsFb_i71_1_c0
+deleting placeholder_PreR_nonresponse_PsFb_i72_2_c0
+deleting PreR_correct_PsFb_i70_7_c0
+deleting placeholder_PreR_error_PsFb_i71_2_c0
+deleting PostR_error_PsFb_i69_2_c0
+deleting PostR_error_PsFb_i70_1_c0
+deleting PostR_nonresponse_PsFb_i69_3_c0
+deleting placeholder_PreR_nonresponse_PsFb_i71_3_c0
+deleting PostR_error_PsFb_i70_2_c0
+deleting placeholder_PreR_error_PsFb_i72_3_c0
+deleting PostR_error_PsFb_i70_3_c0
+deleting placeholder_PreR_correct_PsFb_i71_4_c0
+deleting PostR_error_PsFb_i69_4_c0
+deleting PostR_correct_PsFb_i70_4_c0
+deleting placeholder_PreR_error_PsFb_i72_4_c0
+deleting PostR_correct_PsFb_i70_5_c0
+deleting placeholder_PreR_error_PsFb_i72_5_c0
+deleting PostR_correct_PsFb_i69_5_c0
+deleting placeholder_PreR_correct_PsFb_i71_5_c0
