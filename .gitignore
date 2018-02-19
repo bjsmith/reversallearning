@@ -11,6 +11,8 @@ Icon?
 Rlocalsettings.RData
 Rscript.e*
 Rscript.o*
+bash.e*
+bash.o*
 notebooks/cache/*
 notebooks/*.pdf
 notebooks/*.html
