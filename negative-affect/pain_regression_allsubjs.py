@@ -80,10 +80,10 @@ class RLPain:
         self.stats = stats
         self.decoder = stats['weight_map']
 
-    def process_detailed_regressors(self):
+    def process_detailed_regressors(self,subid_range=range(1,500)):
         #csvfile=None
         header_written=False
-        for sid in range(1,500):
+        for sid in subid_range:
             for rid in [1,2]:
                 nifti_file=self.fMRI_dir + '/sub'+str(sid) + 'ReversalLearningPunishrun'+str(rid)
                 if os.path.isfile(nifti_file+'.nii.gz'):
@@ -134,7 +134,7 @@ class RLPain:
                                 spamwriter.writerow([sid,rid,r])
                         #attach the subject and run ID to the output and concatenate.
 
-
+    #the standard paine regressor from nlTools
     def get_trialtype_pain_regressors(self,nifti_data,onset_file):
         print("importing nifti")
         #import the nifti

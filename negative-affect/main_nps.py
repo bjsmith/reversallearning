@@ -9,7 +9,7 @@ rlPain.regressor_output_filepathprefix = '/Users/benjaminsmith/GDrive/joint-mode
 rlPain.get_wager_nps_map()
 rlPain.onset_file_version='20171020T012118'
 
-sid=113
+sid=114
 rid=2
 #nifti_file = rlPain.fMRI_dir + '/sub' + str(sid) + 'ReversalLearningPunishrun' + str(rid)
 #onset_file = rlPain.onset_dir + '/runfiledetail20170820T001729_s' + str(sid) + '_punishment_r' + str(
