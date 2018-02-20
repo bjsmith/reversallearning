@@ -57,9 +57,26 @@ for (condition in c("reward","punishment")){
     graph.title.condition.suffix<-"\n(Punishment trials)"
   }
   #get list of subjects
-  sub.rec.filenames.f1<-list.files(path=paste0(localsettings$data.dir,"RL_behav/"),pattern=filename.pattern,ignore.case=TRUE)
-  sub.rec.filenames.f2<-list.files(path=paste0(localsettings$data.dir,"ReversalLearning/new"),pattern=filename.pattern,ignore.case=TRUE)
-  sub.rec.filenames.f3<-list.files(path=paste0(localsettings$data.dir,"ReversalLearning/results"),pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f1.untrimmed<-list.files(path=paste0(localsettings$data.dir,"RL_behav/"),pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f2.untrimmed<-list.files(path=paste0(localsettings$data.dir,"ReversalLearning/new"),pattern=filename.pattern,ignore.case=TRUE)
+  sub.rec.filenames.f3.untrimmed<-list.files(path=paste0(localsettings$data.dir,"ReversalLearning/results"),pattern=filename.pattern,ignore.case=TRUE)
+  #OK are there duplicates WITHIN each of these groups?
+  table(substr(sub.rec.filenames.f1.untrimmed,0,15))[table(substr(sub.rec.filenames.f1.untrimmed,0,15))>1]
+  table(substr(sub.rec.filenames.f2.untrimmed,0,15))[table(substr(sub.rec.filenames.f2.untrimmed,0,15))>1]
+  sub.rec.filenames.f1<-sub.rec.filenames.f1.untrimmed[
+    !substr(sub.rec.filenames.f1.untrimmed,0,15) %in% names(table(substr(sub.rec.filenames.f1.untrimmed,0,15))[
+      table(substr(sub.rec.filenames.f1.untrimmed,0,15))>1])]
+  sub.rec.filenames.f2<-sub.rec.filenames.f2.untrimmed[
+    !substr(sub.rec.filenames.f2.untrimmed,0,15) %in% names(table(substr(sub.rec.filenames.f2.untrimmed,0,15))[
+      table(substr(sub.rec.filenames.f2.untrimmed,0,15))>1])]
+  sub.rec.filenames.f3<-sub.rec.filenames.f3.untrimmed[
+    !substr(sub.rec.filenames.f3.untrimmed,0,15) %in% names(table(substr(sub.rec.filenames.f3.untrimmed,0,15))[
+      table(substr(sub.rec.filenames.f3.untrimmed,0,15))>1])]
+  
+  #yes. Sub 153 and 154 have duplicates. what do we do about that?
+  #Because we don't know which are which, we should just exclude these subjects entirely.
+  
+  
   get.sub.rl.data <- function(sub.filename,sub.folder){
     mat.data<-readMat(sub.filename)
     sub.data<-as.data.frame(mat.data$RL)
@@ -147,6 +164,10 @@ for (condition in c("reward","punishment")){
   rl.subjects.f1.list<-do.call("rbind",lapply(paste0(localsettings$data.dir, "RL_behav/",sub.rec.filenames.f1),get.sub.rl.data,paste0(localsettings$data.dir,"RL_behav")))
   rl.subjects.f2.list<-do.call("rbind",lapply(paste0(localsettings$data.dir,"ReversalLearning/new/",sub.rec.filenames.f2),get.sub.rl.data,paste0(localsettings$data.dir,"ReversalLearning/new")))
   rl.subjects.f3.list<-do.call("rbind",lapply(paste0(localsettings$data.dir,"ReversalLearning/results/",sub.rec.filenames.f3),get.sub.rl.data,paste0(localsettings$data.dir,"ReversalLearning/results")))
+  
+  #iterate through each list.
+  #in each list, if there exists duplicate rows, then test to see if the ENTIRE run is duplicated EXACTLY
+  View(rl.subjects.f2.list[rl.subjects.f2.list$subid==153,])
   unique(rl.subjects.f1.list$subid)
   length(unique(rl.subjects.f1.list$subid))
   length(unique(rl.subjects.f2.list$subid))

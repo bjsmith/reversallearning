@@ -6,7 +6,7 @@ rlPain.fMRI_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/be
 rlPain.onset_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
 rlPain.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
 rlPain.compile_pain_decoder()
-rlPain.onset_file_version='20171020T012118'
+rlPain.onset_file_version='20180220T031755'
 #sid=113
 #rid=2
 #nifti_file = rlPain.fMRI_dir + '/sub' + str(sid) + 'ReversalLearningPunishrun' + str(rid)
@@ -14,5 +14,5 @@ rlPain.onset_file_version='20171020T012118'
 #    rid) + '.txt'
 #print(rlPain.get_trialtype_pain_regressors(nifti_file,onset_file))
 
-rlPain.process_detailed_regressors(range(144,1146))
+rlPain.process_detailed_regressors(range(0,199))
 #rlPain.process_detailed_regressors()

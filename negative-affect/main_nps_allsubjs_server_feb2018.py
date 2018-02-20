@@ -8,7 +8,7 @@ rlPain.onset_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/
 rlPain.nps_map_filepath = '/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/weights_NSF_grouppred_cvpcr.img'
 rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/rlPainNPS/'
 rlPain.get_wager_nps_map()
-rlPain.onset_file_version='20180219T084131'
+rlPain.onset_file_version='20180220T031755'
 
 #sid=113
 #rid=2
