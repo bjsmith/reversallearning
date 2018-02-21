@@ -1,6 +1,7 @@
 
 debugSource("de_mcmc/functions.R")
 #install.packages("snowfall")
+library("data.table")
 library("snowfall")
 library("MASS")
 library("msm")#install.packages("msm")
