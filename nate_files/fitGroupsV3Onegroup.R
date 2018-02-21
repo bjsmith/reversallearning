@@ -22,9 +22,11 @@ if(length(grep("nate_files",getwd()))>0){
 REVERSAL_LEARNING_REWARD=1
 REVERSAL_LEARNING_PUNISHMENT=2
 
-ESTIMATION_METHODS<-as.factor(c("variationalbayes","MCMC"))
+ESTIMATION_METHODS<-as.factor(c("variationalbayes","MCMC","DEMCMC"))
 ESTIMATION_METHOD.VariationalBayes=ESTIMATION_METHODS[[1]]
 ESTIMATION_METHOD.MCMC=ESTIMATION_METHODS[[2]]
+ESTIMATION_METHOD.DEMCMC=ESTIMATION_METHODS[[3]]
+ESTIMATION_METHODS_STAN<-list(ESTIMATION_METHOD.VariationalBayes,ESTIMATION_METHOD.MCMC)
 
 
 get_fit_desc<-function(use_model,descr,run,rp=c(2),
@@ -498,44 +500,52 @@ for (i in 1:numSubjs) {
   if(include_run_ot){
     dataList[["run_ot"]] = run_id_ot
   }
-  if(pass_rt){
-    dataList[["rt"]] = rt
+  if(!is.na(pass_rt)){
+    if(pass_rt){
+      dataList[["rt"]] = rt
+    }
   }
+  
+  
+  
   
   
   #need to add an option to number runs from 1 to 4, including both punishment and reward
   #
-  cat("Building model...")
-  model_text<-paste0(readLines(paste0(modelcode_rl,"Final_Models/", use_model,".stan")),collapse="\n")
-  #check if a model under the name exists under "compiled models"
-  #only for this particular system [intended to pick out an individual system; not completely fool-proof but should do the trick]
-  #in instances where there are different systems 
-  compile.environ<-gsub("[\\/(). -#-]","",paste0(Sys.getenv("R_PLATFORM"),Sys.info()["version"],Sys.getenv("USER"),Sys.info()["nodename"]))
-  precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", compile.environ,use_model)
-  model.loaded<-FALSE
-  if (file.exists(paste0(precompiled.location,".stan"))){
-    print(precompiled.location)
-    print("A compiled stan model with this name already exists. Checking to see if it's identical to model being currently run...")
-    m.precompiled.text<-paste0(readLines(paste0(precompiled.location,".stan")),collapse="\n")
-    if(model_text==m.precompiled.text){
-      print("Models match; loading precompiled model...")
-      load(paste0(precompiled.location,".RData"))
-      model.loaded<-TRUE
+  if(estimation_method %in% ESTIMATION_METHODS_STAN){
+    cat("Building model...")
+    model_text<-paste0(readLines(paste0(modelcode_rl,"Final_Models/", use_model,".stan")),collapse="\n")
+    #check if a model under the name exists under "compiled models"
+    #only for this particular system [intended to pick out an individual system; not completely fool-proof but should do the trick]
+    #in instances where there are different systems 
+    compile.environ<-gsub("[\\/(). -#-]","",paste0(Sys.getenv("R_PLATFORM"),Sys.info()["version"],Sys.getenv("USER"),Sys.info()["nodename"]))
+    precompiled.location<-paste0(localsettings$data.dir,"compiled_models/", compile.environ,use_model)
+    model.loaded<-FALSE
+    if (file.exists(paste0(precompiled.location,".stan"))){
+      print(precompiled.location)
+      print("A compiled stan model with this name already exists. Checking to see if it's identical to model being currently run...")
+      m.precompiled.text<-paste0(readLines(paste0(precompiled.location,".stan")),collapse="\n")
+      if(model_text==m.precompiled.text){
+        print("Models match; loading precompiled model...")
+        load(paste0(precompiled.location,".RData"))
+        model.loaded<-TRUE
+      }
     }
-  }
-  if(model.loaded==FALSE){
-    print("No pre-compiled model exists. Compiling...")
-    #if it does, check to see if the text is exactly the same
-    #if it is, use the pre-compiled model.
-    m1 <- stan_model(paste0(modelcode_rl,"Final_Models/", use_model,".stan"))
-    #save away the compiled model and its source into the cache directory.
-    #this will allow this model to be loaded already pre-compiled next time! Should save us a bit of time.
-    save(m1,file=paste0(precompiled.location,".RData"))
-    file.copy(paste0(modelcode_rl,"Final_Models/", use_model,".stan"),paste0(precompiled.location,".stan"),overwrite=TRUE)
+    if(model.loaded==FALSE){
+      print("No pre-compiled model exists. Compiling...")
+      #if it does, check to see if the text is exactly the same
+      #if it is, use the pre-compiled model.
+      m1 <- stan_model(paste0(modelcode_rl,"Final_Models/", use_model,".stan"))
+      #save away the compiled model and its source into the cache directory.
+      #this will allow this model to be loaded already pre-compiled next time! Should save us a bit of time.
+      save(m1,file=paste0(precompiled.location,".RData"))
+      file.copy(paste0(modelcode_rl,"Final_Models/", use_model,".stan"),paste0(precompiled.location,".stan"),overwrite=TRUE)
+    }
+    
+    
+    print("model built.")
   }
   
-  
-  print("model built.")
   if(fastDebug==FALSE){
     
   }
@@ -590,6 +600,14 @@ for (i in 1:numSubjs) {
                       verbose=TRUE)
     }
     
+  }else if (estimation_method==ESTIMATION_METHOD.DEMCMC){
+    source(paste0(modelcode_rl,"getBySubjDataList.R"))
+    bySubjDataList<-dataList()
+    #INSERT DE-MCMC CODE HERE.
+    print("have generated the BySubjDataList. Here's some info about it:")
+    print(names(bySubjDataList))
+    print(lapply(bySubjDataList,dim))
+    
   }else{
     stop(paste0("Estimation method \"",as.character(estimation_method),"\" not recognized."))
   }
@@ -636,7 +654,7 @@ for (i in 1:numSubjs) {
     plot_model(fit_data)
   },
   error=function(e){
-    print("couldn't plot the data because there were more than two levels in \"response\". You might wanna see what's going on there.")
+    print("couldn't plot the data because reasons. You might wanna see what's going on there.")
   }
   )
   return(fit_data)

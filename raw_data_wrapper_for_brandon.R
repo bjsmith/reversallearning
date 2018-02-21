@@ -1,7 +1,7 @@
-#source("util/apply_local_settings.R")
-#apply_local_settings()
-#dd<-localsettings$data.dir
-dd<-""#enter data directory where the raw data is saved here.
+source("util/apply_local_settings.R")
+apply_local_settings()
+dd<-localsettings$data.dir
+#dd<-""#enter data directory where the raw data is saved here.
 rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment.txt"), header=T)
 table(rawdata$runid==1,rawdata$Motivation=="reward")
 
@@ -9,11 +9,12 @@ table(rawdata$runid==1,rawdata$Motivation=="reward")
 #let's get just one run to keep things simple
 rawdata.rewardrun1<-rawdata[rawdata$runid==1 & rawdata$Motivation=="reward",]
 #remove these subjects - I found evidence of bad data.
-rawdata.rewardrun1<-rawdata.rewardrun1[!rawdata.rewardrun1$subid %in% c(115,216,254,332),]
+#rawdata.rewardrun1<-rawdata.rewardrun1[!rawdata.rewardrun1$subid %in% c(115,216,254,332),]
+rawdata<-rawdata[!rawdata$subid %in% c(115,216,254,332,153,154),]
 #have to re-code this column for reasons (it was counterbalanced across subjects; that has to be accounted for)
-rawdata.rewardrun1$cor_res_aligned<-
-  ((rawdata.rewardrun1$subid+1) %% 2)*(3-rawdata.rewardrun1$cor_res)+
-  ((rawdata.rewardrun1$subid) %% 2)*(rawdata.rewardrun1$cor_res)
+rawdata$cor_res_aligned<-
+  ((rawdata$subid+1) %% 2)*(3-rawdata$cor_res)+
+  ((rawdata$subid) %% 2)*(rawdata$cor_res)
 
 
 #####EXPLANATION OF THE DATA.
