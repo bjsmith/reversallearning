@@ -1,5 +1,5 @@
 
-debugSource("de_mcmc/functions.R")
+source("de_mcmc/functions.R")
 #install.packages("snowfall")
 library("snowfall")
 library("MASS")

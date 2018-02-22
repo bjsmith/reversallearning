@@ -25,7 +25,7 @@ subject_groups<-1:3
 times_to_run.mcmc<-1
 times_to_run.vb<-6
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev6a_v_rev6-partial.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev6a_v_rev6_v_rev5a.RData")
 
 models.with.4.separate.runs.count<-0
 models.with.runs.considered.together.count<-length(models_to_run)-models.with.4.separate.runs.count
@@ -131,8 +131,8 @@ if(any(sapply(model.summaries,is.null))){
                   sample_from_prior=FALSE,
                   subj_level_params=FALSE,
                   include_run_ot=TRUE,
-                  pass_rt=pass_rt,
-                  lookupOnly=TRUE
+                  pass_rt=pass_rt#,
+                  #lookupOnly=TRUE
                 )
                 
                 
