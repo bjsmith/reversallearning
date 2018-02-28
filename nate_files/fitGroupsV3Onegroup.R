@@ -5,19 +5,25 @@ library(pROC)
 library(ggplot2)
 library(data.table)
 
+
 if(length(grep("nate_files",getwd()))>0){
   source("../util/apply_local_settings.R")
+  source("../read_nps_output.R")
   modelcode_rl<-""
   apply_local_settings("../")
 }else if(length(grep("notebooks",getwd()))>0){
   source("../util/apply_local_settings.R")
+  source("../read_nps_output.R")
   modelcode_rl<-"../nate_files/"
   apply_local_settings("../")
 }else{
   source("util/apply_local_settings.R")
+  source("read_nps_output.R")
   modelcode_rl<-"nate_files/"
   apply_local_settings()
 }
+
+
 
 REVERSAL_LEARNING_REWARD=1
 REVERSAL_LEARNING_PUNISHMENT=2
@@ -347,20 +353,31 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   subjid <- array(0, c(numSubjs, maxTrials) )
   cue_pos <- array(0, c(numSubjs, maxTrials) )
   cor_resp <- array(0, c(numSubjs, maxTrials) )
-  pain <- array(0, c(numSubjs, maxTrials) )
+  pain_signal <- array(0, c(numSubjs, maxTrials) )
   rt <- array(0, c(numSubjs,maxTrials))
   
   run_id_ot <- array(0, c(numSubjs,4))#because 4 is the max number of runs.
   
-  subj_ids_have <- as.numeric(gsub(x = list.files("Data/Pain_Betas"), pattern = "_.*_*.csv", replacement = ""))
+  
+  if (include_pain){
+    pain_data<-get_nps_data_for_subs(subjList)
+    pain_data$Motivation<-"punishment"
+    rawdata<-merge(
+      rawdata,pain_data,
+      by.x=c("subjID","presentation_n","image","runid","Motivation","first_reversal","presentation_n_in_segment"),
+      by.y=c("subid","presentation_n","image","runid","Motivation","first_reversal","presentation_n_in_segment"),all.x=TRUE,all.y=FALSE)
+  }
+  #subj_ids_have <- as.numeric(gsub(x = list.files("Data/Pain_Betas"), pattern = "_.*_*.csv", replacement = ""))
+
   
 for (i in 1:numSubjs) {
     curSubj      <- subjList[i]
     useTrials    <- Tsubj[i]
-    if (curSubj %in% subj_ids_have) {
-      stop("This seems wrong!")
-      tmp_brain <- read.csv(paste0("Data/Pain_Betas/", curSubj, "_punishment_r1.csv"))
-    }
+
+    # if (curSubj %in% subj_ids_have) {
+    #   stop("This seems wrong!")
+    #   tmp_brain <- read.csv(paste0("Data/Pain_Betas/", curSubj, "_punishment_r1.csv"))
+    # }
     tmp <- subset(rawdata, rawdata$subjID == curSubj)
     choice[i, 1:useTrials]  <- tmp$choice
     rt[i,1:useTrials] <- tmp$reaction_time
@@ -423,24 +440,10 @@ for (i in 1:numSubjs) {
     }
     subjid[i, 1:useTrials] <- tmp$subjID
     cor_resp[i, 1:useTrials] <- tmp$cor_res
-    if (pain_outcome) {
-      outcome[i, 1:useTrials] <- scale(as.numeric(tmp_brain[,!grepl(pattern = "placeholder", x = names(tmp_brain))])[1:useTrials])
-      if (curSubj %in% subj_ids_have) {#pain data
-        punishmentTrialsCount<-sum(outcome_type[i,1:useTrials]==REVERSAL_LEARNING_PUNISHMENT)
-        punishmentTrialsId<-which(outcome_type[i,1:useTrials]==REVERSAL_LEARNING_PUNISHMENT)
-        tmp_noPlace <- tmp_brain[,!grepl(pattern = "placeholder", x = names(tmp_brain))][1:punishmentTrialsCount]#excluding 'placeholder' trials...
-        pain[i, punishmentTrialsId] <- scale(as.numeric(tmp_brain[,!grepl(pattern = "placeholder", x = names(tmp_brain))])[1:punishmentTrialsCount])
-        #get the array of pain measurements to pass in
-        pain_diff[i] <- 
-          mean(as.numeric(tmp_noPlace[,grepl(pattern = "error", x = names(tmp_noPlace))])[1:punishmentTrialsCount], na.rm = T) - 
-          mean(as.numeric(tmp_noPlace[,grepl(pattern = "correct", x = names(tmp_noPlace))])[1:punishmentTrialsCount], na.rm = T)
-        
-      } else {
-        pain_diff[i] <- NA
-      }
-    } else {
-      outcome[i, 1:useTrials] <- tmp$outcome#ifelse(tmp$outcome==1, 0, tmp$outcome)
-    }
+    outcome[i, 1:useTrials] <- tmp$outcome#ifelse(tmp$outcome==1, 0, tmp$outcome)
+    pain_signal[i,1:useTrials]<-tmp$Value 
+      #It doesn't matter what value reward trials hold here so long as it isn't NA (which can't be processed by stan)
+      #because the stan code will just ignore pain values associated with reward trials.
   }
   #print(run_id_ot)
   
@@ -463,7 +466,7 @@ for (i in 1:numSubjs) {
     numPars  = 2
   )
   if(include_pain){
-    dataList[["pain"]]   = pain
+    dataList[["pain_signal"]]   = pain_signal
   }
   
   #add group to the data list, only if we specified that it should be added.

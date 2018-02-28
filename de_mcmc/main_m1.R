@@ -1,10 +1,12 @@
-
+source("util/apply_local_settings.R")
+apply_local_settings()
 source("de_mcmc/functions.R")
 #install.packages("snowfall")
+library("data.table")
 library("snowfall")
 library("MASS")
-library("msm")#install.packages("msm")
-library("MCMCpack")#install.packages("MCMCpack")
+library("msm")      #install.packages("msm")
+library("MCMCpack") #install.packages("MCMCpack")
   
 mainDir <- getwd()
 setwd(mainDir)
@@ -47,8 +49,8 @@ par.names=c("alpha","beta","thresh","theta")
 n.pars=length(par.names)
   
 n.chains=24
-nmc=100
-burnin=50
+nmc=2000
+burnin=400
 thin=1
 keep.samples=seq(burnin,nmc,thin)
 print(length(keep.samples)*n.chains)
@@ -72,8 +74,8 @@ prior$lower=0
 prior$upper=1
 
 ########################################## run it
-  
-subDir=save.name
+mainDir<-getwd()
+subDir=""
 
 sfInit(parallel=TRUE, cpus=cores, type="SOCK")
 sfClusterSetupRNG()
@@ -95,9 +97,10 @@ start.weights=2
 
 #ps1,    2,    3,    4,   5,   6,    7,    8
 # tt, n1n1, n2n2, n3n3, n1t, tn1, n1n2, n2n1
-pdf(paste(save.name,".pdf",sep=""),10,5)
-par(mfrow=c(1,2),ask=FALSE)
-source("fig_base.r")
-dev.off()
+#pdf(paste(save.name,".pdf",sep=""),10,5)
+#par(mfrow=c(1,2),ask=FALSE)
+#source(paste0(localsettings$joint_msm, "/fig_base.r"))
+#fig_base(globalenv())
+#dev.off()
   
   
