@@ -1,9 +1,10 @@
+library(data.table)
 read_nps_output <- function(punish_csv){
   #punish_csv<-punish_r1_csv
   activity<-data.table(t(punish_csv),keep.rownames = TRUE,stringsAsFactors = FALSE)
-  activity<-rename(activity,replace = c(rn="rawcode", V1="Value"))
+  activity<-plyr::rename(activity,replace = c(rn="rawcode", V1="Value"))
   #View(activity)
-  
+  #these should be centered ALREADY, but we should scale them to have a tractable value
   #so, columns we can pull out of this are:
   activity[,IsPlaceholder:=startsWith(activity$rawcode,"placeholder_")]
   #activity[,rawcode2:=sub("placeholder_","",rawcode)]
@@ -22,6 +23,13 @@ read_nps_output <- function(punish_csv){
   activity.eventvals$presentation_n_in_segment<- as.integer(activity.eventvals$presentation_n_in_segment)
   activity.eventvals[,presentation_n:=(presentation_n_in_segment+as.integer(Segment=="PostR")*(first_reversal-1))]
   activity.eventvals[,presentation_n_in_segment]
+  
+  # print(mean(activity.eventvals$Value))
+  # if(abs(mean(activity.eventvals$Value))>0.1*sd(activity.eventvals$Value)){
+  #   stop("for some reason, activity is not centered. The regression process should have centered it, but it hasn't been, for some reason.")
+  # }
+  # activity.eventvals$Value <-activity.eventvals$Value/sd(activity.eventvals$Value)#scale(activity$Value,center=FALSE,scale=TRUE)
+  
   #activity.eventvals<-cbind(activity.eventvals,misc_values[,.(subid,runid)])
   activity.eventvals$subid=as.integer(misc_values[rawcode=="subid",Value])
   activity.eventvals$runid=as.integer(misc_values[rawcode=="runid",Value])
@@ -52,5 +60,8 @@ get_nps_data_for_subs <- function(subjList){
       }
     }
   }
+  #normalize this data.
+  #punish_data_allsubs$Value_n<-scale(punish_data_allsubs$Value,center = 0,scale=TRUE)
+  
   return (punish_data_allsubs)
 }

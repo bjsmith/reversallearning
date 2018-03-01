@@ -86,8 +86,8 @@ parameters {
   
   // Subject-level raw parameters. 
   vector[N] alpha_s_pr_mu;   // learning rate, subject average across runs
-  vector[N] pain_effect_s_pr_mu;//effect of pain on learning rate
   vector[N] beta_s_pr_mu;  // inverse temperature, subject average across runs
+  vector[N] pain_effect_s_pr_mu;//effect of pain on learning rate
   vector[N] alpha_s_pr_rpdiff_mu;   // learning rate, difference between reward and punishment
   vector[N] beta_s_pr_rpdiff_mu;  // inverse temperature, difference between reward and punishment
   
@@ -95,8 +95,8 @@ parameters {
 
   //these are not vectors because we make a simplifying assumption they're the same for all subjects.
   real<lower=0> alpha_s_pr_sigma;   // learning rate, subject variance across runs
-  real<lower=0> pain_effect_s_pr_sigma;   // learning rate, subject variance across runs
   real<lower=0> beta_s_pr_sigma;  // inverse temperature, subject variance across runs
+  real<lower=0> pain_effect_s_pr_sigma;   // learning rate, subject variance across runs
   
   // Run level raw parameters
   // using probit transform
@@ -110,9 +110,9 @@ transformed parameters {
 // and phi-approximate it into a range.
 
   // Transform subject-level raw parameters
-  real<lower=0,upper=1> alpha[N, R];
+  real<lower=0,upper=1> alphan[N, R];
   real<lower=0,upper=14> beta[N, R];
-  real pain_effect_pr[N, R];
+  real pain_effect[N, R];
   //interacts directly with the trial-level learning
   //drawn from a phi-approximation from group-level mean and deviation multiplied by subject-level parameter
 
@@ -121,9 +121,9 @@ transformed parameters {
   //This is double what we found in the recent paper using the same model
   for (s in 1:N) {
     for (r in 1:R){
-      alpha[s, r]  = Phi_approx( alpha_pr[s, r]);
+      alphan[s, r]  = alpha_pr[s, r];
       beta[s, r]   = Phi_approx( beta_pr[s, r]) * 14; 
-      pain_effect[s, r] = pain_effect_pr[s, r]) * 5;
+      pain_effect[s, r] = pain_effect_pr[s, r];
     }
   }
 }
@@ -149,8 +149,8 @@ model {
   //subject level.
   for (s in 1:N){
     alpha_s_pr_mu[s] ~ normal(group_pr_mu[1],group_pr_sigma[1]);
-    pain_effect_s_pr_mu[s] ~ normal(group_pr_mu_pain_effect,group_pr_sigma_pain_effect);
     beta_s_pr_mu[s] ~ normal(group_pr_mu[2],group_pr_sigma[2]);
+    pain_effect_s_pr_mu[s] ~ normal(group_pr_mu_pain_effect,group_pr_sigma_pain_effect);
     
     alpha_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[1],group_pr_rpdiff_sigma[1]); 
     beta_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[2],group_pr_rpdiff_sigma[2]); 
@@ -191,8 +191,8 @@ model {
       
       
       alpha_pr[s,r] ~ normal(alpha_s_pr_mu[s]+run_ot_multiplier*alpha_s_pr_rpdiff_mu[s],alpha_s_pr_sigma);
-      pain_effect_pr[s,r] ~ normal(pain_effect_s_pr_mu[s],pain_effect_s_pr_sigma);
       beta_pr[s,r] ~ normal(beta_s_pr_mu[s]+run_ot_multiplier*beta_s_pr_rpdiff_mu[s],beta_s_pr_sigma);
+      pain_effect_pr[s,r] ~ normal(pain_effect_s_pr_mu[s],pain_effect_s_pr_sigma);
 
     }
   }
@@ -202,6 +202,8 @@ model {
     matrix[100,2] ev;
     real PEnc; // fictitious prediction error (PE-non-chosen)
     real PE;         // prediction error
+    real pain_signal_s_t;
+    real alpha_p;
 
     // Initialize values
     ev[,1] = rep_vector(0, 100); // initial ev values
@@ -215,6 +217,8 @@ model {
         
       //get the particular run we are dealing with for this trial.
       run = run_id[s,t]; 
+      
+      
         
       if (choice[s,t]!=0) {
         if(sample_from_prior!=1){
@@ -223,13 +227,12 @@ model {
           // prediction error
           PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
           PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
-    
+          pain_signal_s_t = pain_effect[s,run] * pain_signal[s,t] * (run_ot[s,run]==2);
+          alpha_p = Phi_approx(alphan + pain_signal_s_t)
           // value updating (learning)
-          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alpha[s, run] * PEnc * 
-            (1 + pain_effect * pain_signal[s,t] * (run_ot[s,run]==2));
+          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + (alpha[s, run]+ pain_signal_s_t) * PEnc ;
             //these pain effects only apply if this is a punishment run (i.e., run2)
-          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alpha[s, run] * PE * 
-            (1 + pain_effect * pain_signal[s,t] * (run_ot[s,run]==2));
+          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + (alpha[s, run]*pain_signal_s_t) * PE;
             //these pain effects only apply if this is a punishment run (i.e., run2)
         }
         else{
@@ -246,6 +249,8 @@ generated quantities {
   real<lower=0,upper=14> group_mu_beta;
   real<lower=0,upper=1> group_sigma_alpha;
   real<lower=0,upper=14> group_sigma_beta;
+  real group_mu_pain_effect;
+  real group_sigma_pain_effect;
   
   real<lower=0,upper=1> group_rew_mu_alpha;
   real<lower=0,upper=14> group_rew_mu_beta;
@@ -257,7 +262,7 @@ generated quantities {
   // real<lower=0,upper=1> group_pun_sigma_alpha;
   // real<lower=0,upper=14> group_pun_sigma_beta;
   
-  real group_pain_effect;
+  
   // vector[N] alpha_s_mu;
   // vector[N] beta_s_mu;
   // real alpha_s_sigma;
@@ -266,10 +271,10 @@ generated quantities {
   //group level
   group_mu_alpha  = Phi_approx(group_pr_mu[1]);
   group_mu_beta   = Phi_approx(group_pr_mu[2]) * 14;
-  group_mu_pain_effect   = Phi_approx(group_pr_mu_pain_effect) * 5;
+  group_mu_pain_effect   = exp(group_pr_mu_pain_effect);
   group_sigma_alpha  = Phi_approx(group_pr_sigma[1]);
   group_sigma_beta   = Phi_approx(group_pr_sigma[2]) * 14;
-  group_mu_pain_effect   = Phi_approx(group_pr_sigma_pain_effect) * 5;
+  group_sigma_pain_effect   = exp(group_pr_sigma_pain_effect);
   
   group_rew_mu_alpha  = Phi_approx(group_pr_mu[1]+0.5*group_pr_rpdiff_mu[1]);
   group_rew_mu_beta   = Phi_approx(group_pr_mu[2]+0.5*group_pr_rpdiff_mu[2]) * 14;

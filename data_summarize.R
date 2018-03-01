@@ -308,7 +308,7 @@ data_summarize_double_update_rev5<- function(extracted.data,outcome.type=NA,comp
   return(data.table(grouplevel.df))
 }
 
-data_summarize_double_update_rev5_pain1<- function(extracted.data,outcome.type=NA,comprehensive=FALSE){
+data_summarize_double_update_rev5pain1<- function(extracted.data,outcome.type=NA,comprehensive=FALSE){
   grouplevel.df<-NULL
   #we want...
   #group level parameters

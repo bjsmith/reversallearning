@@ -147,6 +147,16 @@ class RLPain:
             msmrl1 = Brain_Data(
                 nifti_data + ".nii.gz")
             msmrl1.write(nifti_data + "nltoolstandard.nii.gz")
+
+        #I want to standardize globally; this will preserve the relative strengths of each time point
+        #and preserve the relative activity at each voxel.
+        #and let's use the mean standard deviation across all the images.
+        #msmrl1.data = msmrl1.data - np.tile(msmrl1.mean().mean(),msmrl1.data.shape)
+        #msmrl1.data = msmrl1.data / np.tile(np.std(msmrl1.data,axis=1).mean(),msmrl1.data.shape)
+        # OR we could apply the standardization to the OUTPUT.
+        #grand_mean=msmrl1.mean().mean()
+        #grand_sd=np.std(msmrl1.data,axis=1).mean()
+
         #preprocess the nifti?
         print("importing onsets")
         #import the onset
@@ -185,9 +195,10 @@ class RLPain:
         regression=msmrl1.regress()
         print("Regressing; calculating similarity to the pain map from " + self.decoder_origin + "...")
         msm_predicted_pain = regression['beta'].similarity(self.decoder, 'dot_product')
+        msm_predicted_pain_scaled=msm_predicted_pain-msmrl1.data.std()
         onset_colnames = onsets_convolved.columns.tolist()
         msm_predicted_pain_dict={}
-        for i, b in enumerate(msm_predicted_pain):
+        for i, b in enumerate(msm_predicted_pain_scaled):
             msm_predicted_pain_dict[onset_colnames[i]] = b
         return msm_predicted_pain_dict
 

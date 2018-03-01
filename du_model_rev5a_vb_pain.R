@@ -5,7 +5,7 @@ source("util/get_my_preferred_cores.R")
 options(mc.cores = get_my_preferred_cores())
 #options(mc.cores = NULL)
 #source files
-source("nate_files/fitGroupsV3Onegroup.R")
+debugSource("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
@@ -96,9 +96,9 @@ if(any(sapply(model.summaries,is.null))){
                 rp=rp,
                 model_rp_separately=FALSE,model_runs_separately = TRUE, include_pain=TRUE,
                 fastDebug=FALSE,
-                fileSuffix=paste0("rev_20180227",as.character(t)),
+                fileSuffix=paste0("rev_20180301",as.character(t)),
                 estimation_method = em,
-                bseed=t+1370367598,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+                bseed=t+148715007,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
                 collateTrialData=FALSE,
                 chainNum = 12,
                 iterations = iterations,

@@ -361,6 +361,7 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   
   if (include_pain){
     pain_data<-get_nps_data_for_subs(subjList)
+    pain_data$Value<-pain_data$Value/100 #scale this to something that will work tractably in our model.
     pain_data$Motivation<-"punishment"
     rawdata<-merge(
       rawdata,pain_data,
@@ -441,7 +442,7 @@ for (i in 1:numSubjs) {
     subjid[i, 1:useTrials] <- tmp$subjID
     cor_resp[i, 1:useTrials] <- tmp$cor_res
     outcome[i, 1:useTrials] <- tmp$outcome#ifelse(tmp$outcome==1, 0, tmp$outcome)
-    pain_signal[i,1:useTrials]<-tmp$Value 
+    pain_signal[i,1:useTrials]<-sapply(tmp$Value,function(x){if(is.na(x)){return(0);}else{return(x);}})
       #It doesn't matter what value reward trials hold here so long as it isn't NA (which can't be processed by stan)
       #because the stan code will just ignore pain values associated with reward trials.
   }
