@@ -268,7 +268,6 @@ data_summarize_double_update_rev4<- function(extracted.data,outcome.type=NA,comp
   return(data.table(grouplevel.df))
 }
 
-
 data_summarize_double_update_rev5<- function(extracted.data,outcome.type=NA,comprehensive=FALSE){
   grouplevel.df<-NULL
   #we want...
@@ -319,7 +318,7 @@ data_summarize_double_update_rev5pain1<- function(extracted.data,outcome.type=NA
     sigma_vals <- extracted.data$sigma
     sample.count<-dim(extracted.data$group_mu_alpha)[1]#how many iterations of the sample are we looking at?
     otr.df<-NULL
-    if (p=="pain_effect"){
+    if (parameter=="pain_effect"){
       stat_list<-c("mu", "sigma")
     }else{
       stat_list<-c("mu", "sigma", "rew_mu","pun_mu")

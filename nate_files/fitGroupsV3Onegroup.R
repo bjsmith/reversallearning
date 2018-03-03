@@ -5,7 +5,6 @@ library(pROC)
 library(ggplot2)
 library(data.table)
 
-
 if(length(grep("nate_files",getwd()))>0){
   source("../util/apply_local_settings.R")
   source("../read_nps_output.R")
@@ -361,7 +360,16 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   
   if (include_pain){
     pain_data<-get_nps_data_for_subs(subjList)
-    pain_data$Value<-pain_data$Value/100 #scale this to something that will work tractably in our model.
+    if (mean(abs(pain_data$Value))>50){
+      pain_data$Value<-pain_data$Value/353#a hack because we're in the middle of having this built-in to the pain files.
+      warning("temporary correction applied to pain data magnitude")
+    }
+    
+    
+      #scale this to something that will work tractably in our model.
+      #absence of standardized pain scores will affect the interpretability of the pain parameter
+      #but it seems better than using SD because that would involve applying different SD corrections to each subject,
+      #Based on the variance of their 
     pain_data$Motivation<-"punishment"
     rawdata<-merge(
       rawdata,pain_data,

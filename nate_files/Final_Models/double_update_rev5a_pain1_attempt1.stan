@@ -112,7 +112,7 @@ transformed parameters {
   // Transform subject-level raw parameters
   
   real<lower=0,upper=14> beta[N, R];
-  //real pain_effect[N, R];
+  real pain_effect[N, R];
   //interacts directly with the trial-level learning
   //drawn from a phi-approximation from group-level mean and deviation multiplied by subject-level parameter
 
@@ -123,7 +123,7 @@ transformed parameters {
   for (s in 1:N) {
     for (r in 1:R){
       beta[s, r]   = Phi_approx( beta_pr[s, r]) * 14; 
-      //pain_effect[s, r] = pain_effect_pr[s, r];
+      pain_effect[s, r] = pain_effect_pr[s, r];
     }
     for (t in 1:(Tsubj[s])) {
       // alphan[s, t]  = 
@@ -235,7 +235,7 @@ model {
           //   //pain_signal_s_t = pain_effect[s,run] * pain_signal[s,t];
           //   alpha = Phi_approx(alphan[s,run]);# + pain_signal_s_t);
           // }else{
-          alphan[s,t] = Phi_approx(alpha_pr[s,run]+pain_effect_pr[s,run]*pain_signal[s,t]); #reward trial.
+          alphan[s,t] = Phi_approx(alpha_pr[s,run]); #reward trial.
           // }
           // value updating (learning)
           ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alphan[s,t] * PEnc;# * pain_signal_s_t;
