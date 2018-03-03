@@ -112,7 +112,7 @@ transformed parameters {
   // Transform subject-level raw parameters
   
   real<lower=0,upper=14> beta[N, R];
-  //real pain_effect[N, R];
+  real pain_effect[N, R];
   //interacts directly with the trial-level learning
   //drawn from a phi-approximation from group-level mean and deviation multiplied by subject-level parameter
 

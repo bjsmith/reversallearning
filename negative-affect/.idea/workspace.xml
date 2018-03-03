@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e9ef381-d689-4a57-8cf1-52b5c1dc26a8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py" afterPath="$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../du_model_rev5a_vb_pain.R" afterPath="$PROJECT_DIR$/../du_model_rev5a_vb_pain.R" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nate_files/Final_Models/double_update_rev5a_pain1.stan" afterPath="$PROJECT_DIR$/../nate_files/Final_Models/double_update_rev5a_pain1.stan" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nate_files/fitGroupsV3Onegroup.R" afterPath="$PROJECT_DIR$/../nate_files/fitGroupsV3Onegroup.R" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -74,8 +76,8 @@
       <file leaf-file-name="main_nps_allsubjs_server_feb2018.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="74" lean-forward="false" selection-start-line="8" selection-start-column="74" selection-end-line="8" selection-end-column="74" />
+            <state relative-caret-position="270">
+              <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -581,11 +583,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="24" width="1920" height="1057" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32428116" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293979" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293979" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3290735" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2886049" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1027,8 +1029,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="74" lean-forward="false" selection-start-line="8" selection-start-column="74" selection-end-line="8" selection-end-column="74" />
+        <state relative-caret-position="270">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
           <folding />
         </state>
       </provider>

@@ -3,10 +3,9 @@
 print("initializing...")
 source("util/get_my_preferred_cores.R")
 options(mc.cores = get_my_preferred_cores())
-#options(mc.cores = NULL)
 #source files
-debugSource("nate_files/fitGroupsV3Onegroup.R")
-source("data_summarize.R")
+source("nate_files/fitGroupsV3Onegroup.R")
+debugSource("data_summarize.R")
 
 #set settings.
 models_to_run<-c("double_update_rev5a_pain1","double_update_rev5a")

@@ -110,7 +110,7 @@ transformed parameters {
 // and phi-approximate it into a range.
 
   // Transform subject-level raw parameters
-  
+  real<lower=0,upper=1> alphan[N, T] = rep_array(0.0, N, T);
   real<lower=0,upper=14> beta[N, R];
   //real pain_effect[N, R];
   //interacts directly with the trial-level learning
@@ -123,14 +123,9 @@ transformed parameters {
   for (s in 1:N) {
     for (r in 1:R){
       beta[s, r]   = Phi_approx( beta_pr[s, r]) * 14; 
-      //pain_effect[s, r] = pain_effect_pr[s, r];
     }
     for (t in 1:(Tsubj[s])) {
-      // alphan[s, t]  = 
-      //   Phi_approx(alpha_pr[s, run_id[s,t]] * 
-      //   pain_effect[s,run_id[s,t]] * 
-      //   pain_signal[s,t]);
-      //alphan[s, t]  = Phi_approx(alpha_pr[s, run_id[s,t]]);
+      alphan[s,t] = Phi_approx(alpha_pr[s,run_id[s,t]]+pain_effect_pr[s,run_id[s,t]]*pain_signal[s,t]); #reward trial.
     }
   }
 }
@@ -141,7 +136,6 @@ model {
   int sub_has_rew_runs = 0;
   int sub_has_pun_runs = 0;
   #real<lower=0,upper=1> alphan[N, T];
-  real alphan[N, T];
   
   //mean and variance of the subject mean, i.e., the group level mean and SD
   group_pr_mu ~ normal(0, 1);
@@ -162,9 +156,7 @@ model {
     
     alpha_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[1],group_pr_rpdiff_sigma[1]); 
     beta_s_pr_rpdiff_mu[s] ~ normal(group_pr_rpdiff_mu[2],group_pr_rpdiff_sigma[2]); 
-    //alpha_s_pr_rpdiff_mu[s] ~ normal(0, 1); 
-    //beta_s_pr_rpdiff_mu[s] ~ normal(0, 1); 
-    
+
     //record the kind of runs this subject has
     sub_has_rew_runs = 0;
     sub_has_pun_runs = 0;
@@ -229,14 +221,6 @@ model {
           PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
           PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
           
-          #pain_signal_s_t=1+normal_cdf(pain_effect[s,run]*pain_signal[s,t], 0, 1);
-          #print(pain_signal_s_t)
-          // if(run_ot[s,run]==2){
-          //   //pain_signal_s_t = pain_effect[s,run] * pain_signal[s,t];
-          //   alpha = Phi_approx(alphan[s,run]);# + pain_signal_s_t);
-          // }else{
-          alphan[s,t] = Phi_approx(alpha_pr[s,run]+pain_effect_pr[s,run]*pain_signal[s,t]); #reward trial.
-          // }
           // value updating (learning)
           ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alphan[s,t] * PEnc;# * pain_signal_s_t;
           //these pain effects only apply if this is a punishment run (i.e., run2)
@@ -280,10 +264,10 @@ generated quantities {
   //group level
   group_mu_alpha  = Phi_approx(group_pr_mu[1]);
   group_mu_beta   = Phi_approx(group_pr_mu[2]) * 14;
-  group_mu_pain_effect   = group_pr_mu_pain_effect;
+  group_mu_pain_effect   = Phi_approx(group_pr_mu_pain_effect);
   group_sigma_alpha  = Phi_approx(group_pr_sigma[1]);
   group_sigma_beta   = Phi_approx(group_pr_sigma[2]) * 14;
-  group_sigma_pain_effect   = group_pr_sigma_pain_effect;
+  group_sigma_pain_effect   = Phi_approx(group_pr_sigma_pain_effect);
   
   group_rew_mu_alpha  = Phi_approx(group_pr_mu[1]+0.5*group_pr_rpdiff_mu[1]);
   group_rew_mu_beta   = Phi_approx(group_pr_mu[2]+0.5*group_pr_rpdiff_mu[2]) * 14;
