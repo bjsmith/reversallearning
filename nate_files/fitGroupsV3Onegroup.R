@@ -364,6 +364,7 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
       pain_data$Value<-pain_data$Value/353#a hack because we're in the middle of having this built-in to the pain files.
       warning("temporary correction applied to pain data magnitude")
     }
+    print(paste0("stdev nonzero pain_value data is: ",(sd(abs(pain_data$Value[pain_data$Value!=0])))))
     
     
       #scale this to something that will work tractably in our model.

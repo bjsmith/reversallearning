@@ -112,25 +112,10 @@ transformed parameters {
   // Transform subject-level raw parameters
   
   real<lower=0,upper=14> beta[N, R];
-  //real pain_effect[N, R];
-  //interacts directly with the trial-level learning
-  //drawn from a phi-approximation from group-level mean and deviation multiplied by subject-level parameter
-
   
-  //run level parameter transform.
-  //I am not sure if this is high enough. 
-  //This is double what we found in the recent paper using the same model
   for (s in 1:N) {
     for (r in 1:R){
       beta[s, r]   = Phi_approx( beta_pr[s, r]) * 14; 
-      //pain_effect[s, r] = pain_effect_pr[s, r];
-    }
-    for (t in 1:(Tsubj[s])) {
-      // alphan[s, t]  = 
-      //   Phi_approx(alpha_pr[s, run_id[s,t]] * 
-      //   pain_effect[s,run_id[s,t]] * 
-      //   pain_signal[s,t]);
-      //alphan[s, t]  = Phi_approx(alpha_pr[s, run_id[s,t]]);
     }
   }
 }
@@ -229,18 +214,11 @@ model {
           PE   =  outcome[s,t] - ev[cue[s,t],choice[s,t]];
           PEnc = -outcome[s,t] - ev[cue[s,t],3-choice[s,t]];
           
-          #pain_signal_s_t=1+normal_cdf(pain_effect[s,run]*pain_signal[s,t], 0, 1);
-          #print(pain_signal_s_t)
-          // if(run_ot[s,run]==2){
-          //   //pain_signal_s_t = pain_effect[s,run] * pain_signal[s,t];
-          //   alpha = Phi_approx(alphan[s,run]);# + pain_signal_s_t);
-          // }else{
           alphan[s,t] = Phi_approx(alpha_pr[s,run]+pain_effect_pr[s,run]*pain_signal[s,t]); #reward trial.
-          // }
           // value updating (learning)
-          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alphan[s,t] * PEnc;# * pain_signal_s_t;
+          ev[cue[s,t],3-choice[s,t]] = ev[cue[s,t],3-choice[s,t]] + alphan[s,t] * PEnc;
           //these pain effects only apply if this is a punishment run (i.e., run2)
-          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alphan[s,t] * PE;# * pain_signal_s_t;
+          ev[cue[s,t],choice[s,t]] = ev[cue[s,t],choice[s,t]] + alphan[s,t] * PE;
           //these pain effects only apply if this is a punishment run (i.e., run2)
           
         }

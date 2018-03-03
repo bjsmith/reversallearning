@@ -11,12 +11,13 @@ source("data_summarize.R")
 models_to_run<-c("double_update_rev5a_pain1","double_update_rev5a")
 
 #estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC),as.character(ESTIMATION_METHOD.VariationalBayes))
-estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))
+#estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))
+estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC))
 
 subject_groups<-1:3
 
 
-times_to_run<-3
+times_to_run<-1
 #run.
 summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev5a_pain.RData")
 
