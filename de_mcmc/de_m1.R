@@ -11,10 +11,17 @@ log.dens.prior=function(x,prior){
   dens
 }
 
+check.pars=function(x,use.data){
+  names(x) = par.names
+  x["tau"]<min(use.data$rt[use.data$choice!=0]) &
+    x["alpha"]<1 &
+    all(x>=0)
+}
+
 log.dens.like.m1<-function(x,use.data){
   names(x) <- par.names
   #model
-  if(TRUE){
+  if(check.pars(x=x,use.data=use.data)){
     #iterate through all trials.
     nt=length(use.data$choice)
     dens=numeric(nt)
@@ -37,11 +44,11 @@ log.dens.like.m1<-function(x,use.data){
       }
     }
     # now pass the matrix of v into the density wrapper, where RT and choice are vectors.
-    dens=get.dens.2choice(use.data$rt[use.data$choice!=0],
-                          use.data$choice[use.data$choice!=0],
-                          c(x["thresh"],x["thresh"]),#is this right?-BJS we need a vector of length 2 for thresh and theta.
-                          v_t,
-                          c(x["theta"],x["theta"]))#is this right?-BJS
+    dens=get.dens.2choice(t=use.data$rt[use.data$choice!=0],
+                          choice=use.data$choice[use.data$choice!=0],
+                          alpha=c(x["thresh"],x["thresh"]),
+                          v=v_t[use.data$choice!=0,],
+                          theta=c(x["tau"],x["tau"]))#is this right?-BJS
     out=sum(log(dens))
     if(is.na(out))out=-Inf
   } else {
@@ -50,44 +57,44 @@ log.dens.like.m1<-function(x,use.data){
   out
 }
 
-log.dens.like.m2<-function(x,use.data){
-  names(x) <- par.names
-  #model
-  if(TRUE){
-    #iterate through all trials.
-    nt=length(use.data$choice)
-    dens=numeric(nt)
-    #100 is the number of slots we have to store cues (images), not individual trials.
-    #since we don't record a new EV value each time.
-    ev=matrix(0,100,2)
-    #record the values at each time point.
-    v_t=matrix(0,nt,2)
-    for(t in 1:nt){
-      if (use.data$choice[t]!=0) {
-        # prediction error
-        PE   =  use.data$outcome[t] - ev[use.data$cue[t],use.data$choice[t]]
-        PEnc = -use.data$outcome[t] - ev[use.data$cue[[t]],3-use.data$choice[[t]]]
-        
-        # value updating (learning)
-        ev[use.data$cue[t],3-use.data$choice[t]] = ev[use.data$cue[t],3-use.data$choice[t]] + as.numeric(x["alpha"]) * PEnc;
-        ev[use.data$cue[t],use.data$choice[t]] = ev[use.data$cue[t],use.data$choice[t]] + as.numeric(x["alpha"]) * PE;
-        # there is some transformation based on ev and beta needed before a drift rate can be obtained
-        v_t[t,]=invlogit(ev[use.data$cue[t],])
-      }
-    }
-    # now pass the matrix of v into the density wrapper, where RT and choice are vectors.
-    dens=get.dens.2choice(use.data$rt[use.data$choice!=0],
-                          use.data$choice[use.data$choice!=0],
-                          c(x["thresh"],x["thresh"]),#is this right?-BJS we need a vector of length 2 for thresh and theta.
-                          v_t,
-                          c(x["theta"],x["theta"]))#is this right?-BJS
-    out=sum(log(dens))
-    if(is.na(out))out=-Inf
-  } else {
-    out=-Inf
-  }
-  out
-}
+# log.dens.like.m2<-function(x,use.data){
+#   names(x) <- par.names
+#   #model
+#   if(TRUE){
+#     #iterate through all trials.
+#     nt=length(use.data$choice)
+#     dens=numeric(nt)
+#     #100 is the number of slots we have to store cues (images), not individual trials.
+#     #since we don't record a new EV value each time.
+#     ev=matrix(0,100,2)
+#     #record the values at each time point.
+#     v_t=matrix(0,nt,2)
+#     for(t in 1:nt){
+#       if (use.data$choice[t]!=0) {
+#         # prediction error
+#         PE   =  use.data$outcome[t] - ev[use.data$cue[t],use.data$choice[t]]
+#         PEnc = -use.data$outcome[t] - ev[use.data$cue[[t]],3-use.data$choice[[t]]]
+#         
+#         # value updating (learning)
+#         ev[use.data$cue[t],3-use.data$choice[t]] = ev[use.data$cue[t],3-use.data$choice[t]] + as.numeric(x["alpha"]) * PEnc;
+#         ev[use.data$cue[t],use.data$choice[t]] = ev[use.data$cue[t],use.data$choice[t]] + as.numeric(x["alpha"]) * PE;
+#         # there is some transformation based on ev and beta needed before a drift rate can be obtained
+#         v_t[t,]=invlogit(ev[use.data$cue[t],])
+#       }
+#     }
+#     # now pass the matrix of v into the density wrapper, where RT and choice are vectors.
+#     dens=get.dens.2choice(use.data$rt[use.data$choice!=0],
+#                           use.data$choice[use.data$choice!=0],
+#                           c(x["thresh"],x["thresh"]),#is this right?-BJS we need a vector of length 2 for thresh and theta.
+#                           v_t,
+#                           c(x["tau"],x["tau"]))#is this right?-BJS
+#     out=sum(log(dens))
+#     if(is.na(out))out=-Inf
+#   } else {
+#     out=-Inf
+#   }
+#   out
+# }
 
 log.dens.like <- log.dens.like.m1
 
@@ -119,7 +126,7 @@ for(j in 1:S){
 for(i in 1:n.chains){
   for(j in 1:S){
     while(weight[i,j]==-Inf){
-      theta[i,,j]=rtnorm(n.pars,init.pars[j,],c(10,10,rep(.1,n.pterms)),0,c(Inf,Inf,rep(1,n.pterms)))
+      theta[i,,j]=rtnorm(n.pars,init.pars[j,],c(.05,.05,.5,.05),0,c(1,1,Inf,Inf))
       weight[i,j]=log.dens.like(theta[i,,j],use.data=data[[j]])
       if(is.na(weight[i,j]))weight[i,j]=-Inf
     }}
