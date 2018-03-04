@@ -19,7 +19,7 @@ subject_groups<-1:3
 
 times_to_run<-1
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev5a_pain.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev5a_mcmc_pain.RData")
 
 models.with.4.separate.runs.count<-0
 models.with.runs.considered.together.count<-2
@@ -96,9 +96,9 @@ if(any(sapply(model.summaries,is.null))){
                 rp=rp,
                 model_rp_separately=FALSE,model_runs_separately = TRUE, include_pain=TRUE,
                 fastDebug=FALSE,
-                fileSuffix=paste0("rev_20180301",as.character(t)),
+                fileSuffix=paste0("rev_20180303",as.character(t)),
                 estimation_method = em,
-                bseed=t+148715007,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+                bseed=t+167234579,#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
                 collateTrialData=FALSE,
                 chainNum = 12,
                 iterations = iterations,
