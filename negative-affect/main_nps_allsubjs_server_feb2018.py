@@ -18,7 +18,12 @@ rlPain.onset_file_version='20180220T031755'
 #print(rlPain.get_trialtype_pain_regressors(nifti_file,onset_file))
 
 
-rlPain.process_detailed_regressors(range(100,500))
+rlPain.process_detailed_regressors(
+    range(100,500),
+    lambda sid,rid,m: ('/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/' +
+                      'weights_NSF_grouppred_cvpcr_sub' + str(sid) + '_ReversalLearning_' + m +
+                      '_run' + str(rid) + '_pre.feat.nii.gz'))
+
 #rlPain.process_all_punishment_subjects()
 
 

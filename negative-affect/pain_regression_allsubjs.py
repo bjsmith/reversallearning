@@ -40,11 +40,19 @@ class RLPain:
         self.nps_map_dir=''
         self.onset_file_version='20170819T170218'
 
-    def get_wager_nps_map(self):
-        if(os.path.isfile(self.nps_map_filepath)):
-            nps = Brain_Data(self.nps_map_filepath)
+    def get_wager_nps_map(self,nps_map_filepath=None):
+        using_custom_filepath=False
+        if nps_map_filepath is not None:
+            using_custom_filepath=True
+        else:
+            nps_map_filepath = self.nps_map_filepath
+        if(os.path.isfile(nps_map_filepath)):
+            nps = Brain_Data(nps_map_filepath)
             self.decoder=nps
-            self.decoder_origin='nps'
+            if using_custom_filepath:
+                self.decoder_origin = nps_map_filepath
+            else:
+                self.decoder_origin='nps'
         else:
             raise Exception("error; cannot find NPS map")
 
@@ -81,7 +89,9 @@ class RLPain:
         self.stats = stats
         self.decoder = stats['weight_map']
 
-    def process_detailed_regressors(self,subid_range=range(1,500)):
+    def process_detailed_regressors(self,subid_range=range(1,500),custom_pain_map_lambda=None):
+
+
         #csvfile=None
         header_written=False
         for sid in subid_range:
@@ -94,6 +104,13 @@ class RLPain:
                     if (os.path.isfile(onset_file)):
                         print ('we have a match; '+ onset_file)
                         #print("done the regressing :-)")
+
+                        if custom_pain_map_lambda is not None:
+                            #create the custom pain map in this subject's native space
+                            custom_pain_map_filepath = custom_pain_map_lambda(sid,rid,'Punish')
+                            self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath)
+
+
 
                         msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
                         msm_predicted_pain_dict['subid'] = sid
@@ -111,6 +128,8 @@ class RLPain:
              #                   w.writeheader()
              #                   header_written=True
 
+        if custom_pain_map_lambda is not None:
+            self.get_wager_nps_map()#restore original.
                         #attach the subject and run ID to the output and concatenate.
         #if(csvfile is not None):
         #    csvfile.close(self)
