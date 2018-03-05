@@ -1,0 +1,113 @@
+---
+title: "Exploring Revision 5 vb"
+output:
+  html_document: default
+  html_notebook: default
+---
+In this document I compare rev5a with an identical model that includes a regressor for pain.
+
+The new model assumes that the pain regressor could lead to faster learning, and that stronger pain stimuli would lead to faster learning.
+
+One feature with the pain1 model is that we're looking at *all* trials, including those which were correct and those which were incorrect. It might make more sense to measure a regressor that only operates on trials where a pain signal is detected.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+
+```
+
+```{r setup2, include=FALSE}
+source("util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+source("visualization/geom_hdi.R")
+```
+
+##Variational Bayes: posterior comparison
+```{r }
+source("du_model_rev5a_vb_pain.R")
+```
+
+
+```{r getDataIntoTable, echo=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+table(model.summary.all$TestId)
+```
+
+
+
+```{r, echo=FALSE, cache=FALSE  }
+
+
+ggplot(model.summary.all[Statistic=="mu"],aes(x=Value ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
+
+
+
+ggplot(model.summary.all[Statistic=="rew_mu"],aes(x=Value ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), Reward Runs Only"))
+
+ggplot(model.summary.all[Statistic=="pun_mu"],aes(x=Value ,fill=factor(AnalysisRepetition),color=factor(AnalysisRepetition)
+                                                               ))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Group~Parameter,scales = "free")+
+    
+    labs(title=paste0("mu statistic (all rounds), Punishment Runs Only"))
+
+
+```
+
+## Pain regressor considerations
+
+### The pain regressor probably should not be modeled with a lognormal or normal distribution.
+We estimated the pain regressor parallel to alpha. I never put a Phi_approx on the pain regressor (and probably should have). So, this changes the interpretation a little bit. The pain regressor was modeled with a normal distribution. Thus, values approaching negative infinity represent zero effect, and values approaching positive infinity represent a very strong effect. Zero values represent a moderate effect of pain.
+
+This might have been a misspecification. The pain regressor should really be modeled with a prior distribution that allocates a decent probability, such as around 50%, to values close to zero. A normal prior might inappropropriately bias the model away from a null result.
+
+
+### Behavioral results
+
+### Integration with model on pain trials only.
+
+Perhaps the pain regressor should be integrated with the model on incorrect results only, or, separate regressors should be considered for incorrect trials (where a shock is delivered) compared to correct trials (where no shock is delivered).

@@ -37,7 +37,7 @@ read_nps_output <- function(punish_csv){
   return(activity.eventvals)
 }
 
-get_nps_data_for_subs <- function(subjList){
+  get_nps_data_for_subs <- function(subjList){
   punish_data_allsubs<-NULL
   for (s in subjList) {
     for (r in 1:2){
