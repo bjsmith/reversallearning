@@ -13,9 +13,9 @@ import numpy as np
 from pain_regression_allsubjs import *
 rlp=RLPain()
 
-rlp.fMRI_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed'
-rlp.onset_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
-rlp.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
+rlp.fMRI_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed'
+rlp.onset_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
+rlp.decoder_file='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
 rlp.compile_pain_decoder()
 
 rlp.stats['weight_map']
