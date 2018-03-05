@@ -1,12 +1,11 @@
 from pain_regression_allsubjs import *
 rlPain=RLPain()
 
-#don't see how there's a syntax error here.
-rlPain.fMRI_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks'
-rlPain.onset_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles'
+rlPain.fMRI_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed/'
+rlPain.onset_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
 #rlPain.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
-rlPain.nps_map_filepath = '/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/weights_NSF_grouppred_cvpcr.img'
-rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/rlPainNPS/'
+rlPain.nps_map_filepath = '/Users/benjaminsmith/Dropbox/joint-modeling/wager-pain-dataset/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub105_ReversalLearning_Punish_run1_pre.feat.nii.gz'
+rlPain.regressor_output_filepathprefix = '/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/testing/'
 rlPain.get_wager_nps_map()
 rlPain.onset_file_version='20180220T031755'
 
@@ -19,10 +18,11 @@ rlPain.onset_file_version='20180220T031755'
 
 
 rlPain.process_detailed_regressors(
-    range(100,500),
-    lambda sid,rid,m: ('/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/' +
+    range(105,114),
+    lambda sid,rid,m: ('/Users/benjaminsmith/Dropbox/joint-modeling/wager-pain-dataset/NPS_share/subject_space_masks/' +
                       'weights_NSF_grouppred_cvpcr_sub' + str(sid) + '_ReversalLearning_' + m +
                       '_run' + str(rid) + '_pre.feat.nii.gz'),
+    motivations_all=['Reward']
     )
 
 #rlPain.process_all_punishment_subjects()

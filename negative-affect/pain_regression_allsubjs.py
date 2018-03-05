@@ -89,44 +89,46 @@ class RLPain:
         self.stats = stats
         self.decoder = stats['weight_map']
 
-    def process_detailed_regressors(self,subid_range=range(1,500),custom_pain_map_lambda=None):
+    def process_detailed_regressors(self,subid_range=range(1,500),custom_pain_map_lambda=None,motivations_all=False):
 
 
-        #csvfile=None
+        if motivations_all is None or motivations_all==False:
+            motivations = ['Punishment']
+        elif motivations_all == True:
+            motivations = ['Punishment', 'Reward']
+        else:
+            motivations = motivations_all
+
+            #csvfile=None
         header_written=False
         for sid in subid_range:
             for rid in [1,2]:
-                nifti_file=self.fMRI_dir + '/sub'+str(sid) + 'ReversalLearningPunishrun'+str(rid)
-                if os.path.isfile(nifti_file+'.nii.gz'):
-                    print(self.fMRI_dir)
-                    #got an nii.gz, check tosee if there's also a onset file for this.
-                    onset_file=self.onset_dir + '/runfiledetail'+self.onset_file_version+'_s'+str(sid)+'_punishment_r'+str(rid)+'.txt'
-                    if (os.path.isfile(onset_file)):
-                        print ('we have a match; '+ onset_file)
-                        #print("done the regressing :-)")
+                for m in motivations:
+                    nifti_file=self.fMRI_dir + 'sub'+str(sid) + 'ReversalLearning' + m[0:6] + 'run'+str(rid)
+                    if os.path.isfile(nifti_file+'.nii.gz'):
+                        print(self.fMRI_dir)
+                        #got an nii.gz, check tosee if there's also a onset file for this.
+                        onset_file=self.onset_dir + '/runfiledetail'+self.onset_file_version+'_s'+str(sid)+'_' + m.lower() + '_r'+str(rid)+'.txt'
+                        if (os.path.isfile(onset_file)):
+                            print ('we have a match; '+ onset_file)
+                            #print("done the regressing :-)")
 
-                        if custom_pain_map_lambda is not None:
-                            #create the custom pain map in this subject's native space
-                            custom_pain_map_filepath = custom_pain_map_lambda(sid,rid,'Punish')
-                            self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath)
+                            if custom_pain_map_lambda is not None:
+                                #create the custom pain map in this subject's native space
+                                custom_pain_map_filepath = custom_pain_map_lambda(sid,rid,m[0:6])
+                                self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath)
 
 
 
-                        msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
-                        msm_predicted_pain_dict['subid'] = sid
-                        msm_predicted_pain_dict['runid'] = rid
-                        with open(self.regressor_output_filepathprefix + str(sid) + '_punishment_r' + str(rid) + '.csv',
-                                  'w') as csvfile:
-                            w = csv.DictWriter(csvfile, msm_predicted_pain_dict.keys())
-                            w.writeheader()
-                            w.writerow(msm_predicted_pain_dict)
+                            msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
+                            msm_predicted_pain_dict['subid'] = sid
+                            msm_predicted_pain_dict['runid'] = rid
+                            with open(self.regressor_output_filepathprefix + str(sid) + '_' + m.lower() + '_r' + str(rid) + '.csv',
+                                      'w') as csvfile:
+                                w = csv.DictWriter(csvfile, msm_predicted_pain_dict.keys())
+                                w.writeheader()
+                                w.writerow(msm_predicted_pain_dict)
 
-                            #for key, value in msm_predicted_pain_dict.items():
-                            #    w.writerow([key, value])
-
-             #               if (header_written==False):
-             #                   w.writeheader()
-             #                   header_written=True
 
         if custom_pain_map_lambda is not None:
             self.get_wager_nps_map()#restore original.

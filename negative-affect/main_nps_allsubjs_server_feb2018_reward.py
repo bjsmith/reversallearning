@@ -1,6 +1,7 @@
 from pain_regression_allsubjs import *
 rlPain=RLPain()
 
+
 rlPain.fMRI_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks'
 rlPain.onset_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles'
 #rlPain.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
@@ -17,7 +18,14 @@ rlPain.onset_file_version='20180220T031755'
 #print(rlPain.get_trialtype_pain_regressors(nifti_file,onset_file))
 
 
-rlPain.process_detailed_regressors()
+rlPain.process_detailed_regressors(
+    range(100,400),
+    lambda sid,rid,m: ('/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/' +
+                      'weights_NSF_grouppred_cvpcr_sub' + str(sid) + '_ReversalLearning_' + m +
+                      '_run' + str(rid) + '_pre.feat.nii.gz'),
+    motivations_all=['Reward']
+    )
+
 #rlPain.process_all_punishment_subjects()
 
 

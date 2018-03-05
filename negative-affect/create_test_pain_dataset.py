@@ -14,18 +14,18 @@ from nltools.data import Brain_Data
 
 #Get nii.gz data
 fMRI_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed'
-nps_map_filepath = '/Users/benjaminsmith/Dropbox/joint-modeling/wager-pain-dataset/NPS_share/weights_NSF_grouppred_cvpcr.img'
+nps_map_folder = '/Users/benjaminsmith/Dropbox/joint-modeling/wager-pain-dataset/NPS_share/weights_NSF_grouppred_cvpcr/subject_space_masks'
 #get behavioral data
 #onset_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
 behav_data_path='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/all_subjs_datacomplete_reward_and_punishment.txt'
 behav_data= pd.read_csv(behav_data_path,header=0,sep=" ")
 
-nps_brain_data=Brain_Data(nps_map_filepath)
-filtered_func_data=Brain_Data(fMRI_dir + '/sub105ReversalLearningPunishrun1.nii.gz')
+
+#filtered_func_data=Brain_Data(fMRI_dir + '/sub105ReversalLearningPunishrun1.nii.gz')
 from nilearn.plotting import plot_glass_brain
-plot_glass_brain(nps_brain_data.to_nifti())
-plot_glass_brain(filtered_func_data.mean().to_nifti())
-def insert_pain_image(timepoints,nifti_file):
+#plot_glass_brain(nps_brain_data.to_nifti())
+#plot_glass_brain(filtered_func_data.mean().to_nifti())
+def insert_pain_image(timepoints,nifti_file,pain_pattern_in_subj_space_filepath):
 
     # split up the nifti image into a whole set of images,
 
@@ -68,14 +68,14 @@ def insert_pain_image(timepoints,nifti_file):
             for img_3d_i in range(splice['start_tr'],splice['end_tr']+2,2):
                 # add the punishment image to the splice
                 img_3d_filepath = nifti_file + format(img_3d_i,'04.0f') + '.nii.gz'
-                subprocess.call(['fslmaths', img_3d_filepath, '-add', nps_map_filepath,img_3d_filepath])
+                subprocess.call(['fslmaths', img_3d_filepath, '-add', pain_pattern_in_subj_space_filepath,img_3d_filepath])
 
-    subprocess.call(['fslmerge',
-                     nifti_file + 'groundtruth.nii.gz'] + [nifti_file + format(img_3d_i,'04.0f') + '.nii.gz' for i in range(0,vol_length)],
+    subprocess.call(['fslmerge',"-t",
+                     nifti_file + 'groundtruth.nii.gz'] + [(nifti_file + format(i,'04.0f') + '.nii.gz') for i in range(0,vol_length)],
                      )
     #now delete the files we created.
     for i in range(0,vol_length):
-        subprocess.call(['rm',nifti_file + format(img_3d_i,'04.0f') + '.nii.gz'])
+        subprocess.call(['rm',nifti_file + format(i,'04.0f') + '.nii.gz'])
     #make sure out output has the length our input did.
     assert(vol_length==subprocess.run(['fslnvols', nifti_file + 'groundtruth.nii.gz'], stdout=subprocess.PIPE).stdout.strip())
 
@@ -112,8 +112,8 @@ subid_range = range(105,114)
 for sid in subid_range:
     for rid in [1, 2]:
         #get the nifti dataset
-        #nifti_file = fMRI_dir + '/sub' + str(sid) + 'ReversalLearningPunishrun' + str(rid)
-        nifti_file = fMRI_dir + '/filtered_func_data'
+        nifti_file = fMRI_dir + '/sub' + str(sid) + 'ReversalLearningPunishrun' + str(rid)
+        #nifti_file = fMRI_dir + '/filtered_func_data'
 
         #get the behavioral data we'll use to generate our data
         behav_data_s_r = behav_data[(behav_data['runid'] == rid) & (behav_data['subid'] == sid) & (behav_data.Motivation=="punishment")]
@@ -124,14 +124,17 @@ for sid in subid_range:
             # right, now
             punishment_timepoints_unconvolved = behav_data_s_r.loc[behav_data_s_r.correct==False,'onset_time_actual']
             #a very basic pseudoconvolution; because we're just testing, this approximate test should suffice.
-
+            pain_pattern_path = (
+                nps_map_folder+'weights_NSF_grouppred_cvpcr_sub' +str(sid) + '_ReversalLearning_Punish_run' +
+                str(rid) + '_pre.feat.nii.gz')
             # to do this we will
             # get a list of the punishment periods
             punishment_timepoints_convolved = pd.concat([(punishment_timepoints_unconvolved + 4),
                                                          (punishment_timepoints_unconvolved + 6)],
                                                         ignore_index=True).sort_values()
 
-            insert_pain_image(punishment_timepoints_convolved,nifti_file)
+
+            insert_pain_image(punishment_timepoints_convolved,nifti_file,pain_pattern_path)
 
 
 

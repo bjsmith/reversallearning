@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e9ef381-d689-4a57-8cf1-52b5c1dc26a8" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/main_nps_allsubjs_feb2018_reward.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/main_nps_allsubjs_server_feb2018_reward.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/main_nps_tests105r1p.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_test_pain_dataset.py" afterPath="$PROJECT_DIR$/create_test_pain_dataset.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main_nps_allsubjs_server.py" afterPath="$PROJECT_DIR$/main_nps_allsubjs_server.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py" afterPath="$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/negative_affect_trials.R" afterPath="$PROJECT_DIR$/negative_affect_trials.R" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pain_regression_allsubjs.py" afterPath="$PROJECT_DIR$/pain_regression_allsubjs.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,13 +22,15 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$main_nps_allsubjs.coverage" NAME="main_nps_allsubjs Coverage Results" MODIFIED="1518998391878" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1503190184995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/negative-affect$create_test_pain_dataset.coverage" NAME="create_test_pain_dataset Coverage Results" MODIFIED="1520211791233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/negative-affect$create_test_pain_dataset.coverage" NAME="create_test_pain_dataset Coverage Results" MODIFIED="1520285632557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$main_nps.coverage" NAME="main_nps Coverage Results" MODIFIED="1518998333518" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/negative-affect$pain_regression_allsubjs.coverage" NAME="pain_regression_allsubjs Coverage Results" MODIFIED="1520235130572" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/negative-affect$main_nps_tests105r1p.coverage" NAME="main_nps_tests105r1p Coverage Results" MODIFIED="1520244186703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$pain_regression_allsubjs.coverage" NAME="pain_regression_allsubjs Coverage Results" MODIFIED="1518994970465" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$main_nps_allsubjs_server_feb2018.coverage" NAME="main_nps_allsubjs_server-feb2018 Coverage Results" MODIFIED="1519027243914" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/negative-affect$main_nps_allsubjs_feb2018_reward.coverage" NAME="main_nps_allsubjs_feb2018_reward Coverage Results" MODIFIED="1520285270043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/negative-affect$main.coverage" NAME="main Coverage Results" MODIFIED="1519947148130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$main.coverage" NAME="main Coverage Results" MODIFIED="1519097075452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$main_nps_allsubjs_server_feb2018.coverage" NAME="main_nps_allsubjs_server-feb2018 Coverage Results" MODIFIED="1519027243914" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$visual_play.coverage" NAME="visual_play Coverage Results" MODIFIED="1503196022261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="PyCharm2016.3/coverage/negative-affect$visualize_timecourses.coverage" NAME="visualize_timecourses Coverage Results" MODIFIED="1518914710974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -31,106 +40,31 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="pain_regression_allsubjs.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pain_regression_allsubjs.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="568">
-              <caret line="131" column="54" lean-forward="false" selection-start-line="131" selection-start-column="54" selection-end-line="131" selection-end-column="54" />
-              <folding>
-                <element signature="e#70#109#0" expanded="true" />
-                <element signature="e#1542#2677#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="117" lean-forward="true" selection-start-line="4" selection-start-column="16" selection-end-line="4" selection-end-column="117" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pain_regression.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pain_regression.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="795">
-              <caret line="53" column="25" lean-forward="false" selection-start-line="53" selection-start-column="19" selection-end-line="53" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main_nps_allsubjs_server.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="main_nps_allsubjs_server_feb2018.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="24" column="62" lean-forward="true" selection-start-line="24" selection-start-column="62" selection-end-line="24" selection-end-column="62" />
+            <state relative-caret-position="195">
+              <caret line="13" column="6" lean-forward="true" selection-start-line="13" selection-start-column="6" selection-end-line="13" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="visualize_brainmap.p.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/visualize_brainmap.p.py">
+      <file leaf-file-name="main_nps_allsubjs_feb2018_reward.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_feb2018_reward.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="90">
+              <caret line="6" column="119" lean-forward="false" selection-start-line="6" selection-start-column="100" selection-end-line="6" selection-end-column="119" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="visual_play.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/visual_play.py">
+      <file leaf-file-name="main_nps_allsubjs_server_feb2018_reward.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server_feb2018_reward.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="23" column="34" lean-forward="false" selection-start-line="23" selection-start-column="34" selection-end-line="23" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="visualize_painspace.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/visualize_painspace.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="17" column="46" lean-forward="false" selection-start-line="17" selection-start-column="46" selection-end-line="17" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="create_test_pain_dataset.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/create_test_pain_dataset.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="54" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="run_for_job_and_rid.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/run_for_job_and_rid.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="86" />
+            <state relative-caret-position="315">
+              <caret line="21" column="17" lean-forward="false" selection-start-line="21" selection-start-column="17" selection-end-line="21" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -181,15 +115,18 @@
         <option value="$PROJECT_DIR$/check_timecourses_against_fslfile.py" />
         <option value="$PROJECT_DIR$/main_nps.py" />
         <option value="$PROJECT_DIR$/main_nps_allsubjs.py" />
-        <option value="$PROJECT_DIR$/main_nps_allsubjs_server.py" />
         <option value="$PROJECT_DIR$/main_nps_allsubjs_server-feb2018.py" />
         <option value="$USER_HOME$/anaconda/lib/python3.6/site-packages/nltools/data.py" />
         <option value="$PROJECT_DIR$/main.py" />
-        <option value="$PROJECT_DIR$/create_test_pain_dataset.py" />
         <option value="$PROJECT_DIR$/run_for_job_and_rid.py" />
         <option value="$PROJECT_DIR$/visualize_painspace.py" />
+        <option value="$PROJECT_DIR$/create_test_pain_dataset.py" />
+        <option value="$PROJECT_DIR$/main_nps_allsubjs_server.py" />
+        <option value="$PROJECT_DIR$/main_nps_tests105r1p.py" />
         <option value="$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py" />
         <option value="$PROJECT_DIR$/pain_regression_allsubjs.py" />
+        <option value="$PROJECT_DIR$/main_nps_allsubjs_feb2018_reward.py" />
+        <option value="$PROJECT_DIR$/main_nps_allsubjs_server_feb2018_reward.py" />
       </list>
     </option>
   </component>
@@ -200,10 +137,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1" />
-    <option name="y" value="24" />
-    <option name="width" value="1440" />
-    <option name="height" value="826" />
+    <option name="x" value="240" />
+    <option name="y" value="1103" />
+    <option name="width" value="1680" />
+    <option name="height" value="976" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -250,7 +187,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.pain_regression_allsubjs">
+  <component name="RunManager" selected="Python.create_test_pain_dataset">
     <configuration default="false" name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -265,42 +202,6 @@
       <module name="negative-affect" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="main_nps_allsubjs" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="negative-affect" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main_nps_allsubjs.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="main_nps_allsubjs_server-feb2018" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="negative-affect" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main_nps_allsubjs_server-feb2018.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -337,6 +238,42 @@
       <module name="negative-affect" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pain_regression_allsubjs.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="main_nps_tests105r1p" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="negative-affect" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main_nps_tests105r1p.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="main_nps_allsubjs_feb2018_reward" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="negative-affect" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main_nps_allsubjs_feb2018_reward.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -576,18 +513,18 @@
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Python.Unnamed" />
       <item index="1" class="java.lang.String" itemvalue="Python.main" />
-      <item index="2" class="java.lang.String" itemvalue="Python.main_nps_allsubjs" />
-      <item index="3" class="java.lang.String" itemvalue="Python.main_nps_allsubjs_server-feb2018" />
-      <item index="4" class="java.lang.String" itemvalue="Python.create_test_pain_dataset" />
-      <item index="5" class="java.lang.String" itemvalue="Python.pain_regression_allsubjs" />
+      <item index="2" class="java.lang.String" itemvalue="Python.create_test_pain_dataset" />
+      <item index="3" class="java.lang.String" itemvalue="Python.pain_regression_allsubjs" />
+      <item index="4" class="java.lang.String" itemvalue="Python.main_nps_tests105r1p" />
+      <item index="5" class="java.lang.String" itemvalue="Python.main_nps_allsubjs_feb2018_reward" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.pain_regression_allsubjs" />
-        <item index="1" class="java.lang.String" itemvalue="Python.create_test_pain_dataset" />
-        <item index="2" class="java.lang.String" itemvalue="Python.main" />
-        <item index="3" class="java.lang.String" itemvalue="Python.main_nps_allsubjs_server-feb2018" />
-        <item index="4" class="java.lang.String" itemvalue="Python.main_nps_allsubjs" />
+        <item index="0" class="java.lang.String" itemvalue="Python.create_test_pain_dataset" />
+        <item index="1" class="java.lang.String" itemvalue="Python.main_nps_allsubjs_feb2018_reward" />
+        <item index="2" class="java.lang.String" itemvalue="Python.main_nps_tests105r1p" />
+        <item index="3" class="java.lang.String" itemvalue="Python.pain_regression_allsubjs" />
+        <item index="4" class="java.lang.String" itemvalue="Python.main" />
       </list>
     </recent_temporary>
   </component>
@@ -617,20 +554,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="24" width="1440" height="826" extended-state="6" />
+    <frame x="240" y="1103" width="1680" height="976" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2746781" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23443224" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293979" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5240113" sideWeight="0.1695279" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37146893" sideWeight="0.8304721" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28531075" sideWeight="0.49713877" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37062937" sideWeight="0.8304721" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28438228" sideWeight="0.49713877" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.299787" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32786885" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.42424244" sideWeight="0.7281831" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34965035" sideWeight="0.7281831" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -680,14 +617,14 @@
           <option name="timeStamp" value="42" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/create_test_pain_dataset.py</url>
-          <line>69</line>
-          <option name="timeStamp" value="51" />
+          <url>file://$PROJECT_DIR$/pain_regression_allsubjs.py</url>
+          <line>147</line>
+          <option name="timeStamp" value="55" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/create_test_pain_dataset.py</url>
-          <line>67</line>
-          <option name="timeStamp" value="52" />
+          <url>file://$PROJECT_DIR$/pain_regression_allsubjs.py</url>
+          <line>124</line>
+          <option name="timeStamp" value="62" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -700,7 +637,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="53" />
+      <option name="time" value="63" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
@@ -710,27 +647,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="30" lean-forward="false" selection-start-line="0" selection-start-column="5" selection-end-line="0" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/visual_play.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/run_for_job_and_rid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="12" column="14" lean-forward="false" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda/lib/python3.6/site-packages/scipy/ndimage/interpolation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1890">
@@ -856,7 +772,9 @@
           <caret line="174" column="34" lean-forward="true" selection-start-line="174" selection-start-column="34" selection-end-line="174" selection-end-column="34" />
           <folding>
             <element signature="e#70#109#0" expanded="true" />
+            <element signature="e#960#1481#0" expanded="false" />
             <element signature="e#1542#2677#0" expanded="false" />
+            <element signature="e#5155#6460#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -907,13 +825,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="820" column="0" lean-forward="false" selection-start-line="820" selection-start-column="0" selection-end-line="820" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/check_timecourses_against_fslfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="15" column="56" lean-forward="false" selection-start-line="15" selection-start-column="56" selection-end-line="15" selection-end-column="56" />
         </state>
       </provider>
     </entry>
@@ -983,29 +894,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main_nps_allsubjs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="8" lean-forward="false" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda/lib/python3.6/site-packages/nltools/data.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="55">
           <caret line="96" column="8" lean-forward="false" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="8" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/create_test_pain_dataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="54" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1049,6 +942,53 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/check_timecourses_against_fslfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="15" column="56" lean-forward="false" selection-start-line="15" selection-start-column="56" selection-end-line="15" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main_nps_allsubjs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="27" lean-forward="true" selection-start-line="6" selection-start-column="27" selection-end-line="6" selection-end-column="99" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main_nps_tests105r1p.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="51" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/create_test_pain_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="43" column="34" lean-forward="false" selection-start-line="43" selection-start-column="34" selection-end-line="43" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pain_regression_allsubjs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="97">
+          <caret line="124" column="0" lean-forward="false" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+          <folding>
+            <element signature="e#70#109#0" expanded="true" />
+            <element signature="e#960#1481#0" expanded="false" />
+            <element signature="e#1542#2677#0" expanded="false" />
+            <element signature="e#5155#6460#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pain_regression.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="795">
@@ -1059,28 +999,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        <state relative-caret-position="120">
+          <caret line="8" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_feb2018_reward.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="119" lean-forward="false" selection-start-line="6" selection-start-column="100" selection-end-line="6" selection-end-column="119" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server_feb2018.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="62" lean-forward="true" selection-start-line="24" selection-start-column="62" selection-end-line="24" selection-end-column="62" />
+        <state relative-caret-position="195">
+          <caret line="13" column="6" lean-forward="true" selection-start-line="13" selection-start-column="6" selection-end-line="13" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pain_regression_allsubjs.py">
+    <entry file="file://$PROJECT_DIR$/main_nps_allsubjs_server_feb2018_reward.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="568">
-          <caret line="131" column="54" lean-forward="false" selection-start-line="131" selection-start-column="54" selection-end-line="131" selection-end-column="54" />
-          <folding>
-            <element signature="e#70#109#0" expanded="true" />
-            <element signature="e#1542#2677#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="315">
+          <caret line="21" column="17" lean-forward="false" selection-start-line="21" selection-start-column="17" selection-end-line="21" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
