@@ -19,7 +19,7 @@ rlPain.onset_file_version='20180220T031755'
 
 
 rlPain.process_detailed_regressors(
-    range(100,400),
+    range(332,400),
     lambda sid,rid,m: ('/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/' +
                       'weights_NSF_grouppred_cvpcr_sub' + str(sid) + '_ReversalLearning_' + m +
                       '_run' + str(rid) + '_pre.feat.nii.gz'),

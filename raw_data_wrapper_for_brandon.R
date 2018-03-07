@@ -19,7 +19,7 @@ rawdata$cor_res_aligned<-
 
 #####EXPLANATION OF THE DATA.
 #key columns are:
-colnames(rawdata.rewardrun1)
+#colnames(rawdata.rewardrun1)
 #subid: nominal factor representing the subject ID for this trial
 #image: nominal factor representing the particular image cue shown to subjects in this trail
 #presentation_n:  ordinal factor, ranging from 1 to 13, indicating that this is the nth trial this this image has been presented.

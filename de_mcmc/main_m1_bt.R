@@ -1,9 +1,10 @@
-#source("util/apply_local_settings.R")
-#apply_local_settings()
-source("functions.R")
-#install.packages("snowfall")
+
+source("util/apply_local_settings.R")
+apply_local_settings()
+
+source("de_mcmc/functions.R")
 library("data.table")
-library("snowfall")
+library("snowfall")#install.packages("snowfall")
 library("MASS")
 library("msm")      #install.packages("msm")
 library("MCMCpack") #install.packages("MCMCpack")
@@ -12,8 +13,8 @@ mainDir <- getwd()
 setwd(mainDir)
   
 version="m1"
-save.name <- paste("output_",version,sep="")
-
+save.name <- paste("demcmc/output_",version,sep="")
+save.dir <- localsettings$data_dir
 subDir=save.name
 
 ##############################################  generate data
@@ -83,12 +84,12 @@ sfInit(parallel=TRUE, cpus=cores, type="SOCK")
 sfClusterSetupRNG()
   
 ptm=proc.time()[3]
-debugSource(paste("de_",version,".R",sep=""))
+source(paste("de_mcmc/de_",version,".R",sep=""))
 proc.time()[3]-ptm
   
 sfStop()
   
-save.image(paste(save.name,".RData",sep=""))
+save.image(paste(save.dir,save.name,".RData",sep=""))
   
 ########################################## estimation
   
@@ -97,7 +98,7 @@ plot.weights=TRUE
 start=2
 start.weights=2
 
-pdf(paste(save.name,".pdf",sep=""),10,5)
+pdf(paste(sav.dir,save.name,".pdf",sep=""),10,5)
 par(mfrow=c(1,2),ask=FALSE)
 source("fig_base.R")
 dev.off()

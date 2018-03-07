@@ -16,6 +16,7 @@ import os.path
 import csv
 import pickle
 import warnings
+import gc
 
 """
 Created on Sat Aug 19 19:05:48 2017
@@ -128,6 +129,7 @@ class RLPain:
                                 w = csv.DictWriter(csvfile, msm_predicted_pain_dict.keys())
                                 w.writeheader()
                                 w.writerow(msm_predicted_pain_dict)
+            gc.collect()
 
 
         if custom_pain_map_lambda is not None:

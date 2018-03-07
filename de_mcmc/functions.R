@@ -7,11 +7,18 @@ invlogit=function(x){
   1/(1+exp(-x))
 }
 
+#this is using a wald probability density function to calculate results
+#and multiplies the result by alpha
+#we take the classical formulation of a wald PDF.
+#The entire thing is multiplied by alpha;
+#(x-1) is replaced by alpha-v*(t[idx]-theta)
+#x is replaced by (t[idx]-theta)
 wald.pdf=function(t,alpha,v,theta){
   # alpha is threshold
   # v is drift
   # theta is nondecision time
   # t is the response time
+
   idx=t>theta
   tmp=numeric(length(idx))
   tmp[idx]=alpha/sqrt(2*pi*(t[idx]-theta)^3) * exp(-(alpha-v*(t[idx]-theta))^2/(2*(t[idx]-theta)))  
@@ -88,8 +95,8 @@ write.files=function(q,use.theta,use.weight,append=TRUE){
     dir.create(file.path(mainDir, subDir))
     setwd(file.path(mainDir, subDir))
   }
-  for(j in 1:S)write(round(use.theta[q,,j],6),paste("chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
-  write(round(use.weight[q,],8),paste("chain",q,"_weights.txt",sep=""),ncolumns=S,append=append)
+  for(j in 1:S)write(round(use.theta[q,,j],6),paste(localsettings$data_dir,"/de_mcmc_workspace/", "chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
+  write(round(use.weight[q,],8),paste(localsettings$data_dir,"/de_mcmc_workspace/","chain",q,"_weights.txt",sep=""),ncolumns=S,append=append)
   setwd(mainDir)
 }
 
