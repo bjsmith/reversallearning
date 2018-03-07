@@ -1,0 +1,18 @@
+---
+title: "Negative affect behavioral data"
+output: html_notebook
+---
+Verifying pain signal
+
+If the NPS similarity reliably measures pain, then we should see that the NPS score is higher in trials where subjects receive an electric shock compared to trials where they do not. Thus, sign that the NPS is measuring pain is to ensure that:
+
+ - In the punishment runs, NPS scores should be higher in those trials where subjects receive an electric shock than those where they did not, i.e., where they made an incorrect response or made no response compared to when they made a correct response.
+ - The difference between incorrect or non-responses and correct responses should be substantially stronger in the punishments than in the reward runs, where subjects were being rewarded for correct responses, but not punished for incorrect responses. If this is indeed the case, then we have evidence the NPS is measuring the brain response to physical pain. If there is no difference, then the NPS might be detecting non-physical pain, or a negative signal which is not physical pain.
+
+After the NPS scores were obtained, I tested these two postulates with a series of linear models.
+
+```{r}
+source("negative_affect_trials_setup.R")
+```
+
+
