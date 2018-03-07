@@ -33,6 +33,10 @@ log.dens.like.m1<-function(x,use.data){
     v_t=matrix(0,nt,2)
     for(t in 1:nt){
       if (use.data$choice[t]!=0) {
+        #this must come first - this represents the choice being made.
+        # there is some transformation based on ev and beta needed before a drift rate can be obtained
+        v_t[t,]=invlogit(ev[use.data$cue[t],])
+        
         # prediction error
         PE   =  use.data$outcome[t] - ev[use.data$cue[t],use.data$choice[t]]
         PEnc = -use.data$outcome[t] - ev[use.data$cue[[t]],3-use.data$choice[[t]]]
@@ -40,8 +44,7 @@ log.dens.like.m1<-function(x,use.data){
         # value updating (learning)
         ev[use.data$cue[t],3-use.data$choice[t]] = ev[use.data$cue[t],3-use.data$choice[t]] + as.numeric(x["alpha"]) * PEnc;
         ev[use.data$cue[t],use.data$choice[t]] = ev[use.data$cue[t],use.data$choice[t]] + as.numeric(x["alpha"]) * PE;
-        # there is some transformation based on ev and beta needed before a drift rate can be obtained
-        v_t[t,]=invlogit(ev[use.data$cue[t],])
+        
       }
     }
     # now pass the matrix of v into the density wrapper, where RT and choice are vectors.

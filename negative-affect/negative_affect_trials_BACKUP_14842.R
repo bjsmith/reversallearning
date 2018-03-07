@@ -1,7 +1,28 @@
+<<<<<<< HEAD
+source("util/apply_local_settings.R")
+apply_local_settings()
+dd<-localsettings$data.dir
+rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment.txt"), header=T)
+#do trials where the subject received punishment have a stronger NPS pain signal than trials wher they did not?
+
+source("read_nps_output.R")
+pain_data<-get_nps_data_for_subs(100:218)
+pain_data$Motivation="punishment"
+
+names(pain_data)
+names(rawdata)
+pain_data$ResponseCorrect<-pain_data$Outcome=="correct"
+rawdata<-data.table(merge(
+  rawdata,pain_data,
+  by.x=c("subid","presentation_n","image","runid","Motivation","first_reversal","presentation_n_in_segment"),
+  by.y=c("subid","presentation_n","image","runid","Motivation","first_reversal","presentation_n_in_segment"),all.x=TRUE,all.y=FALSE))
+
+warning("NEED TO RE-RUN WITH ALL SUBJECTS ONCE RECALCULATION OF NEURAL DATA IS COMPLETE")
+=======
 source("negative_affect/negative_affect_trials_setup.R")
 
 warning("Should test several more runs to determine that the method is reliable.")
-
+>>>>>>> 309586672523d3343f88ef7ea6f3b19d7aa518d5
 #descriptives
 lapply(pain_data,length)
 lapply(pain_data,function(x){length(unique(x))})
@@ -26,13 +47,17 @@ pain_data$subid<-as.factor(pain_data$subid)
 pain_data$image<-as.factor(pain_data$image)
 #hierarchical
 library(lme4)
-
+<<<<<<< HEAD
+m.sronly<-lmer(Value~presentation_n_in_segment+ (1 | subid/runid),pain_data)
+summary(m.sronly)
+m.withReponseCorrect<-lmer(Value~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data)
+=======
 
 m.sronly<-lmer(ValueScaled~presentation_n_in_segment+ (1 | subid/runid),pain_data)
 summary(m.sronly)
 m.withReponseCorrect<-lmer(ValueScaled~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data)
 
-
+>>>>>>> 309586672523d3343f88ef7ea6f3b19d7aa518d5
 summary(m.withReponseCorrect)
 fixed_effects.w.p<-function(m){
   # extract coefficients
@@ -60,7 +85,18 @@ summary(m.withImage)
 fixed_effects.w.p(m.withImage)
 
 m.withImage2<-lmer(Value~ResponseCorrect * presentation_n_in_segment + (1+ResponseCorrect | subid/runid) + (1 | image),pain_data)
+=======
 
+
+m.withImage<-lmer(ValueScaled~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid) + (1 | image),pain_data)
+summary(m.withImage)
+fixed_effects.w.p(m.withImage)
+
+m.withImage2<-lmer(ValueScaled~
+                     ResponseCorrect * presentation_n_in_segment + 
+                     (1+ResponseCorrect * presentation_n_in_segment | subid/runid) + 
+                     (1+ResponseCorrect * presentation_n_in_segment | image),pain_data)
+>>>>>>> 309586672523d3343f88ef7ea6f3b19d7aa518d5
 summary(m.withImage2)
 fixed_effects.w.p(m.withImage2)
 
@@ -104,12 +140,3 @@ m2.3<-
 summary(m2.3)
 
 anova(m2.1,m2.2,m2.3)
-
-
-m2.4<-
-  lmer(ResponseCorrect ~ PreviousValueScaled*PreviousCorrect + (1+ PreviousValueScaled*PreviousCorrect | subid/runid) +
-         (1 + PreviousValueScaled*PreviousCorrect | image),rawdata.ordered)
-summary(m2.4)
-
-anova(m2.1,m2.2,m2.3,m2.4)
-
