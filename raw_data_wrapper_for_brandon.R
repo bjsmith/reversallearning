@@ -1,4 +1,4 @@
-source("util/apply_local_settings.R")
+source("../util/apply_local_settings.R")
 apply_local_settings()
 dd<-localsettings$data.dir
 #dd<-""#enter data directory where the raw data is saved here.

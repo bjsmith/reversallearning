@@ -89,18 +89,19 @@ get.dens.2choice.simple=function(t,choice,alpha,v,theta){
 ############################################################
 
 write.files=function(q,use.theta,use.weight,append=TRUE){
+  
   if (file.exists(subDir)){
-    setwd(file.path(mainDir, subDir))
+    setwd(file.path(mainDataDir, subDir))
   } else {
-    dir.create(file.path(mainDir, subDir))
-    setwd(file.path(mainDir, subDir))
+    dir.create(file.path(mainDataDir, subDir))
+    setwd(file.path(mainDataDir, subDir))
   }
-  for(j in 1:S)write(round(use.theta[q,,j],6),paste(localsettings$data_dir,"/de_mcmc_workspace/", "chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
-  write(round(use.weight[q,],8),paste(localsettings$data_dir,"/de_mcmc_workspace/","chain",q,"_weights.txt",sep=""),ncolumns=S,append=append)
-  setwd(mainDir)
+  for(j in 1:S)write(round(use.theta[q,,j],6),paste(mainDataDir,subDir, "chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
+  write(round(use.weight[q,],8),paste(mainDataDir,subDir,"chain",q,"_weights.txt",sep=""),ncolumns=S,append=append)
+  setwd(mainDataDir)
 }
 
-crossover=function(i,pars,use.theta,use.like,prior,...){
+crossover=function(i,pars,use.theta,use.like,prior,log.dens.like,...){
   require(msm)
   use.weight=use.like[i] + log.dens.prior(x=use.theta[i,],prior=prior)
   gamma = runif(1,.5,1)

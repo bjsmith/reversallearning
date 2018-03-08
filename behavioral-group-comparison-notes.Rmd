@@ -3,9 +3,9 @@ title: "Linear modeling"
 output: html_notebook
 ---
 
+In summary, the behavioral data clearly demonstrates the relationship between raection time and correct responses, but only offers weak evidence that meth users perform poorly compared to non-meth users.
 
-
-```{r}
+```{r, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
 library(R.matlab)
 library(data.table)
 library(ggplot2)
@@ -19,7 +19,7 @@ source("rl_behav_analysis_learning_setup.R")
 ```
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE, include=FALSE}
 #put this in the right format
 rl.all.subjects.dt<-data.table(rl.all.subjects.list)
 
@@ -35,61 +35,86 @@ lm.beta.lmer <- function(mod) {
   b*sd.x/sd.y
 }
 
+rl.all.subjects.list$reaction_time_adj<-rl.all.subjects.list$reaction_time
+rl.all.subjects.list[is.na(reaction_time),reaction_time_adj:=1]
+#table(is.na(rl.all.subjects.list$reaction_time))
+#table(is.na(rl.all.subjects.list$reaction_time_adj))
+rl.all.subjects.list.clean<-rl.all.subjects.list[score!=0]
+
 ```
 
+After eliminating `r rl.all.subjects.list[score==0,.N]` non-response trials across the subjects, `r rl.all.subjects.list[score!=0,.N]` trials remain. 
 
 ```{r}
 
-rl.all.subjects.list$reaction_time_adj<-rl.all.subjects.list$reaction_time
-rl.all.subjects.list[is.na(reaction_time),reaction_time_adj:=1]
-table(is.na(rl.all.subjects.list$reaction_time))
-table(is.na(rl.all.subjects.list$reaction_time_adj))
 
 #what does reaction time look like in a distribution?
 
-ggplot(rl.all.subjects.list,aes(reaction_time,color=correct))+geom_density()+#facet_grid(SexRisk~.,margins=TRUE)
+ggplot(rl.all.subjects.list.clean,aes(reaction_time,color=correct))+geom_density()+#facet_grid(SexRisk~.,margins=TRUE)
   scale_x_continuous(breaks=seq(0.2,1.2,0.2))+
   labs(title="Reaction time density by outcome")
-ggplot(rl.all.subjects.list,aes(reaction_time_adj,color=correct))+geom_density()+#facet_grid(SexRisk~.,margins=TRUE)
-  scale_x_continuous(breaks=seq(0.2,1.2,0.2))+
-  labs(title="Reaction time density by outcome")
-rl.all.subjects.list[,.N,by=.(subid,MethUse)] %>% .()
+# ggplot(rl.all.subjects.list[score!=0],aes(reaction_time_adj,color=correct))+geom_density()+facet_grid(SexRisk~.,margins=TRUE)+
+#   scale_x_continuous(breaks=seq(0.2,1.2,0.2))+
+#   labs(title="Reaction time density by outcome (color) and sexrisk (axis)")
 
+
+```
+
+Correct trials clearly are somewhat slower than incorrect trials, indicating that waiting, on average, paid off for participants.
+
+There is some sign of a bimodal distribution for the incorrect trials. A small number of trials may be clustered around 0.4 s, and then a second set clustered around 0.62 s, just a few milliseconds below the peak of the correct trials at 0.65 s. \footnote{Should posit a bimodal distribution in a simple stan model and see if it does better than a unimodal model.}
+
+
+I applied a logistic regression model to predict correct responses using reaction time, the position of each image in the segment, and the groups, presented as separate variables (MethUse and SexRisk), with subject ID as a random effect. \footnote{Really, runID also needs to be in here as a random effect, and actually, we need runid to be a random effect from 1 to 4}
+```{r cache=TRUE}
+
+mA2c<-glmer(correct~ 
+                 #reaction_time+
+                  presentation_n_in_segment+ #trial-level
+                 #MethUse+
+              SexRisk+(1|subid), #subject-level
+               data = rl.all.subjects.list.clean,
+            family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
+summary(mA2c)
+
+mA2c.nomethuse.rt0<-glmer(correct~ 
+                 reaction_time+presentation_n_in_segment+ #trial-level
+                 SexRisk+(1|subid), #subject-level
+               data = rl.all.subjects.list.clean,
+               family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
+summary(mA2c.nomethuse.rt0)
+```
+
+```{r}
 mA2c.rt0<-glmer(correct~ 
                  reaction_time+presentation_n_in_segment+ #trial-level
                  MethUse+SexRisk+(1|subid), #subject-level
-               data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
+               data = rl.all.subjects.list.clean,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
 summary(mA2c.rt0)
 
-chisq.test(rl.all.subjects.list[MethUse==TRUE,correct],rl.all.subjects.list[MethUse==FALSE,correct])
 
 lm.beta.lmer(mA2c.rt0)
 
-mA2c.nm<-glmer(correct~ 
-                 reaction_time_adj+presentation_n_in_segment+ #trial-level
-                 MethUse+SexRisk+(1|subid), #subject-level
-               data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
-summary(mA2c.nm)
+```
 
-mA2c.nm2<-glmer(correct~ 
-                 reaction_time_adj+I(reaction_time_adj^2)+presentation_n_in_segment+ #trial-level
-                 MethUse+SexRisk+(1|subid), #subject-level
-               data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
-summary(mA2c.nm2)
+The model clearly links reaction time with correct responses. We can calculate standardized $\beta$ values. The standardized beta for reaction time is 0.22 and the standardized beta for SexRisk, which also appeared significant, is 0.10.
 
-mA2c.nm3<-glmer(correct~ 
-                  reaction_time_adj+I(reaction_time_adj^2)+I(reaction_time_adj^3)+presentation_n_in_segment+ #trial-level
-                  MethUse+SexRisk+(1|subid), #subject-level
-                data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
-summary(mA2c.nm3)
+```{r}
 
+anova(mA2c,mA2c.nomethuse.rt0,mA2c.rt0)
+
+```
+
+An ANOVA comparison of the models offers unambiguous evidence with a strong difference in both AIC and BIC that adding reaction to the model improves its prediction of a correct response. However, the addition of MethUse as a predictor only improves AIC slightly, by 4 points, and the BIC, which more strongly peanlizes model complexity, suggests that the model including MethUse is not as powerful.
+
+```{r}
 # does eliminating reaction time change the prediction?
 # in other words, does reaction time carry useful information which might be moderating the rleationship between corrct and MethUse/SexRisk; is reaction time a NEGATIVE CONFOUNDER?
 
 mA2c.noreactiontime<-glmer(correct~ 
                              presentation_n_in_segment+ #trial-level
                              MethUse+SexRisk+(1|subid), #subject-level
-                           data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
+                           data = rl.all.subjects.list.clean,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
 summary(mA2c.noreactiontime)
 
 #looking at this - the regression coefficients for MethUse and SexRisk appear to disappear
@@ -99,7 +124,7 @@ summary(mA2c.noreactiontime)
 mA2c.rt.interact<-glmer(correct~ 
                  reaction_time+presentation_n_in_segment+ #trial-level
                  MethUse*reaction_time+SexRisk*reaction_time+(1|subid), #subject-level
-               data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
+               data = rl.all.subjects.list.clean,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
 summary(mA2c.rt.interact)
 #quite interesting: allowing an interaction term between reaction_time and MethUse,
 # - MethUse becomes more significant
@@ -109,51 +134,41 @@ summary(mA2c.rt.interact)
 rt.A<-lmer(reaction_time~ 
                           +presentation_n_in_segment+ #trial-level
                           MethUse+(1|subid), #subject-level
-                        data = rl.all.subjects.list)
+                        data = rl.all.subjects.list.clean)
 summary(rt.A)
 #MethUse doesn't predict reaction time....
 rt.A1<-lmer(reaction_time~ correct*MethUse
              +presentation_n_in_segment+ #trial-level
              MethUse+(1|subid), #subject-level
-           data = rl.all.subjects.list)
+           data = rl.all.subjects.list.clean)
 summary(rt.A1)
 
 #But MethUse interacting with correct might be a predictor; i.e.,...
 rt.A1.cor<-lmer(reaction_time~ MethUse
             +presentation_n_in_segment+ #trial-level
               (1|subid), #subject-level
-            data = rl.all.subjects.list[correct==TRUE])
+            data = rl.all.subjects.list.clean[correct==TRUE])
 summary(rt.A1.cor)
 
 rt.A1.ncor<-lmer(reaction_time~ MethUse
                 +presentation_n_in_segment+ #trial-level
                   (1|subid), #subject-level
-                data = rl.all.subjects.list[correct==FALSE])
+                data = rl.all.subjects.list.clean[correct==FALSE])
 summary(rt.A1.ncor)
 #Nope. Neither in Correct nor incorrect trials alone is MethUse a predictor of reaction time.
 
-
-#many false results are due to participants responding far too quickly to make a good response.
-#we might want to include this in the model.
-#Specifically: we model correct~reaction time according to two regressors: whether RT is less than 0.1
-#and whether RT predicts %c
-mB<-glmer(correct~ (reaction_time<0.1)+
-                 reaction_time+presentation_n_in_segment+ #trial-level
-                 MethUse+SexRisk+(1|subid), #subject-level
-               data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
-summary(mB)
-lm.beta.lmer(mB)
 #SO, it is clear here that:
 # - reaction time is STILL a predictor of performanace
-# - getting a RT score less than 0.1 is strongly associated with bad performance
+```
 
-mB.1<-glmer(correct~ (reaction_time<0.1)+
-            reaction_time+presentation_n_in_segment:(reaction_time>0.1)+ #trial-level
-            MethUse:(reaction_time>0.1)+SexRisk:(reaction_time>0.1)+(1|subid), #subject-level
-          data = rl.all.subjects.list,family = binomial, control=glmerControl(optimizer="Nelder_Mead"))
-summary(mB.1)
-lm.beta.lmer(mB.1)
 
+
+```{r}
+anova(mA2c,mA2c.noreactiontime,mA2c.rt.interact)
+```
+
+
+```{r}
 #DO A LINEAR MODEL PREDICTING NON-RESPONSE RATES FROM METH USE AND OTHER RELEVANT VARIABLES.
 #THIS MIGHT IMPACT ON THE WAY WE TREAT THE DATA.
 
@@ -169,7 +184,7 @@ table(rl.all.subjects.list[,.(reaction_time>0.1,correct)])
 #what's going on?
 #- this is 
 
-ggplot(rl.all.subjects.list,aes(reaction_time,color=correct))+geom_density()+#facet_grid(SexRisk~.,margins=TRUE)
+ggplot(rl.all.subjects.list.clean,aes(reaction_time,color=correct))+geom_density()+#facet_grid(SexRisk~.,margins=TRUE)
   coord_cartesian(xlim=c(0,0.2))
   labs(title="Reaction time density by outcome")
 

@@ -1,5 +1,5 @@
 
-source("util/apply_local_settings.R")
+source("../util/apply_local_settings.R")
 apply_local_settings()
 
 source("de_mcmc/functions.R")
@@ -84,7 +84,11 @@ sfInit(parallel=TRUE, cpus=cores, type="SOCK")
 sfClusterSetupRNG()
   
 ptm=proc.time()[3]
-source(paste("de_mcmc/de_",version,".R",sep=""))
+source(paste("de_mcmc/de_",version,"_config.R",sep=""))
+source(paste("de_mcmc/de_",version,"_run.R",sep=""))
+de_m1_run(log.dense.like.f=log.dens.like.m1,
+          log.dens.prior.f=log.dens.prior
+          )
 proc.time()[3]-ptm
   
 sfStop()
@@ -98,7 +102,7 @@ plot.weights=TRUE
 start=2
 start.weights=2
 
-pdf(paste(sav.dir,save.name,".pdf",sep=""),10,5)
+pdf(paste(save.dir,save.name,".pdf",sep=""),10,5)
 par(mfrow=c(1,2),ask=FALSE)
 source("fig_base.R")
 dev.off()
