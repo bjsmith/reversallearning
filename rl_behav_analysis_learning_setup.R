@@ -19,7 +19,7 @@ require(data.table)
 #install.packages("tidyr")
 require(tidyr)
 require(ggplot2)
-source("util/apply_local_settings.R")
+source("../util/apply_local_settings.R")
 apply_local_settings()
 
 
@@ -45,7 +45,7 @@ rl.all.subjects.list<-NULL
 for (condition in c("reward","punishment")){
   #condition<-"reward"
   
-  source("util/graphics.R")
+  source("../util/graphics.R")
   if (condition=="reward"){
     filename.pattern<-"^rlr_sub[0-9]+_run[0-9]+_.*\\.mat"
     filename.prefix<-"/rlr_sub"
@@ -240,4 +240,5 @@ break.labels=c("1\nPre-reversal",2:last_nonreversal,"1\nReversal",2:6)
 accuracy.by.pres_seg.subid.finalpc<-
   accuracy.by.pres_seg.subid[presentation_n_over_segments==4,.(final.prop.correct=prop.correct),.(subid,Motivation)]
 accuracy.by.pres_seg.subid<-merge(accuracy.by.pres_seg.subid,accuracy.by.pres_seg.subid.finalpc,by=c("subid","Motivation"))
+
 

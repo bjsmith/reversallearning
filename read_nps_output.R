@@ -1,7 +1,7 @@
 library(data.table)
-read_nps_output <- function(punish_csv){
-  #punish_csv<-punish_r1_csv
-  activity<-data.table(t(punish_csv),keep.rownames = TRUE,stringsAsFactors = FALSE)
+read_nps_output <- function(pattern_csv){
+  #pattern_csv<-punish_r1_csv
+  activity<-data.table(t(pattern_csv),keep.rownames = TRUE,stringsAsFactors = FALSE)
   activity<-plyr::rename(activity,replace = c(rn="rawcode", V1="Value"))
   #View(activity)
   #these should be centered ALREADY, but we should scale them to have a tractable value
@@ -37,31 +37,34 @@ read_nps_output <- function(punish_csv){
   return(activity.eventvals)
 }
 
-  get_nps_data_for_subs <- function(subjList){
-  punish_data_allsubs<-NULL
+get_nps_data_for_subs <- function(subjList){
+  pattern_data_allsubs<-NULL
   for (s in subjList) {
     for (r in 1:2){
-      #print (paste("getting pain data for subject ",s, "run",r))
-      #input and parse CSV
-      pr<-paste0(localsettings$data.dir,"rlPainNPS/",s,"_punishment_r",r,".csv")
-      if (file.exists(pr)){
-        punish_data<-read_nps_output(read.csv(file=pr))
-        if(any(s!=punish_data$subid) | any(r!=punish_data$runid)){
-          stop("mismatch between filename and file contents subject id or runid")
+      for (m in c("Punishment","Reward")){
+        #print (paste("getting pain data for subject ",s, "run",r))
+        #input and parse CSV
+        pr<-paste0(localsettings$data.dir,"rlPainNPS/",s,"_",tolower(m),"_r",r,".csv")
+        if (file.exists(pr)){
+          pattern_data<-read_nps_output(read.csv(file=pr))
+          pattern_data$Motivation<-m
+          if(any(s!=pattern_data$subid) | any(r!=pattern_data$runid)){
+            stop("mismatch between filename and file contents subject id or runid")
+          }
+        }else{
+          print(paste("Run",r,"M",m,", data not available for subject ",s))
+          next
         }
-      }else{
-        print(paste("Run",r,"data not available for subject ",s))
-        next
-      }
-      if (is.null(punish_data_allsubs)){
-        punish_data_allsubs<-punish_data
-      }else{
-        punish_data_allsubs<-rbind(punish_data_allsubs,punish_data)
+        if (is.null(pattern_data_allsubs)){
+          pattern_data_allsubs<-pattern_data
+        }else{
+          pattern_data_allsubs<-rbind(pattern_data_allsubs,pattern_data)
+        }
       }
     }
   }
   #normalize this data.
-  #punish_data_allsubs$Value_n<-scale(punish_data_allsubs$Value,center = 0,scale=TRUE)
+  #pattern_data_allsubs$Value_n<-scale(pattern_data_allsubs$Value,center = 0,scale=TRUE)
   
-  return (punish_data_allsubs)
+  return (pattern_data_allsubs)
 }

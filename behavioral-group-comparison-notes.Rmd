@@ -15,7 +15,9 @@ library(corrplot)
 library(Matrix)
 require(lme4)
 nonResponseTimeAsNA<-TRUE
+
 source("rl_behav_analysis_learning_setup.R")
+
 ```
 
 
@@ -107,7 +109,7 @@ anova(mA2c,mA2c.nomethuse.rt0,mA2c.rt0)
 
 An ANOVA comparison of the models offers unambiguous evidence with a strong difference in both AIC and BIC that adding reaction to the model improves its prediction of a correct response. However, the addition of MethUse as a predictor only improves AIC slightly, by 4 points, and the BIC, which more strongly peanlizes model complexity, suggests that the model including MethUse is not as powerful.
 
-```{r}
+```{r, cache=TRUE}
 # does eliminating reaction time change the prediction?
 # in other words, does reaction time carry useful information which might be moderating the rleationship between corrct and MethUse/SexRisk; is reaction time a NEGATIVE CONFOUNDER?
 
@@ -159,16 +161,17 @@ summary(rt.A1.ncor)
 
 #SO, it is clear here that:
 # - reaction time is STILL a predictor of performanace
+
 ```
 
 
 
-```{r}
+```{r, cache=TRUE}
 anova(mA2c,mA2c.noreactiontime,mA2c.rt.interact)
 ```
 
 
-```{r}
+```{r, cache=TRUE}
 #DO A LINEAR MODEL PREDICTING NON-RESPONSE RATES FROM METH USE AND OTHER RELEVANT VARIABLES.
 #THIS MIGHT IMPACT ON THE WAY WE TREAT THE DATA.
 

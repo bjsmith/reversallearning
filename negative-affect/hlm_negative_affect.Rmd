@@ -12,6 +12,7 @@ If the NPS similarity reliably measures pain, then we should see that the NPS sc
 After the NPS scores were obtained, I tested these two postulates with a series of linear models.
 
 ```{r, include=FALSE,cache=TRUE}
+library(lme4)
 setwd("../")
 source("negative-affect/negative_affect_trials_setup.R")
 ```
@@ -26,8 +27,13 @@ We first build a base level model, for comparison, that attempts to predict the 
 ```{r}
 m.0<-lmer(ValueScaled~
                      presentation_n_in_segment + 
-                     (1+presentation_n_in_segment | subid/runid) + 
-                     (1 | image),pain_data)
+                     (1+presentation_n_in_segment | subid/runmotiveid) + 
+                     (1 | image),rawdata.ordered.complete[Motivation=="punishment"])
+summary(m.0)
+# m.0.nm<-lmer(ValueScaled~
+#                      presentation_n_in_segment + 
+#                      (1+presentation_n_in_segment | subid/runid) + 
+#                      (1 | image),rawdata.ordered.complete, control=lmerControl(optimizer="Nelder_Mead"))
 ```
 
 We represent subject as $S$, run as $S$, and image as $\iota$; then 
@@ -35,8 +41,8 @@ We represent subject as $S$, run as $S$, and image as $\iota$; then
 $V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon$
 
 ```{r}
-m.sronly<-lmer(ValueScaled~presentation_n_in_segment+ (1 | subid/runid),pain_data)
-summary(m.sronly)
+#m.sronly<-lmer(ValueScaled~presentation_n_in_segment+ (1 | subid/runid),rawdata.ordered.complete[Motivation=="punishment"])
+#summary(m.sronly)
 ```
 
 
@@ -46,8 +52,13 @@ $V=\mathit{RESPONSE}_k*\mathit{PRESENTATION}_{i} + S_{s(i, k )} + R_{r(s,i , k )
 
 ```{r}
 
-m.withReponseCorrect<-lmer(ValueScaled~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data)
-summary(m.withReponseCorrect)
+#m.withReponseCorrect<-lmer(ValueScaled~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data)
+m.withResponseCorrect<-lmer(ValueScaled~
+                     ResponseCorrect + 
+                     presentation_n_in_segment + 
+                     (1+presentation_n_in_segment | subid/runmotiveid) + 
+                     (1 | image),rawdata.ordered.complete[Motivation=="punishment"])
+summary(m.withResponseCorrect)
 
 
 ```
@@ -56,7 +67,7 @@ Over all pain datasets, the model with correct response has much lower AIC and B
 
 
 ```{r}
-anova(m.sronly,m.withReponseCorrect)
+anova(m.0,m.withResponseCorrect)
 ```
 
 This suggests that responses are predictive of the NPS value detected. The beta value estimate representing the response fixed effect suggests that NPS is lower for correct responses (no electric shock) than incorrect responses (electric shock), which is consistent with the purpose of the NPS to measure pain.
@@ -67,7 +78,47 @@ This may be the first time that a generalized neurologic pain signal has been co
 
 However, this by itself does not demonstrate that the NPS reponse is in fact directly related to physical pain from the electric shock. Although there are a large number of possible alternative explanations, one plausible explanation is that the NPS signal change is simply that getting an item wrong in the game is affectively unpleasant, even without a direct physical pain. We might posit an ego-driven response to performing well in the task; in effect, an incorrect response is its own punishment.
 
-In order to rule out this possibility, we need to compare the response we get during the punishment runs with a similar response in the reward runs. If we measure the NPS during the Reward task, and compare correct and incorrect responses, do we see the same or a different response? A significantly larger difference in NPS between incorrect and incorrect responses seems very unlikely and would suggest either a methdological 
+In order to rule out this possibility, we need to compare the response we get during the punishment runs with a similar response in the reward runs. If we measure the NPS during the Reward task, and compare correct and incorrect responses, do we see the same or a different response? A significantly larger difference in NPS between incorrect and correct responses during hte Reward task seems very unlikely and would likely suggest some methodological error. A main effect difference in the magnitude of the incorrect and correct responses across the Reward and Punishment conditions would suggest the NPS is tracking some kind of punishment signal other than pain. We hope to see a significantly larger difference in NPS between incorrect and correct responses during the Punishment task, and would demonstrate that the signal we find is related to the physical pain of an electric shock. Note that these last two effects could be observed simultaneously, i.e., a main effect and an interaction effect.
 
-or a difference in the opposite direction, i.e., 
+We first build a base model that does NOT include information about motives but only whether the trial is correct. Note that the runid used here will index Reward and Punishment runs uniquely, i.e., if the subject has 2 reward and 2 punishment runs, as most do, then runs are numbered from 1 to 4. Here we do include both reward and punishment data.
+
+$V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon$
+
+```{r}
+m.rp.0<-lmer(ValueScaled~
+                     (ResponseCorrect==FALSE) + 
+                     presentation_n_in_segment + 
+                     (1+presentation_n_in_segment | subid/runmotiveid) + 
+                     (1 | image),rawdata.ordered.complete)
+m.rp<-lmer(ValueScaled~
+                     (ResponseCorrect==FALSE)*(Motivation=="punishment") + 
+                     presentation_n_in_segment + 
+                     (1+presentation_n_in_segment | subid/runmotiveid) + 
+                     (1 | image),rawdata.ordered.complete)
+
+
+```
+
+We can also run an ANOVA and using the result, conduct AIC and BIC tests to see whether overall, model fit was improved by including motivation in the model:
+
+```{r, cache=TRUE}
+anova(m.rp.0,m.rp)
+```
+
+BIC indicates that the model including punishment is strongly predictive.
+
+However the clearest indication of the result here, since we are interested in the direction of an effect, will come from examining the significance and magnitude of the effect sizes of the regressors themselves:
+
+```{r}
+summary(m.rp.0)
+summary(m.rp)
+
+```
+
+The result:
+
+1. With an estimate of $B=0.094$, $t=9.6$, the interaction of Incorrect Response and Motivation is strong and indicates that there was a brain response to an incorrect outcome in the electric shock punishment condition but not in the reward condition.
+2. With an estimate of $B=0.005$, $t=0.66$, the main effect of Incorrect response is not significantly different from zero, which implies the NPS specifically responds to pain feedback and not to negative feedback generally.
+
+
 
