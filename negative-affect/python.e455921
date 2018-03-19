@@ -1,0 +1,12 @@
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/ndimage/interpolation.py:462: UserWarning: The behaviour of affine_transform with a one-dimensional array supplied for the matrix parameter has changed in scipy 0.18.0.
+  "The behaviour of affine_transform with a one-dimensional "
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nltools/data.py:363: RuntimeWarning: invalid value encountered in true_divide
+  t_out.data = b / stderr
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:879: RuntimeWarning: invalid value encountered in greater
+  return (self.a < x) & (x < self.b)
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:879: RuntimeWarning: invalid value encountered in less
+  return (self.a < x) & (x < self.b)
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/scipy/stats/_distn_infrastructure.py:1735: RuntimeWarning: invalid value encountered in greater_equal
+  cond2 = (x >= self.b) & cond0
+/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nilearn/image/resampling.py:481: UserWarning: Casting data from int16 to float32
+  warnings.warn("Casting data from %s to %s" % (data.dtype.name, aux))

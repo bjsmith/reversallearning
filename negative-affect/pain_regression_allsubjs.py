@@ -103,13 +103,16 @@ class RLPain:
             #csvfile=None
         header_written=False
         for sid in subid_range:
+            print sid
             for rid in [1,2]:
                 for m in motivations:
                     nifti_file=self.fMRI_dir + 'sub'+str(sid) + 'ReversalLearning' + m[0:6] + 'run'+str(rid)
+                    #print(nifti_file)
                     if os.path.isfile(nifti_file+'.nii.gz'):
-                        print(self.fMRI_dir)
+                        print(nifti_file)
                         #got an nii.gz, check tosee if there's also a onset file for this.
                         onset_file=self.onset_dir + '/runfiledetail'+self.onset_file_version+'_s'+str(sid)+'_' + m.lower() + '_r'+str(rid)+'.txt'
+                        print(onset_file)
                         if (os.path.isfile(onset_file)):
                             print ('we have a match; '+ onset_file)
                             #print("done the regressing :-)")

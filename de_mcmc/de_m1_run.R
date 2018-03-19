@@ -13,14 +13,23 @@ de_m1_run <- function(log.dens.like.f,log.dens.prior.f){
   print("Optimizing...")
   init.pars=matrix(1,S,n.pars)
   for(j in 1:S){
+    start_time <- Sys.time()
     x=x.init[j,]
+    print(x)
     temp.weight=log.dens.like.f(x,use.data=data[[j]])
     new.x=x
     while(temp.weight==-Inf){
       new.x=rtnorm(n.pars,x,.1,0,c(1,1,Inf,Inf))
       temp.weight=log.dens.like.f(new.x,use.data=data[[j]])
     }
-    if(use.optim==TRUE)init.pars[j,]=optim(new.x,function(x,...)-log.dens.like.f(x,...),use.data=data[[j]],control=list("maxit"=1000))$par
+    if(use.optim==TRUE){
+      optim_res<-optim(new.x,function(x,...)-log.dens.like.f(x,...),use.data=data[[j]],control=list("maxit"=1000))
+      print(optim_res$counts)
+      init.pars[j,]=optim_res$par
+    }
+    end_time <- Sys.time()
+    
+    print(end_time - start_time)
     if(use.optim==FALSE)init.pars[j,]=new.x
     print(paste("Optimization ",round(j/S*100),"% Complete.",sep=""))
   }

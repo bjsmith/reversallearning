@@ -3,7 +3,7 @@
 
 fig_base <- function(env){
   attach(env)
-  setwd(file.path(mainDir, subDir))
+  setwd(file.path(mainDataDir, subDir))
   tnmc=length(keep.samples)
   
   if(plot.phi==TRUE)phi=array(NA,c(n.chains,n.hpars,tnmc))
