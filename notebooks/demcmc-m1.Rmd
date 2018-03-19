@@ -1,0 +1,53 @@
+---
+title: "DE-MCMC Model 1"
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+This is an analysis of the DE-MCMC Model 1.
+
+We'll try to start with printing out results similar to those produced by Brandon's code.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+#source("visualization/geom_hdi.R")
+
+
+```
+
+```{r setup3, include=FALSE}
+load(paste0(localsettings$data.dir,"de_mcmc/output_m120180307T224156.RData"))
+
+
+
+```
+
+Here are the results from fit_base.r
+
+```{r fig_base, include=FALSE}
+#mainDir<-paste0(mainDir,"/")
+plot.phi=FALSE
+plot.lower=TRUE
+plot.weights=FALSE
+plot.sigma=FALSE
+plot.mu=FALSE
+plot.rho=FALSE
+starti=1000
+#contains cue, choice, rt, and outcome. This isn't what we need; this is input, not output.
+setwd(file.path(mainDir))
+source("de_mcmc/fig_base_demcmc_m1.r")
+
+```
+
+

@@ -21,7 +21,7 @@ check.pars=function(x,use.data){
 }
 
 log.dens.like.m1<-function(x,use.data){
-  #printv("running log.dens.like.m1")
+  
   names(x) <- par.names
   #model
   if(check.pars(x=x,use.data=use.data)){
@@ -56,6 +56,9 @@ log.dens.like.m1<-function(x,use.data){
                           alpha=c(x["thresh"],x["thresh"]),
                           v=v_t[use.data$choice!=0,],
                           theta=c(x["tau"],x["tau"]))#is this right?-BJS
+    
+    
+    
     #printv("...got density.")
     out=sum(log(dens))
     if(is.na(out))out=-Inf

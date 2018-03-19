@@ -1,9 +1,9 @@
 version="m1"
 verbose=TRUE
-debugSource('de_mcmc/main_m1_setup.R')
+source('de_mcmc/main_m1_setup.R')
 
 ##############################################  generate data
-debugSource("de_mcmc/raw_data_reward_only.R")
+source("de_mcmc/raw_data_reward_only.R")
 ##############################################  initialize
 
 par.names=c("alpha","beta","thresh","tau")
@@ -36,24 +36,23 @@ prior$lower=0
 prior$upper=1
 
 ########################################## run it
-debugSource(paste("de_mcmc/de_",version,"_config.R",sep=""))
-debugSource(paste("de_mcmc/de_",version,"_run.R",sep=""))
+source(paste("de_mcmc/de_",version,"_config.R",sep=""))
+source(paste("de_mcmc/de_",version,"_run.R",sep=""))
+
 
 run_env<-de_mcmc_execute(log.dens.like.m1,log.dens.prior)
 attach(run_env)
 
 
-
 ########################################## estimation
-  
-plot.lower=TRUE
-plot.weights=TRUE
-start=2
-start.weights=2
+##graphics.  
 
-pdf(paste(save.dir,save.name,".pdf",sep=""),10,5)
-par(mfrow=c(1,2),ask=FALSE)
-source("fig_base.R")
-dev.off()
-  
-  
+# plot.lower=TRUE
+# plot.weights=TRUE
+# start=2
+# start.weights=2
+# 
+# pdf(paste(save.dir,save.name,".pdf",sep=""),10,5)
+# par(mfrow=c(1,2),ask=FALSE)
+# source("de_mcmc/fig_base.R")
+# dev.off()

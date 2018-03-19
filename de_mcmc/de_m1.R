@@ -44,7 +44,6 @@ log.dens.like.m1<-function(x,use.data){
         # value updating (learning)
         ev[use.data$cue[t],3-use.data$choice[t]] = ev[use.data$cue[t],3-use.data$choice[t]] + as.numeric(x["alpha"]) * PEnc;
         ev[use.data$cue[t],use.data$choice[t]] = ev[use.data$cue[t],use.data$choice[t]] + as.numeric(x["alpha"]) * PE;
-        
       }
     }
     # now pass the matrix of v into the density wrapper, where RT and choice are vectors.

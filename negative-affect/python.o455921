@@ -1,0 +1,577 @@
+332
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub332ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s332_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s332_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub332_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub332ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s332_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s332_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub332_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+333
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub333ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s333_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s333_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub333_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub333ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s333_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s333_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub333_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+334
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub334ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s334_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s334_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub334_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub334ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s334_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s334_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub334_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+335
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub335ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s335_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s335_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub335_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub335ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s335_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s335_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub335_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+336
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub336ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s336_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s336_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub336_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub336ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s336_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s336_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub336_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+337
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub337ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s337_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s337_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub337_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub337ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s337_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s337_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub337_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+338
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub338ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s338_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s338_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub338_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub338ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s338_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s338_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub338_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+339
+340
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub340ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s340_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s340_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub340_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub340ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s340_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s340_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub340_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+341
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub341ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s341_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s341_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub341_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub341ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s341_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s341_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_nonresponse_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub341_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+342
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub342ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s342_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s342_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub342_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub342ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s342_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s342_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub342_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+343
+344
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub344ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s344_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s344_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub344_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub344ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s344_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s344_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub344_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+345
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub345ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s345_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s345_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub345_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub345ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s345_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s345_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub345_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+346
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub346ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s346_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s346_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub346_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub346ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s346_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s346_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub346_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+347
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub347ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s347_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s347_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub347_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub347ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s347_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s347_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub347_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+348
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub348ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s348_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s348_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub348_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub348ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s348_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s348_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub348_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+349
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub349ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s349_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s349_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub349_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub349ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s349_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s349_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub349_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+350
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub350ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s350_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s350_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub350_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub350ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s350_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s350_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub350_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+351
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub351ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s351_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s351_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub351_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub351ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s351_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s351_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub351_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+352
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub352ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s352_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s352_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub352_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub352ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s352_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s352_reward_r2.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub352_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+353
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub353ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s353_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s353_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub353_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub353ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s353_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s353_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub353_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+354
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub354ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s354_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s354_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub354_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub354ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s354_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s354_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub354_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+355
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub355ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s355_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s355_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub355_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub355ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s355_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s355_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub355_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+356
+357
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub357ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s357_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s357_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub357_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub357ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s357_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s357_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub357_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+358
+359
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub359ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s359_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s359_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub359_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub359ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s359_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s359_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub359_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+360
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub360ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s360_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s360_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub360_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub360ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s360_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s360_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub360_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+361
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub361ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s361_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s361_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub361_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub361ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s361_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s361_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub361_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+362
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub362ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s362_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s362_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub362_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub362ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s362_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s362_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub362_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+363
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub363ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s363_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s363_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub363_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub363ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s363_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s363_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_nonresponse_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub363_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+364
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub364ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s364_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s364_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub364_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub364ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s364_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s364_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub364_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+365
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub365ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s365_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s365_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub365_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub365ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s365_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s365_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub365_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+366
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub366ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s366_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s366_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub366_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub366ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s366_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s366_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub366_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub390ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s390_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s390_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub390_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub390ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s390_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s390_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub390_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+391
+392
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub392ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s392_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s392_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub392_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub392ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s392_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s392_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_correct_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub392_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+393
+394
+395
+396
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub396ReversalLearningRewardrun1
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s396_reward_r1.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s396_reward_r1.txt
+importing nifti
+importing onsets
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub396_ReversalLearning_Reward_run1_pre.feat.nii.gz...
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/sub396ReversalLearningRewardrun2
+/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s396_reward_r2.txt
+we have a match; /expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles/runfiledetail20180220T031755_s396_reward_r2.txt
+importing nifti
+importing onsets
+deleting placeholder_PreR_error_PsFb_i46_5_c0
+convolved onsets; regressing...
+Regressing; calculating similarity to the pain map from /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub396_ReversalLearning_Reward_run2_pre.feat.nii.gz...
+397
+398
+399
