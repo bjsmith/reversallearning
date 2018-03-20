@@ -140,8 +140,8 @@ write(t(init.pars),file=paste("MLEs_",save.name,".txt",sep=""),ncolumns=n.pars)
 
 #now we initialize.
 warned.dist2<-FALSE
-for(i in 1:n.chains){
-  for(j in 1:S){
+for(i in 1:n.chains){#i<-1
+  for(j in 1:S){#j<-1
     temp.weight=-Inf
     while(weight[i,j]==-Inf){
       theta[i,par.ids.l1$alpha,j]=rnorm(1,init.pars[j,par.ids.l1$alpha],.25)
@@ -153,9 +153,7 @@ for(i in 1:n.chains){
         warned.dist2=TRUE}
       
       weight[i,j]=
-        log.dens.like(theta[i,par.ids.l1$alpha,j],data[[j]])+
-        log.dens.like(theta[i,par.ids.l1$thresh,j],data[[j]])+
-        log.dens.like(theta[i,par.ids.l1$tau,j],data[[j]])
+        log.dens.like(theta[i,,j],data[[j]])
       if(is.na(weight[i,j]))weight[i,j]=-Inf
     }
   }

@@ -3,6 +3,7 @@ source("../joint_msm_combined/bjs_misc_utils.R")
 version="h_m2"
 save.name="main_h_m2"
 source('de_mcmc/main_m1_setup.R')
+source('de_mcmc/functions_joint_v2.R')
 
 ########################################## generate data
 
@@ -90,7 +91,7 @@ print("...snowfall initialized; running cluster setup...")
 sfClusterSetupRNG()
 print("...cluster setup run.")
 
-debugSource(paste("de_mcmc/de_",version,".R",sep=""))
+source(paste("de_mcmc/de_",version,".R",sep=""))
 
 sfStop()
 
