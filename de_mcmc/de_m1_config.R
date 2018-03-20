@@ -1,10 +1,11 @@
 
-
+#log.dens.prior=function(x,prior,phi){
 log.dens.prior=function(x,prior){
   require(MCMCpack)
   names(x) <- par.names
   #priors
   #what scale are these on; how do they relate to the absolute values here?
+  #add phi values here.
   dens=sum(log(dunif(x["alpha"],0,1))) + 
     sum(log(dunif(x["beta"],0,1))) + 
     sum(log(dunif(x["thresh"],0,1000))) +

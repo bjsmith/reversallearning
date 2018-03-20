@@ -1,0 +1,99 @@
+########################################## load the functions you will use
+source("../joint_msm_combined/bjs_misc_utils.R")
+version="h_m2"
+save.name="main_h_m2"
+source('de_mcmc/main_m1_setup.R')
+
+########################################## generate data
+
+source("de_mcmc/raw_data_reward_only.R")
+
+########################################## initialize
+par.names.l1=c("alpha",#"beta",
+                   "thresh","tau")
+par.ids.l1<-as.list(1:3)
+names(par.ids.l1)=par.names.l1
+
+par.names.l2<-c(paste0(par.names.l1, "_mu"),paste0(par.names.l1, "_sigma"))
+
+par.names=c(par.names.l1)
+#if I understand correctly, these are hyper-parameters because they are describing the distribution of individual subject parameters
+#Each subject has a mu (which decomposes to eta, I think???? need to drill down to this),
+#a sigma, and a tau; these are all important for the exGaussian estimation
+#but those parameters themselves are estimated across subjects on an simple normal distribution;
+#hence they each have a mu and a sigma.
+hpar.names=par.names.l2
+
+
+n.chains=24
+n.pars=length(par.names)
+n.hpars=length(hpar.names)
+n.phi.mu=n.hpars/2
+
+
+
+#hyper-parameters are the parameters describing the distributions from which the main model parameters are drawn
+#so it seems that we aren't calculating sigmas across all subjects; if we were, they'd be hyper-parameters
+
+#link parameters are parameters for which we're creating sigma correlations at the end.
+link.pars=NULL #at this stage
+#link.pars=c(1:n.components, n.components+1, n.components+2, n.components+3)
+#unlink.pars=n.components + c(4,5,6,7)
+  
+n.link.pars=length(link.pars)
+#n.unlink.pars=length(unlink.pars)
+
+n.mu=n.link.pars
+n.Sigma=n.link.pars^2
+
+# n.delta.pars=length(delta.pars)
+# n.theta.pars=length(theta.pars)
+
+nmc=5000
+burnin=4000
+thin=1
+keep.samples=seq(burnin,nmc,thin)
+length(keep.samples)*n.chains
+
+migrate.prob=.1
+migrate.duration=round(burnin*.5) + 1
+b=.001
+
+S=length(data)
+
+x.init=matrix(NA,S,n.pars)
+for(j in 1:S){
+  x.init[j,par.ids.l1$alpha]=-3
+  x.init[j,par.ids.l1$thresh]=log(2)
+}
+x.init[,par.ids.l1$tau]=log(.6*(sapply(data,function(x)min(x$rt,na.rm=TRUE))))
+
+
+########################################## prior
+prior.big=NULL
+#prior.big$mu=rep(0,n.link.pars)
+prior.big$m=1/10
+#prior.big$phi=diag(n.link.pars)
+prior.big$n0=length(prior.big$mu) + 2
+
+# prior=NULL
+# prior$sigma.go=list(mu=1.5,sigma=0.8,alpha=4,beta=10)
+# prior$tau.go=list(mu=.75,sigma=0.5,alpha=4,beta=10)
+# prior$sigma.stop=list(mu=1.5,sigma=0.8,alpha=4,beta=10)
+# prior$tau.stop=list(mu=.75,sigma=.5,alpha=4,beta=10)
+
+########################################## run it
+cores=8#detectCores()
+print(paste0("Starting sfInit to run sfInit with ",cores," cores..."))
+sfInit(parallel=TRUE, cpus=cores, type="SOCK")
+print("...snowfall initialized; running cluster setup...")
+sfClusterSetupRNG()
+print("...cluster setup run.")
+
+debugSource(paste("de_mcmc/de_",version,".R",sep=""))
+
+sfStop()
+
+save.image(paste(save.name,run.ts,".RData",sep=""))
+
+########################################## plot

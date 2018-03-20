@@ -10,7 +10,6 @@ library("MASS")
 library("msm")      # install.packages("msm")
 library("MCMCpack") # install.packages("MCMCpack")
 
-
 mainDir <- getwd()
 
 setwd(mainDir)

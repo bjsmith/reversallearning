@@ -153,20 +153,20 @@ get.dens.2choice=function(t,choice,alpha,v,theta){
   #tend<-Sys.time()
   #time.wald<<-time.wald+(tend-tstart)
   #if((get.dens.2choice_count%%1000)==0) print(paste0(get.dens.2choice_count, "twalds:",time.wald))
-  print(paste0("alpha:",alpha))
-  if (is.nan(sum(log(tmp)))){
-    
-    print("sum log tmp is NaN")
-    #it's because densities are coming out negative, so the log densities are NA.
-    
-    print(tmp)
-    print(log(tmp))
-    print(sum(log(tmp)))
-    print(t[idx1])
-    print(alpha[1])
-    print(v[idx1,1])
-    print(theta[1])
-  }
+  
+  # if (is.nan(sum(log(tmp)))){
+  #   
+  #   print("sum log tmp is NaN")
+  #   #it's because densities are coming out negative, so the log densities are NA.
+  #   print(paste0("alpha:",alpha))
+  #   print(tmp)
+  #   print(log(tmp))
+  #   print(sum(log(tmp)))
+  #   print(t[idx1])
+  #   print(alpha[1])
+  #   print(v[idx1,1])
+  #   print(theta[1])
+  # }
   tmp
 }
 
@@ -220,6 +220,7 @@ crossover=function(i,par_ind,use.param,use.like,prior,log.dens.like,log.dens.pri
   #use.param is nChains*nParam
   #use.like is nChains
   require(msm)
+  #we have to change this line to handle multiple subjects 
   use.weight=use.like[i] + log.dens.prior(x=use.param[i,],prior=prior)
   gamma = runif(1,.5,1)
   index=sample(c(1:n.chains)[-i],2,replace=F)

@@ -1,3 +1,5 @@
+library(LaplacesDemon)
+
 #this is adapted from de_m1_config
 #this version is hierarchical, unlike de_m1
 #for this hierarchical model, we'll only add room for a single run per subject.
@@ -7,11 +9,14 @@ log.dens.prior.h.m1=function(x,prior){
   #specifies distributions
   require(MCMCpack)
   names(x) <- parinstancenames
+  if(is.null(log.dens.like.h.m1.parnames.alpha)){
+    update.parnames.ids(length(x),x)
+  }
   #priors
   l2<-list()
-  l2[level2.par.names[c(1,3)]]<-dnorm(x[level2.par.names[c(1,3)]],0,1,log=TRUE)
-  l2[level2.par.names[2]]<-dcauchy(x[level2.par.names[2]],0,10,log=TRUE)
-  l2[level2.par.names[4:6]]<-dcauchy(x[level2.par.names[4:6]],0,1,log=TRUE)
+  l2[level2.par.names[1:3]]<-dnorm(x[level2.par.names[1:3]],0,1,log=TRUE)
+  #l2[level2.par.names[2]]<-dhalfcauchy(x[level2.par.names[2]],10,log=TRUE)
+  l2[level2.par.names[4:6]]<-dhalfcauchy(x[level2.par.names[4:6]],1,log=TRUE)
   #that's cool. Now...
   #Each of the level 1 vars are distributed using the level 2 parameters
   #iterate through the three variables (alpha,thresh,tau)
@@ -19,29 +24,31 @@ log.dens.prior.h.m1=function(x,prior){
     update.parnames.ids(S)
   }
   #s<-1
-  print(log.dens.like.h.m1.parnames.alpha)
-  print(x[log.dens.like.h.m1.parnames.alpha])
-  print(level2.par.names)
-  print(x[level2.par.names])
+  # print(log.dens.like.h.m1.parnames.alpha)
+  # print(x[log.dens.like.h.m1.parnames.alpha])
+  # print(level2.par.names)
+  # print(x[level2.par.names])
+  if(x["alpha_s_sigma"]<0 | x["thresh_s_sigma"]<0 | x["tau_s_sigma"]<0){
+    return(-Inf) #don't bother calculating because we will not get a viable result.
+  }else{
   dens=sum(unlist(lapply(1:S,function(s){
     dnorm(x[log.dens.like.h.m1.parnames.alpha[[s]]],
           x[level2.par.names[[1]]],
           x[level2.par.names[[4]]],
           log=TRUE)+
-      dnorm(x[log.dens.like.h.m1.parnames.alpha[[s]]],
+      dnorm(x[log.dens.like.h.m1.parnames.thresh[[s]]],
             x[level2.par.names[[2]]],
             x[level2.par.names[[5]]],
             log=TRUE)+
-      dnorm(x[log.dens.like.h.m1.parnames.alpha[[s]]],
+      dnorm(x[log.dens.like.h.m1.parnames.tau[[s]]],
             x[level2.par.names[[3]]],
             x[level2.par.names[[6]]],
             log=TRUE)})))+
     sum(unlist(l2))
+  }
       
   if(is.na(dens)){dens=-Inf
-    print(parinstancenames)
-    print(x)
-    stop("asdf")
+    print("infinite density prior.")
     
   }
   dens
@@ -51,14 +58,12 @@ check.pars.nonfunction.warned<<-FALSE
 check.pars=function(x,use.data){
   names(x) = parinstancenames
   if (!check.pars.nonfunction.warned){
-    warning("check.pars is currently disabled. I need to revisit this and fix up how it looks.")
+    warning("check.pars is currently only checks sigma values are above zero. It probably needs a more comprehensive check than that but I'm not sure what to add-BJS.")
     check.pars.nonfunction.warned<<-TRUE
   }
-  
-  # x["tau"]<min(use.data$rt[use.data$choice!=0]) &
-  #   x["alpha"]<1 &
-  #   all(x>=0)
-  return(TRUE)
+  #add checks for all to make sense
+  #make sure all sigma values are greater than zero
+  return(all(x[c("alpha_s_sigma","thresh_s_sigma","tau_s_sigma")]>0))
 }
 
 log.dens.like.h.m1.timer.sectionA<-0
@@ -72,9 +77,12 @@ log.dens.like.h.m1.parid.tau<-NULL
 
 log.dens.like.h.m1<-function(x,use.data){
   cat("*")
-  
+  #transformation functions
+  f_alpha_s_tr<-function(alpha){invlogit(alpha)}
+  f_thresh_s_tr<-function(thresh){exp(thresh)}
+  f_tau_s_tr<-function(tau){exp(tau)}
   if(is.null(log.dens.like.h.m1.parnames.alpha)){
-    update.parnames.ids(length(use.data))
+    update.parnames.ids(length(use.data),x)
   }
   #
   #model
@@ -90,7 +98,7 @@ log.dens.like.h.m1<-function(x,use.data){
       ev=matrix(0,100,2)
       #record the values at each time point.
       v_t=matrix(0,nt,2)
-      alpha_tr<-invlogit(as.numeric(x[[log.dens.like.h.m1.parid.alpha[[s]] ]]))
+      alpha_tr<-f_alpha_s_tr(as.numeric(x[[log.dens.like.h.m1.parid.alpha[[s]] ]]))
       for(tr in 1:nt){#tr=1;tr=tr+1
         #print (tr)
         #start_time <- Sys.time()
@@ -118,30 +126,26 @@ log.dens.like.h.m1<-function(x,use.data){
 
         #save(list(list(use.data),list(x),list(v_t)), file=paste0(dd, "test_de_h_m1_config.Rdata"))
         #stop("stopping here so I can use profvis well.")
-      print("hello")
+      #print("hello")
       #print(x)
-      if(x[[ log.dens.like.h.m1.parid.thresh[[s]] ]]<0){
-        print("alpha below zero; here is x:")
-        print(parinstancenames)
-        print(x)
-      }
-      thresh_s<-x[[ log.dens.like.h.m1.parid.thresh[[s]] ]]
+      thresh_s_tr<-f_thresh_s_tr(x[[ log.dens.like.h.m1.parid.thresh[[s]] ]])
+      tau_s_tr<-f_tau_s_tr(x[[ log.dens.like.h.m1.parid.tau[[s]] ]] )
       dens.s<-sum(log(get.dens.2choice(t=use.data[[s]]$rt[use.data[[s]]$choice!=0],
                                        choice=use.data[[s]]$choice[use.data[[s]]$choice!=0],
-                                       alpha=c(thresh_s,thresh_s),
+                                       alpha=c(thresh_s_tr,thresh_s_tr),
                                        v=v_t[use.data[[s]]$choice!=0,],
-                                       theta=c(x[[ log.dens.like.h.m1.parid.tau[[s]] ]],x[[  log.dens.like.h.m1.parid.tau[[s]] ]])
+                                       theta=c(tau_s_tr,tau_s_tr)
       )))
       dens=dens+dens.s#is this right?-BJS
-      # if(is.nan(dens.s)){
-      #    print("NaN density produced. check out why.")
+      if(is.nan(dens.s)){
+          print("NaN density produced. check out why.")
       #   
       #   print(use.data[[s]]$rt[use.data[[s]]$choice!=0])
       #   print(use.data[[s]]$choice[use.data[[s]]$choice!=0])
       #   print(c(x[[ log.dens.like.h.m1.parid.thresh[[s]] ]],x[[ log.dens.like.h.m1.parid.thresh[[s]] ]]))
       #   print(v_t[use.data[[s]]$choice!=0,])
       #   print(c(x[[ log.dens.like.h.m1.parid.tau[[s]] ]],x[[  log.dens.like.h.m1.parid.tau[[s]] ]]))
-      # }
+       }
         #end_time <- Sys.time()
         #log.dens.like.h.m1.timer.sectionB<<-log.dens.like.h.m1.timer.sectionB+(end_time-start_time)
       #printv("running getting density")
@@ -166,7 +170,7 @@ log.dens.like.h.m1<-function(x,use.data){
   out
 }
 
-update.parnames.ids <- function(S){
+update.parnames.ids <- function(S,x){
   #do this here to speed up processing. Should only be one ONCE.
   log.dens.like.h.m1.parnames.alpha<<-unlist(lapply(1:S,function(s){paste0("alpha_s",s)}))
   log.dens.like.h.m1.parnames.thresh<<-unlist(lapply(1:S,function(s){paste0("thresh_s",s)}))

@@ -29,7 +29,7 @@ level1.par.names=c("alpha_s",#"beta",
 level2.par.names<-c(paste0(level1.par.names, "_mu"),paste0(level1.par.names, "_sigma"))
 
 #par.names<-c(level1.par.names,level2.par.names)
-n.pars=length(par.names)
+
 
 n.chains=24
 nmc=5000
@@ -54,14 +54,15 @@ S=length(data)
 
 #MAY NEED TO ADJUST THESE TAU VALUES IN LIGHT OF PUTTING THIS IN NORMAL DISTRIBUTION SPACE
 x.init<- list()
-x.init[[level1.par.names[[1]] ]]<-rep(0,S)#alpha
-x.init[[level1.par.names[[2]] ]]<-rep(2,S)#thresh
-x.init[[level1.par.names[[3]] ]]=.6*(sapply(data,function(x)min(x$rt,na.rm=TRUE))) #is this the best we can do?
+x.init[[level1.par.names[[1]] ]]<-rep(-Inf,S)#alpha
+x.init[[level1.par.names[[2]] ]]<-rep(log(2),S)#thresh
+x.init[[level1.par.names[[3]] ]]=log(.6*(sapply(data,function(x)min(x$rt,na.rm=TRUE)))) #is this the best we can do?
 #mu values
-for (pn in level2.par.names[1:2]){
-  x.init[[pn]]<-0
-}
-x.init[[level2.par.names[3]]]=.6*mean(sapply(data,function(x)min(x$rt,na.rm=TRUE))) #is this the best we can do?
+x.init[[level2.par.names[1]]]<--Inf
+x.init[[level2.par.names[2]]]<-log(2)
+
+
+x.init[[level2.par.names[3]]]=log(.6*mean(sapply(data,function(x)min(x$rt,na.rm=TRUE)))) #is this the best we can do?
 #sigma values
 for (pn in level2.par.names[4:5]){
   x.init[[pn]]<-1
@@ -70,6 +71,7 @@ x.init[[level2.par.names[6]]]=.6*sd(sapply(data,function(x)min(x$rt,na.rm=TRUE))
 
 n.parinstances<-length(unlist(x.init))#the list of parameter instances, counting each element of the vector parameters
 parinstancenames<-names(unlist(x.init))
+n.pars=n.parinstances
 ##############################################  set prior
 
 prior=NULL
