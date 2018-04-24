@@ -22,14 +22,28 @@ require(ggplot2)
 source("../util/apply_local_settings.R")
 apply_local_settings()
 
+if(!exists("data_amendment_version")){
+  data_amendment_version<-0
+}
 
 pwd<-getwd()
-aggregated.game.data.path<-paste0(localsettings$data.dir,"aggregated_game_data.Rdata")
+if(data_amendment_version>0){
+  aggregated.game.data.path<-paste0(localsettings$data.dir,"aggregated_game_data",data_amendment_version,".Rdata")
+}else{
+  aggregated.game.data.path<-paste0(localsettings$data.dir,"aggregated_game_data.Rdata")
+}
+
 if (file.exists(aggregated.game.data.path)){
   load(aggregated.game.data.path)
 }else{
   source("/Users/benjaminsmith/Documents/msm-project/ranalysis/data-preprocessing-compilation/load_aggregated_game_data.R")
-  all.subject.data<-load_aggregated_game_data()[,c(1,10:35,541:567,988:1024)]
+  all.data.all.cols<-load_aggregated_game_data()
+  col.range<-c(1,10:35,541:567,988:1024)
+  if(!is.na(data_amendment_version)){
+    col.range<-c(col.range,which(colnames(all.data.all.cols) %in% c("Q24.1","Q32", "Q34","Q39","Q41")))
+  }
+  all.subject.data<-all.data.all.cols[,col.range]
+  rm(all.data.all.cols)
   save(all.subject.data,file = aggregated.game.data.path)
 }
 

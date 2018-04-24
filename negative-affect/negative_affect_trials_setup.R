@@ -8,10 +8,10 @@ rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment.tx
 source("read_nps_output.R")
 pain_data<-get_nps_data_for_subs(100:400)
 
-tmp$runmotiveid<-tmp$runid
-
-tmp$runmotiveid[tmp$Motivation=="punishment"] <- 
-  tmp$runid[tmp$Motivation=="punishment"]+rew_runcount#this will increment the run motive ID by the number of reward runs.
+# tmp$runmotiveid<-tmp$runid
+# 
+# tmp$runmotiveid[tmp$Motivation=="punishment"] <- 
+#   tmp$runid[tmp$Motivation=="punishment"]+rew_runcount#this will increment the run motive ID by the number of reward runs.
 
 names(pain_data)
 names(rawdata)
@@ -23,13 +23,13 @@ rawdata<-data.table(merge(
   by.x=c("subid","presentation_n","image","runid","Motivation","first_reversal","presentation_n_in_segment"),
   by.y=c("subid","presentation_n","image","runid","Motivation","first_reversal","presentation_n_in_segment"),all.x=TRUE,all.y=FALSE))
 
-rawdata.ordered$ValueScaled <- scale(rawdata.ordered$Value)
-rawdata.ordered$PreviousValueScaled <- scale(rawdata.ordered$PreviousValue)
-
 #iterate through each run and add those values 
 #order rawdata
+
 rawdata.ordered<-rawdata[order(subid,runid,Motivation,onset_time_designed),]
-rawdata.ordered[,runmotiveid:=runid]
+rawdata.ordered$ValueScaled <- scale(rawdata.ordered$Value)
+
+rawdata.ordered[,runmotiveid:=runid]#start this; it'll be more fully defined below, see below.
 for (s in unique(rawdata.ordered$subid)){
   print(s)
   #get the reward run count so that we can give each run, rew and pun, unique IDs
@@ -59,10 +59,12 @@ for (s in unique(rawdata.ordered$subid)){
   }
 }
 
+rawdata.ordered$PreviousValueScaled <- scale(rawdata.ordered$PreviousValue)
+
 
 #table(rawdata.ordered.complete$PreviousCorrect)
 #table(rawdata.ordered.complete$PreviousValue)
 rawdata.ordered.complete<-rawdata.ordered[
   !is.na(PreviousValue)&!is.na(PreviousCorrect)
   ]
-
+pain_data<-rawdata.ordered.complete
