@@ -169,34 +169,3 @@ summary(rt.A1.ncor)
 ```{r, cache=TRUE}
 anova(mA2c,mA2c.noreactiontime,mA2c.rt.interact)
 ```
-
-
-```{r, cache=TRUE}
-#DO A LINEAR MODEL PREDICTING NON-RESPONSE RATES FROM METH USE AND OTHER RELEVANT VARIABLES.
-#THIS MIGHT IMPACT ON THE WAY WE TREAT THE DATA.
-
-
-#Here, where we include interactions of reaction time being less than 0.1 or more than 0.1,
-#we can see that when raection time is less than 0.1, nothing is particularly predictive of score.
-#however, when reaction time is greater than 0.1, MethUse, presentation_n, etc, are predictive.
-#digging a bit deeper, performance these trials with low reaction times is worse than chance:
-
-table(rl.all.subjects.list[,.(reaction_time>0.1,correct)])
-
-#This is 98% INCORRECT! Something is off here. No one's performance could be this bad by chance.
-#what's going on?
-#- this is 
-
-ggplot(rl.all.subjects.list.clean,aes(reaction_time,color=correct))+geom_density()+#facet_grid(SexRisk~.,margins=TRUE)
-  coord_cartesian(xlim=c(0,0.2))
-  labs(title="Reaction time density by outcome")
-
-hist(rl.all.subjects.list[reaction_time<0.2,reaction_time],breaks = 100)
-#ahh. So there is a mistake in the data.
-#We have 8000 trials where the response is recorded as incorrect but their reaction time is 0.
-table(rl.all.subjects.list$correct)
-#need to work out why these were coded as incorrect when they were really non-responses!
-```
-
-
-

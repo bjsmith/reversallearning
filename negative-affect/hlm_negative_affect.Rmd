@@ -24,7 +24,7 @@ The first set of models tests our ability distinguish between punished trials (i
 We first build a base level model, for comparison, that attempts to predict the NPS signal on a given trial without reference to whether or not that trial was correct.
 
 
-```{r}
+```{r, echo=TRUE}
 m.0<-lmer(ValueScaled~
                      presentation_n_in_segment + 
                      (1+presentation_n_in_segment | subid/runmotiveid) + 
@@ -50,7 +50,7 @@ Then we can repeat the model, this time with the correct response included:
 
 $V=\mathit{RESPONSE}_k*\mathit{PRESENTATION}_{i} + S_{s(i, k )} + R_{r(s,i , k )} + \iota_{j(i, k)} + \epsilon$
 
-```{r}
+```{r, echo=TRUE}
 
 #m.withReponseCorrect<-lmer(ValueScaled~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data)
 m.withResponseCorrect<-lmer(ValueScaled~
@@ -66,7 +66,7 @@ summary(m.withResponseCorrect)
 Over all pain datasets, the model with correct response has much lower AIC and BIC values, incdicating correct response explains variance within the data.
 
 
-```{r}
+```{r, echo=TRUE}
 anova(m.0,m.withResponseCorrect)
 ```
 
@@ -84,7 +84,7 @@ We first build a base model that does NOT include information about motives but 
 
 $V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon$
 
-```{r}
+```{r, echo=TRUE}
 m.rp.0<-lmer(ValueScaled~
                      (ResponseCorrect==FALSE) + 
                      presentation_n_in_segment + 
@@ -101,7 +101,7 @@ m.rp<-lmer(ValueScaled~
 
 We can also run an ANOVA and using the result, conduct AIC and BIC tests to see whether overall, model fit was improved by including motivation in the model:
 
-```{r, cache=TRUE}
+```{r, echo=TRUE, cache=TRUE}
 anova(m.rp.0,m.rp)
 ```
 

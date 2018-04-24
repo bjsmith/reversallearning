@@ -1,18 +1,18 @@
   if(length(grep("nate_files",getwd()))>0){
-  source("../util/apply_local_settings.R")
+  source("../../util/apply_local_settings.R")
   modelcode_rl<-""
   apply_local_settings("../")
 }else if(length(grep("notebooks",getwd()))>0){
-  source("../util/apply_local_settings.R")
+  source("../../util/apply_local_settings.R")
   modelcode_rl<-"../nate_files/"
   apply_local_settings("../")
 }else{
-  source("util/apply_local_settings.R")
+  source("../util/apply_local_settings.R")
   modelcode_rl<-"nate_files/"
   apply_local_settings()
 }
 
-source("util/graphics.R")
+source("../util/graphics.R")
 
 # create_simulated_dataset<-function(){
 # }
@@ -211,10 +211,10 @@ PE=0;    #     // prediction error
 
 #iterate through each subject
 cat(paste0("iterating through ", s_n, " subjects."))
-for (s in 1:s_n){
+for (s in 1:s_n){#s<-1
   cat(".")
   #for each trial
-  for (t in 1:tNum){
+  for (t in 1:tNum){ t<-1
     
     #so we're at a given trial
     #which cue is it?

@@ -1,15 +1,21 @@
 ########################################## load the functions you will use
 source("../joint_msm_combined/bjs_misc_utils.R")
-version="h_m2"
-save.name="main_h_m2"
+version="h_m4"
+save.name=paste0("main_", version)
+source('de_mcmc/functions.R')
 source('de_mcmc/main_m1_setup.R')
 source('de_mcmc/functions_joint_v2.R')
-
+source(paste0('de_mcmc/functions_',version,'.R'))
 ########################################## generate data
 
-source("de_mcmc/raw_data_reward_only.R")
-
+source("de_mcmc/raw_data_all_runs_flat.R")
+safe_meth_subjs<-unlist(lapply(data,function(d){d$group=="Safe Meth"}))
+data<-data[!safe_meth_subjs]
 ########################################## initialize
+#h_m4 includes a simple 2-level model, with all four runs.
+#This is a little unprincipled as we are assuming that all runs are the same 
+#but I want to do this as an intermediate step, as Brandon suggested.
+
 par.names.l1=c("alpha",#"beta",
                    "thresh","tau")
 par.ids.l1<-as.list(1:3)
@@ -32,6 +38,11 @@ n.pars=length(par.names)
 n.hpars=length(hpar.names)
 n.phi.mu=n.hpars/2
 
+group_by_subject<-unlist(lapply(data,function(d){d$group}))
+l2.groups.list<-unique(group_by_subject)
+n.l2.groups<-length(l2.groups.list)
+ids.l2.groups<-as.list(1:length(l2.groups.list))
+names(ids.l2.groups)<-l2.groups.list
 
 
 #hyper-parameters are the parameters describing the distributions from which the main model parameters are drawn
@@ -51,8 +62,8 @@ n.Sigma=n.link.pars^2
 # n.delta.pars=length(delta.pars)
 # n.theta.pars=length(theta.pars)
 
-nmc=5000
-burnin=4000
+nmc=200
+burnin=100
 thin=1
 keep.samples=seq(burnin,nmc,thin)
 length(keep.samples)*n.chains
@@ -97,6 +108,7 @@ source(paste("de_mcmc/de_",version,".R",sep=""))
 
 sfStop()
 
-save.image(paste(save.name,run.ts,".RData",sep=""))
+save.image(paste(save.dir,save.name,".RData",sep=""))
 
 ########################################## plot
+setwd(mainDir)

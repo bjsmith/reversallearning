@@ -13,6 +13,7 @@ data=NULL
 # i'm pretty sure some of the run information needs to be in here. 
 for(j in 1:S){#j=1
   s<-subs[j]
+  subj_group<-as.character(unique(rawdata.dt[subid==subs[j]]$RiskLabel))
   for (r in unique(rawdata.dt[subid==s,runid])){#r=1
     for (m in unique(rawdata.dt[subid==s&runid==r,Motivation])){#m="reward"
       #for now just focus on reward run 1
@@ -20,7 +21,9 @@ for(j in 1:S){#j=1
         temp.data=rawdata.dt[subid==s & runid==r & Motivation==m,]
         rt=temp.data[,reaction_time]
         rt[rt==0] <- NA
-        data[[j]]=list("cue"=as.vector(temp.data[,cue]),"choice"=as.vector(temp.data[,choice]),"rt"=rt,"outcome"=as.vector(temp.data[,outcome]))
+        
+        data[[j]]=list("cue"=as.vector(temp.data[,cue]),"choice"=as.vector(temp.data[,choice]),"rt"=rt,"outcome"=as.vector(temp.data[,outcome]),
+                       "group"=subj_group)
       }
     }
   }

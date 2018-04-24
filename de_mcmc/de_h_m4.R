@@ -1,5 +1,7 @@
 
-log.dens.prior=function(x_s,use.mu,use.Sigma,
+log.dens.prior=function(x_s,
+                        use.mu,
+                        use.Sigma,
                         use.phi
                         ){#x_s<-use.theta[i,];use.mu<-use.mu[i,];use.phi=use.phi[i,]
   require(MCMCpack)
@@ -20,12 +22,11 @@ log.dens.prior=function(x_s,use.mu,use.Sigma,
 check.pars=function(x_s,use.data_s){
   return(TRUE)
 }
+
 log.dens.like=function(x_s,use.data_s,method="full"){
-  cat("*")
+  #cat("*")
   #transformation functions
-  f_alpha_s_tr<-function(alpha){invlogit(alpha)}
-  f_thresh_s_tr<-function(thresh){exp(thresh)}
-  f_tau_s_tr<-function(tau){exp(tau)}
+  
   #model
   dens=0
   if(check.pars(x=x,use.data_s=use.data_s)){
@@ -35,6 +36,7 @@ log.dens.like=function(x_s,use.data_s,method="full"){
       #print(paste0("processing sub ",s))
       #100 is the number of slots we have to store cues (images), not individual trials.
       #since we don't record a new EV value each time.
+      #this seems ot be a really big overshoot.
       ev=matrix(0,100,2)
       #record the values at each time point.
       v_t=matrix(0,nt,2)
@@ -105,7 +107,8 @@ weight=array(-Inf,c(n.chains,S))
 mu=array(NA,c(n.chains,n.mu))
 Sigma=array(NA,c(n.chains,n.Sigma))
 warning("no definitions set for mu or sigma. Do we need definitions for these before we start?")
-phi=array(NA,c(n.chains,n.hpars))
+phi=array(NA,c(n.chains,n.hpars,n.l2.groups))
+dimnames(phi)[[3]]<-l2.groups.list
 
 colnames(theta) <- par.names
 colnames(phi) <- hpar.names
@@ -164,22 +167,38 @@ for(i in 1:n.chains){#i<-1
 
   #do need these below.
   #but then we need the unlink parameters - what are those?
-  for(k in 1:n.phi.mu)phi[i,k]=update.mu.vector(i,use.core=theta[,unlink.pars[k],],use.sigma=apply(theta[,unlink.pars[k],],1,sd,na.rm=TRUE),prior=prior[[k]])
-  for(k in (n.phi.mu+1):(2*n.phi.mu))phi[i,k]=update.sigma.vector(i,use.core=theta[,unlink.pars[k-n.phi.mu],],use.mu=apply(theta[,unlink.pars[k-n.phi.mu],],1,mean,na.rm=TRUE),prior=prior[[k-n.phi.mu]])
+  for(g in 1:n.l2.groups){
+    for(k in 1:n.phi.mu) phi[i,k,g]=
+        update.mu.vector(i,
+                         use.core=theta[,unlink.pars[k],group_by_subject==l2.groups.list[g]],
+                         use.sigma=apply(theta[,unlink.pars[k],group_by_subject==l2.groups.list[g]],1,sd,na.rm=TRUE),
+                         prior=prior[[k]])
+    
+    for(k in (n.phi.mu+1):(2*n.phi.mu)) phi[i,k,g]=
+        update.sigma.vector(i,
+                            use.core=theta[,unlink.pars[k-n.phi.mu],group_by_subject==l2.groups.list[g]],
+                            use.mu=apply(theta[,unlink.pars[k-n.phi.mu],group_by_subject==l2.groups.list[g]],1,mean,na.rm=TRUE),
+                            prior=prior[[k-n.phi.mu]])
+  }
   print(paste("Initialization ",round(i/n.chains*100),"% Complete",sep=""))
 }
 
-junk=sfLapply(1:n.chains,write.files,use.theta=theta,use.mu=mu,use.Sigma=Sigma,use.phi=phi,use.weight=weight,append=FALSE)
+junk=sfLapply(1:n.chains,write.files,use.theta=theta,use.mu=mu,use.Sigma=Sigma,
+              use.phi=matrix(phi,nrow=dim(phi)[1],ncol=prod(dim(phi)[2:3])),#need to reshape this to write it.
+              use.weight=weight,append=FALSE)
 
 ###########################################
 
 grid=expand.grid(1:S,1:n.chains)
 n.grid=nrow(grid)
 
+de_time_start<-Sys.time()
+print("Starting...")
+last_time_print_progress<-de_time_start
 for(i in 2:nmc){#i<-2
     
-  temp=sfLapply(
-    #lapply(
+  temp=#sfLapply(
+    lapply(
     1:n.grid,
     wrap.crossover,idx=grid,pars=1:n.pars,
     use.theta=theta,#array(theta,c(n.chains,n.pars,S)),
@@ -194,6 +213,7 @@ for(i in 2:nmc){#i<-2
   theta[grid[j,2],,grid[j,1]]=temp[[j]][2:(n.pars+1)]
   }
   
+  #decide whether to replace existing estimate with new one?
   if(i<migrate.duration){
     if(runif(1)<migrate.prob){
       out=sfLapply(1:S,wrapper,use.theta=array(theta,c(n.chains,n.pars,S)),use.like=weight,log.dens=log.dens.like,use.data=data,method="block")
@@ -210,17 +230,32 @@ for(i in 2:nmc){#i<-2
   # Sigma=matrix(unlist(sfLapply(1:n.chains,update.Sigma,use.theta=array(theta[,link.pars,],c(n.chains,n.link.pars,S)),prior=prior.big )),n.chains,n.Sigma,byrow=T)
   #we do need l2vars.
   
-  
-  #need these below.
-  for(k in 1:n.phi.mu){
-    phi[,k]=unlist(sfLapply(1:n.chains,update.mu.vector,use.core=theta[,unlink.pars[k],],use.sigma=phi[,k+n.phi.mu],prior=prior[[k]]))
+  for(g in 1:n.l2.groups){
+    #need these below.
+    for(k in 1:n.phi.mu){
+      phi[,k,g]=unlist(sfLapply(1:n.chains,
+                                update.mu.vector,
+                                use.core=theta[,unlink.pars[k],group_by_subject==l2.groups.list[g]],
+                                use.sigma=phi[,k+n.phi.mu,g],prior=prior[[k]]))
+    }
+    
+    for(k in (n.phi.mu+1):(2*n.phi.mu)){
+      phi[,k,g]=unlist(sfLapply(1:n.chains,
+                                update.sigma.vector,
+                                use.core=theta[,unlink.pars[k-n.phi.mu],group_by_subject==l2.groups.list[g]],
+                                use.mu=phi[,k-n.phi.mu,g],prior=prior[[k-n.phi.mu]]))
+    }
   }
   
-  for(k in (n.phi.mu+1):(2*n.phi.mu)){
-  phi[,k]=unlist(sfLapply(1:n.chains,update.sigma.vector,use.core=theta[,unlink.pars[k-n.phi.mu],],use.mu=phi[,k-n.phi.mu],prior=prior[[k-n.phi.mu]]))
+  if(any(i==keep.samples))temp=sfLapply(1:n.chains,write.files,use.theta=theta,use.mu=mu,use.Sigma=Sigma,
+                                        use.phi=matrix(phi,nrow=dim(phi)[1],ncol=prod(dim(phi)[2:3])),
+                                        use.weight=weight,append=T)
+  last_time<-Sys.time()
+  if(last_time-10>last_time_print_progress){
+    #if(i%%10==0)print(i)
+    print(i)
+    last_time_print_progress<-last_time
   }
   
-  if(any(i==keep.samples))temp=sfLapply(1:n.chains,write.files,use.theta=theta,use.mu=mu,use.Sigma=Sigma,use.phi=phi,use.weight=weight,append=T)
-  if(i%%10==0)print(i)
 }
 

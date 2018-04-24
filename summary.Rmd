@@ -1,0 +1,53 @@
+---
+title: "Reversal learning projects"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+source("de_mcmc/functions_h_m3.R")
+source("visualization/geom_hdi.R")
+source("de_mcmc/hierarchical_summarize.R")
+```
+
+
+
+# Hierarchical model 3
+
+Includes just one run.
+
+```{r HModel3}
+
+
+load(paste(save.dir,"output_h_m320180411T175926",".RData",sep=""))
+#load.image(paste(save.name,"run.ts",".RData",sep=""))
+hierarchical_summarize()
+
+```
+
+
+
+# Hierarchical model 4a
+
+Includes all runs, but in a flat model
+
+4a removed one run with bad data (a subject did two runs with the same images) which Model 4 had included. As a result, the HDI for the difference for the sexually risky measure excludes zero.
+
+```{r HModel4a, echo=FALSE}
+source("de_mcmc/hierarchical_summarize.R")
+
+load(paste(save.dir,"output_h_m420180421T172527",".RData",sep=""))
+#load.image(paste(save.name,"run.ts",".RData",sep=""))
+hierarchical_summarize()
+
+#hsummary$group_plot
+
+#knitr::kable(hsummary$HDI_table)
+
+```
+
+# Hierarchical Model 5
+
+Hierarchical model 5 is a three-level hierarchical model.
+
+

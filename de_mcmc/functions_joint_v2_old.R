@@ -259,15 +259,8 @@ update.mu.vector=function(x,use.core,use.sigma,prior){
   den=1/sigma.sq0 + n/sigma.sq
   mean=num/den
   sigma=den^(-1/2)
-  
   #this seems a bit oversimplistic. Do we really simply calculate a hyper as the mean and SD of the density
-  res<-rnorm(1,mean,sigma)
-  
-  if(is.na(res)){
-    print(paste0("mean:",mean,"; sigma:",sigma,"; use.core[x,]:",X,"; use.sigma[x]:",use.sigma[x],"; prior:", prior))
-  }
-  
-  return(res)
+  rnorm(1,mean,sigma)
 }
 
 update.sigma.vector=function(x,use.core,use.mu,prior){
@@ -283,9 +276,8 @@ update.sigma.vector=function(x,use.core,use.mu,prior){
 }
 
 
-write.files = function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,use.weight.delta,append=TRUE){
-  print(dim(use.theta))
-  print(class(use.phi))
+write.files=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,use.weight.delta,append=TRUE){
+  
   if (file.exists(paste0(mainDataDir,subDir))){
   setwd(file.path(mainDataDir, subDir))
   } else {
@@ -295,12 +287,7 @@ write.files = function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,use.weigh
   for(j in 1:S)write(round(use.theta[q,,j],6),paste("chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
   write(round(use.mu[q,],6),paste("chain",q,"_mu.txt",sep=""),ncolumns=n.mu,append=append)
   write(round(use.Sigma[q,],6),paste("chain",q,"_Sigma.txt",sep=""),ncolumns=n.Sigma,append=append)
-  print(use.phi)
-  if(class(use.phi)=="list"){
-    for (phi_name in names(use.phi)){
-      write(round(use.phi[[phi_name]][q,],6),paste("chain",q,"_hyper_",phi_name,".txt",sep=""),ncolumns=dim(use.phi[[phi_name]])[2],append=append)
-    }
-  }else write(round(use.phi[q,],6),paste("chain",q,"_hyper.txt",sep=""),ncolumns=dim(use.phi)[2],append=append)
+  write(round(use.phi[q,],6),paste("chain",q,"_hyper.txt",sep=""),ncolumns=dim(use.phi)[2],append=append)
   write(round(use.weight[q,],8),paste("chain",q,"_weights.txt",sep=""),ncolumns=S,append=append)
   write(round(use.weight.delta[q,],8),paste("chain",q,"_weights_delta.txt",sep=""),ncolumns=S,append=append)
   setwd(mainDir)
@@ -325,10 +312,8 @@ setwd(mainDir)
 }
 
 
-
-
 write.files=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,append=TRUE){
-  if (file.exists(paste0(mainDataDir,subDir))){
+  if (file.exists(mainDataDir,subDir)){
     setwd(file.path(mainDataDir, subDir))
   } else {
     dir.create(file.path(mainDataDir, subDir))
@@ -337,26 +322,21 @@ write.files=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,append=TRUE
   for(j in 1:S)write(round(use.theta[q,,j],6),paste("chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
   if(n.mu>0) write(round(use.mu[q,],6),paste("chain",q,"_mu.txt",sep=""),ncolumns=n.mu,append=append)
   if(n.Sigma>0) write(round(use.Sigma[q,],6),paste("chain",q,"_Sigma.txt",sep=""),ncolumns=n.Sigma,append=append)
-  if(class(use.phi)=="list"){
-    for (phi_name in names(use.phi)){
-      write(round(use.phi[[phi_name]][q,],6),paste("chain",q,"_hyper_",phi_name,".txt",sep=""),ncolumns=dim(use.phi[[phi_name]])[2],append=append)
-    }
-  }else write(round(use.phi[q,],6),paste("chain",q,"_hyper.txt",sep=""),ncolumns=dim(use.phi)[2],append=append)
-  write(round(matrix(use.weight,nrow=dim(use.weight)[1],ncol=prod(dim(use.weight)[2:length(dim(use.weight))]))[q,],8),paste("chain",q,"_weights.txt",sep=""),ncolumns=dim(use.weight)[2],append=append)
+  print(dim(use.phi)[2])
+  write(round(use.phi[q,],6),paste("chain",q,"_hyper.txt",sep=""),ncolumns=dim(use.phi)[2],append=append)
+  write(round(use.weight[q,],8),paste("chain",q,"_weights.txt",sep=""),ncolumns=S,append=append)
   
+  #keep this out to save time.
+  # if(!is.null(param_key) & !file.exists("key.txt")){
+  #   write.param.key(param_key)
+  # }
+    
   setwd(mainDir)
+  
 }
 
 
-write.param.key = function(param_key){
-  if (file.exists(paste0(mainDataDir,subDir))){
-    setwd(file.path(mainDataDir, subDir))
-  } else {
-    dir.create(file.path(mainDataDir, subDir))
-    setwd(file.path(mainDataDir, subDir))
-  }
-  write.csv(param_key,paste0(mainDataDir,subDir,"param_key.csv"))
-}
+
 ###########################################################
 logit=function(x){
 log(x/(1-x))

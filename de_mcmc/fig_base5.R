@@ -1,11 +1,12 @@
 #bjs 2016-10-24
 #updated to work as a function.
-fig_base <- function(env){
+fig_base <- function(env,plot.lower=FALSE,plot.phi=FALSE,plot.weights=FALSE,plot.sigma=FALSE,plot.rho=FALSE,plot.mu=FALSE,plot.priors=FALSE,
+                     ask=FALSE,par.functions=NULL){
   attach(env)
-  setwd(file.path(mainDir, subDir))
+  setwd(file.path(mainDataDir, subDir))
   tnmc=length(keep.samples)
   
-  if(plot.phi==TRUE)phi=array(NA,c(n.chains,n.hpars,tnmc))
+  if(plot.phi==TRUE)phi=array(NA,c(n.chains,n.hpars*n.l2.groups,tnmc))
   if(plot.lower==TRUE)theta=array(NA,c(n.chains,n.pars,S,tnmc))
   if(plot.weights==TRUE)weights=array(NA,c(n.chains,S,tnmc))
   if(plot.sigma==TRUE | plot.rho==TRUE)Sigma=array(NA,c(n.chains,n.Sigma,tnmc))
@@ -31,11 +32,45 @@ fig_base <- function(env){
   }
   
   #######################################################################################
-  
+  #if(!exists("n.l2.groups"))n.l2.groups<-1
+    
   breaks=50
   
+  count=1
+  if(plot.phi==TRUE){
+    par(mfrow=c(2,3),ask=ask)
+    #phi_names<-hpar.names
+    # groups<-1
+    # if(exists(l2.groups.list)){
+    #   groups<-length(l2.groups.list)
+    #   
+    # }
+    # loop through the groups
+    #for (g in 1:groups){
+      # loop through the parameters
+    for(k in 1:length(hpar.names)){
+      #phi_name<-paste0(hpar.names[k]," ",l2.groups.list[g])
+      
+      if(plot.priors==TRUE){
+        if(k==(n.pars+1))count=1
+        xs=seq(min(phi[,k,start:tnmc]),max(phi[,k,start:tnmc]),length=200)
+        if(k<=n.pars)ys=dnorm(xs,prior[[count]]$mu,prior[[count]]$sigma)
+        if(k>n.pars)ys=dinvgamma(xs,prior[[count]]$alpha,prior[[count]]$beta)
+      }
+      matplot(t(phi[,k,start:tnmc]),type="l",lty=1,main="",ylab=hpar.names[k])
+      hist(phi[,k,start:tnmc],prob=T,breaks=breaks,main="estimation space",xlab=hpar.names[k])
+      
+      hist(par.functions[[k]](phi[,k,start:tnmc]),prob=T,breaks=breaks,main="model space",xlab=hpar.names[k])
+      if(plot.priors==TRUE){
+        lines(xs,ys,lty=2)
+        count=count+1
+      }}
+    #}
+    
+    }
+  
   if(plot.lower==TRUE){
-    par(mfrow=c(2,2),ask=T)
+    par(mfrow=c(2,2),ask=ask)
     for(j in 1:S){
       for(k in 1:n.pars){
         matplot(t(theta[,k,j,start:tnmc]),type="l",lty=1,main=paste("Subject ",j),ylab=par.names[k])
@@ -46,25 +81,10 @@ fig_base <- function(env){
         #if(any(k==c(4,5)))abline(v=logit(true$vec[k]),lwd=3,col="red")
       }}}
   
-  count=1
-  if(plot.phi==TRUE){
-    par(mfrow=c(2,2),ask=T)
-    for(k in 1:n.hpars){
-      if(plot.priors==TRUE){
-        if(k==(n.pars+1))count=1
-        xs=seq(min(phi[,k,start:tnmc]),max(phi[,k,start:tnmc]),length=200)
-        if(k<=n.pars)ys=dnorm(xs,prior[[count]]$mu,prior[[count]]$sigma)
-        if(k>n.pars)ys=dinvgamma(xs,prior[[count]]$alpha,prior[[count]]$beta)
-      }
-      matplot(t(phi[,k,start:tnmc]),type="l",lty=1,main="",ylab=hpar.names[k])
-      hist(phi[,k,start:tnmc],prob=T,breaks=breaks,main="",xlab=hpar.names[k])
-      if(plot.priors==TRUE){
-        lines(xs,ys,lty=2)
-        count=count+1
-      }}}
+
   
   if(plot.sigma==TRUE){
-    par(mfrow=c(2,2),ask=T)
+    par(mfrow=c(2,2),ask=ask)
     for(k in 1:n.Sigma){
       matplot(t(Sigma[,k,start:tnmc]),type="l",lty=1,main=paste("Sigma1",k))
       hist(Sigma[,k,start:tnmc],prob=T,breaks=breaks)
@@ -72,7 +92,7 @@ fig_base <- function(env){
   }
   
   if(plot.mu==TRUE){
-    par(mfrow=c(2,2),ask=T)
+    par(mfrow=c(2,2),ask=ask)
     for(k in 1:n.mu){
       matplot(t(mu[,k,start:tnmc]),type="l",lty=1,main=paste("mu1",k))
       hist(mu[,k,start:tnmc],prob=T,breaks=breaks)
@@ -80,7 +100,7 @@ fig_base <- function(env){
   }
   
   if(plot.rho==TRUE){
-    par(mfrow=c(2,2),ask=T)
+    par(mfrow=c(2,2),ask=ask)
     shift=n.mu
     for(k in 3:shift){
       temp=Sigma[,k,start:tnmc]/(sqrt(Sigma[,shift*(k-1)+k,start:tnmc])*sqrt(Sigma[,1,start:tnmc]))
@@ -94,7 +114,7 @@ fig_base <- function(env){
   }
   
   if(plot.weights==TRUE){
-    par(mfrow=c(2,2),ask=T)
+    par(mfrow=c(2,2),ask=ask)
     for(j in 1:S){
       matplot(t(weights[,j,start.weights:tnmc]),type="l",lty=1,main=paste("Subject ",j),ylab="log likelihood")
     }}

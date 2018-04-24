@@ -5,6 +5,7 @@ run.ts<-get.datetimestamp()
 
 source("de_mcmc/functions.R")
 library("data.table")
+library("parallel")
 library("snowfall") # install.packages("snowfall")
 library("MASS")
 library("msm")      # install.packages("msm")

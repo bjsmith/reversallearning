@@ -2,6 +2,7 @@
 .Rproj.user/
 .Rhistory
 .RData
+*.RData
 .Ruserdata
 .DS_Store
 Icon\r
@@ -23,3 +24,5 @@ core
 *.pdf
 *.PDF
 *.Rdata
+.nb.html
+*.nb.html
