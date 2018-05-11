@@ -1,7 +1,7 @@
-
+#setwd("/expdata/bensmith/joint-modeling/code/msm/reversallearning")
 ########################################## load the functions you will use
 source("../joint_msm_combined/bjs_misc_utils.R")
-version="h_m5"
+version="h_m5a"#with enhanced diagnostic data-gathering
 save.name=paste0("main_", version)
 source('de_mcmc/functions.R')
 source('de_mcmc/main_m1_setup.R')
@@ -178,10 +178,12 @@ sfClusterSetupRNG()
 print("...cluster setup run.")
 
 source(paste("de_mcmc/de_",version,"_functions.R",sep=""))
-source(paste("de_mcmc/de_",version,".R",sep=""))
-#save.image(file=paste0(mainDataDir,"de_h_m5_testing2.RData"))
-#load(file=paste0(mainDataDir,"de_h_m5_testing2.RData"))
-source(paste("de_mcmc/de_",version,".R",sep=""))
+source(paste("de_mcmc/de_",version,"_start.R",sep=""))
+#load(file=paste0(mainDataDir,"de_h_m5_testing3.RData"))
+source(paste("de_mcmc/de_",version,"_run.R",sep=""))
+#save.image(file=paste0(mainDataDir,"de_h_m5_testing3.RData"))
+
+#debugSource(paste("de_mcmc/de_",version,".R",sep=""))
 
 sfStop()
 

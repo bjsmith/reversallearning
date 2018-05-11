@@ -8,13 +8,18 @@ source('de_mcmc/functions_joint_v2.R')
 source(paste0('de_mcmc/functions_',version,'.R'))
 ########################################## generate data
 
-source("de_mcmc/raw_data_all_runs_flat.R")
+source("de_mcmc/raw_data_all_runs_flat_v2.R")
 safe_meth_subjs<-unlist(lapply(data,function(d){d$group=="Safe Meth"}))
-data<-data[!safe_meth_subjs]
+subjs.without.group<-unlist(lapply(data,function(d){is.na(d$group)}))
+
+data<-data[!safe_meth_subjs & !subjs.without.group]
+
 ########################################## initialize
 #h_m4 includes a simple 2-level model, with all four runs.
 #This is a little unprincipled as we are assuming that all runs are the same 
 #but I want to do this as an intermediate step, as Brandon suggested.
+#h_m4a removes a bad run from the data.
+#h_m4b removes three subjects whose classification into risk groups may be inaccurate.
 
 par.names.l1=c("alpha",#"beta",
                "thresh","tau")
@@ -24,7 +29,7 @@ names(par.ids.l1)=par.names.l1
 par.names.l2<-c(paste0(par.names.l1, "_mu"),paste0(par.names.l1, "_sigma"))
 par.ids.l2<-as.list(1:length(par.names.l2))
 names(par.ids.l2)<-par.names.l2
-par.names=c(par.names.l2)
+par.names=c(par.names.l1)
 #if I understand correctly, these are hyper-parameters because they are describing the distribution of individual subject parameters
 #Each subject has a mu (which decomposes to eta, I think???? need to drill down to this),
 #a sigma, and a tau; these are all important for the exGaussian estimation

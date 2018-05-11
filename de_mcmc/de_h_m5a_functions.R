@@ -1,7 +1,10 @@
 require(MCMCpack)
 require(dplyr)
 
-
+diagnostic_record$NaN_densities_l1<-0
+diagnostic_record$NaN_densities_l2<-0
+diagnostic_record$NaN_density_likelihood<-0
+diagnostic_record$base_rate_density_likelihood<-0
 log.dens.prior=function(x_s,
                         use.mu,
                         use.Sigma,
@@ -10,7 +13,7 @@ log.dens.prior=function(x_s,
   #phi includes level 2 and level 3 phi values.
   #add phi values here.
   dens.prior.code<-function(){
-    sum(dnorm(x_s[param.l1.ids[["alpha"]]],use.phi[param.l2.ids[["alpha_s_mu"]]],absI(use.phi[param.l2.ids[["alpha_s_sigma"]]]),log=TRUE)) + 
+    sum(dnorm(x_s[param.l1.ids[["alpha"]]],use.phi[param.l2.ids[["alpha_s_mu"]]],abs(use.phi[param.l2.ids[["alpha_s_sigma"]]]),log=TRUE)) + 
     sum(dnorm(x_s[param.l1.ids[["thresh"]]],use.phi[param.l2.ids[["thresh_s_mu"]]],abs(use.phi[param.l2.ids[["thresh_s_sigma"]]]),log=TRUE)) +
     sum(dnorm(x_s[param.l1.ids[["tau"]]],use.phi[param.l2.ids[["tau_s_mu"]]],abs(use.phi[param.l2.ids[["tau_s_sigma"]]]),log=TRUE))
   }
@@ -30,6 +33,7 @@ log.dens.prior=function(x_s,
   
   if(is.na(dens)){
     dens=-Inf
+    diagnostic_record$NaN_densities_l1<<-diagnostic_record$NaN_densities_l1+1
   }
   
   dens
@@ -128,6 +132,7 @@ log.dens.like=function(x_s,use.data_s,method="full"){
       diagnostic_record$NaN_density_likelihood<<-diagnostic_record$NaN_density_likelihood+1
       #print(use.data_s$rt[1:3])
     }
+    diagnostic_record$base_rate_density_likelihood<<-diagnostic_record$base_rate_density_likelihood+1
     #end_time <- Sys.time()
     #log.dens.like.h.m1.timer.sectionB<<-log.dens.like.h.m1.timer.sectionB+(end_time-start_time)
     #printv("running getting density")

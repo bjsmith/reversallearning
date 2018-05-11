@@ -1,9 +1,8 @@
-stop("This is obsolete. See _amendment1 unless running for archival purposes.")
 source("../util/apply_local_settings.R")
 apply_local_settings()
 dd<-localsettings$data.dir
 #dd<-""#enter data directory where the raw data is saved here.
-rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment.txt"), header=T)
+rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment_amendment1.txt"), header=T)
 #table(rawdata$runid==1,rawdata$Motivation=="reward")
 
 #some essential pre-processing.

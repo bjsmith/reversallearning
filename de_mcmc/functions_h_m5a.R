@@ -109,10 +109,42 @@ migrate=function(use.theta,use.like,log.dens,use.data,...){
   return(list(weight=use.like,theta=use.theta))
 }
 
+write.files.3l=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,append=TRUE){
+  if (file.exists(paste0(mainDataDir,subDir))){
+    setwd(file.path(mainDataDir, subDir))
+  } else {
+    dir.create(file.path(mainDataDir, subDir))
+    setwd(file.path(mainDataDir, subDir))
+  }
+  
+  for(s in 1:S){
+    for (r in 1:s_runs.N[s]){
+      #run-level
+      write(round(use.theta[q,,s],6),paste("chain",q,"_sub",s,"_run",r,".txt",sep=""),ncolumns=n.pars,append=append)
+    }
+    #subject-level?
+    #write(round(use.phi$phi_s[q,,s],6),paste("chain",q,"_sub",s,".txt",sep=""),ncolumns=n.pars,append=append)
+  }
+  #group level
+  if(n.mu>0) write(round(use.mu[q,],6),paste("chain",q,"_mu.txt",sep=""),ncolumns=n.mu,append=append)
+  if(n.Sigma>0) write(round(use.Sigma[q,],6),paste("chain",q,"_Sigma.txt",sep=""),ncolumns=n.Sigma,append=append)
+  if(class(use.phi)=="list"){
+    #this includes subject-level and group-level
+    for (phi_name in names(use.phi)){
+      write(round(use.phi[[phi_name]][q,],6),paste("chain",q,"_hyper_",phi_name,".txt",sep=""),ncolumns=dim(use.phi[[phi_name]])[2],append=append)
+    }
+  }else write(round(use.phi[q,],6),paste("chain",q,"_hyper.txt",sep=""),ncolumns=dim(use.phi)[2],append=append)
+  write(round(matrix(use.weight,nrow=dim(use.weight)[1],ncol=prod(dim(use.weight)[2:length(dim(use.weight))]))[q,],8),paste("chain",q,"_weights.txt",sep=""),ncolumns=dim(use.weight)[2],append=append)
+
+  setwd(mainDir)
+}
+
 
 #transformation functions to transform variables from our estimation space into the space we need them for calculations.
 f_alpha_s_tr<-function(alpha){invlogit(alpha)}
 f_thresh_s_tr<-function(thresh){exp(thresh)}
 f_tau_s_tr<-function(tau){exp(tau)}
+
+diagnostic_record<-list()
 
 

@@ -1,5 +1,5 @@
 
-source("raw_data_wrapper_for_brandon.R")
+source("raw_data_wrapper_for_brandon_amendment1.R")
 
 #all runs.
 #rawdata<-rawdata[rawdata$Motivation=="reward" & rawdata$runid==1,]
@@ -18,7 +18,7 @@ for(j in 1:S){#j=1
   
   data[[j]]<-list("group"=subj_group,"runs"=list(),"SubID"=paste0("SUB",s))
   
-  s_unique_motivations<-unique(rawdata.dt[subid==s&runid==r,Motivation])
+  s_unique_motivations<-unique(rawdata.dt[subid==s,Motivation])
   #list the Motivations this subject has
   for (m in s_unique_motivations){#m="reward"
     s_unique_runids<-unique(rawdata.dt[subid==s & Motivation==m,runid]) #list the run IDS for this subject*motivation.

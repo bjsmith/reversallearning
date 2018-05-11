@@ -13,8 +13,25 @@ After the NPS scores were obtained, I tested these two postulates with a series 
 
 ```{r, include=FALSE,cache=TRUE}
 library(lme4)
+library(ggplot2)
+library(data.table)
 setwd("../")
 source("negative-affect/negative_affect_trials_setup.R")
+
+fixedef.se<-function(fit){
+  return(summary(fit)$coefficients[,"Std. Error"])
+}
+
+require(lme4)
+lm.beta.lmer <- function(mod) {
+  b <- fixef(mod)[-1]
+  sd.x <- apply(getME(mod,"X")[,-1],2,sd)
+  sd.y <- sd(getME(mod,"y"))
+  b*sd.x/sd.y
+}
+
+
+
 ```
 
 ## NPS scores higher in trials where subjects receive an electric shock
@@ -40,7 +57,7 @@ We represent subject as $S$, run as $S$, and image as $\iota$; then
 
 $V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon$
 
-```{r}
+```{r, echo=TRUE}
 #m.sronly<-lmer(ValueScaled~presentation_n_in_segment+ (1 | subid/runid),rawdata.ordered.complete[Motivation=="punishment"])
 #summary(m.sronly)
 ```
@@ -61,13 +78,23 @@ m.withResponseCorrect<-lmer(ValueScaled~
 summary(m.withResponseCorrect)
 
 
+m.withResponseCorrectInteract<-lmer(ValueScaled~
+                     ResponseCorrect * 
+                     presentation_n_in_segment + 
+                     (1+presentation_n_in_segment | subid/runmotiveid) + 
+                     (1 | image),rawdata.ordered.complete[Motivation=="punishment"])
+summary(m.withResponseCorrectInteract)
 ```
 
 Over all pain datasets, the model with correct response has much lower AIC and BIC values, incdicating correct response explains variance within the data.
 
 
 ```{r, echo=TRUE}
+<<<<<<< HEAD
 anova(m.0,m.withResponseCorrect)
+=======
+anova(m.0,m.withResponseCorrect,m.withResponseCorrectInteract)
+>>>>>>> 6f7f50affd0a45d303d41dfec1bb7d98769c6f55
 ```
 
 This suggests that responses are predictive of the NPS value detected. The beta value estimate representing the response fixed effect suggests that NPS is lower for correct responses (no electric shock) than incorrect responses (electric shock), which is consistent with the purpose of the NPS to measure pain.
@@ -94,6 +121,28 @@ m.rp<-lmer(ValueScaled~
                      (ResponseCorrect==FALSE)*(Motivation=="punishment") + 
                      presentation_n_in_segment + 
                      (1+presentation_n_in_segment | subid/runmotiveid) + 
+                     (1 | image),rawdata.ordered.complete,
+           )
+
+
+m.rp.2<-lmer(ValueScaled~
+                     (ResponseCorrect==FALSE)*(Motivation=="punishment") + 
+                     presentation_n_in_segment + 
+                     (1+presentation_n_in_segment+(ResponseCorrect==FALSE) | subid/runmotiveid) + 
+                     (1 | image),rawdata.ordered.complete)
+
+m.rp.contrast<-lmer(ValueScaled~
+                     (ResponseCorrect==FALSE)*(Motivation=="punishment") + 
+                     presentation_n_in_segment + 
+                     (1+ | runmotiveid) + 
+                      (1+presentation_n_in_segment+(ResponseCorrect==FALSE):(Motivation=="punishment")  | subid) + 
+                     (1 | image),rawdata.ordered.complete)
+
+m.rp.3<-lmer(ValueScaled~
+                     (ResponseCorrect==FALSE)*(Motivation=="punishment") + 
+                     presentation_n_in_segment + 
+                     (1 | runmotiveid) + 
+                      (1+presentation_n_in_segment+(ResponseCorrect==FALSE) | subid) + 
                      (1 | image),rawdata.ordered.complete)
 
 
@@ -109,10 +158,10 @@ BIC indicates that the model including punishment is strongly predictive.
 
 However the clearest indication of the result here, since we are interested in the direction of an effect, will come from examining the significance and magnitude of the effect sizes of the regressors themselves:
 
-```{r}
+```{r, echo=TRUE}
 summary(m.rp.0)
 summary(m.rp)
-
+lm.beta.lmer(m.rp)
 ```
 
 The result:
@@ -122,3 +171,66 @@ The result:
 
 
 
+```{r, echo=TRUE}
+ggplot(rawdata.ordered.complete,aes(y=ValueScaled,x=interaction(ResponseCorrect,Motivation)))+geom_violin()+coord_cartesian(ylim=c(-5,5))
+
+#average valuescaled by subject
+rawdata.ordered.complete.dt<-data.table(rawdata.ordered.complete)
+data.to.graph<-rawdata.ordered.complete.dt[
+  !is.na(ResponseCorrect) & !is.na(Motivation),
+  .(ValueScaledBySub=mean(ValueScaled,na.rm=TRUE),ResponseCorrect,Motivation),.(subid,ResponseCorrect,Motivation)]
+
+data.to.graph[,Response:=sapply(ResponseCorrect,function(x){ifelse(x,"Correct","Wrong")})]
+data.to.graph$Motivation<-factor(data.to.graph$Motivation,levels=c("reward","punishment"))
+ggplot(data.to.graph,
+       aes(y=ValueScaledBySub,x=interaction(Response,Motivation),color=interaction(Response,Motivation)))+
+  scale_colour_manual(values=c("#888888", "#888888","#888888","#ff0000"),guide=FALSE)+
+  geom_violin()+geom_jitter(width=0.3,height=0.0,alpha=0.2)+
+  stat_summary(fun.y = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..),
+                 width = 2, linetype = "dashed")+
+  scale_x_discrete(labels=c("Reward condition\nCORRECT","Reward condition\nWRONG","Punishment condition\nCORRECT","Punishment condition\nWRONG"),
+                   name="Condition\nSUBJECT RESPONSE")+
+  scale_y_continuous(name="Neurologic Pain Signature Value\n(Subject Mean)")+
+  labs(title="Neurologic Pain Signature Value in Reversal learning\nBy Subject Response and Condition")
+  
+data.to.graph.2<-tidyr::spread(data.to.graph,Motivation,ValueScaledBySub)
+data.to.graph.2$PunishmentMinusReward<-data.to.graph.2$punishment-data.to.graph.2$reward
+
+
+ggplot(data.to.graph.2,
+       aes(y=PunishmentMinusReward,x=ResponseCorrect,color=ResponseCorrect))+
+  scale_colour_manual(values=c("#ff0000", "#888888", "#888888","#888888"),guide=FALSE)+
+  geom_violin()+geom_jitter(width=0.3,height=0.0,alpha=0.2)+
+  stat_summary(fun.y = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..),
+                 width = 2, linetype = "dashed")+
+  scale_x_discrete(labels=c("WRONG","CORRECT"),
+                   name="SUBJECT RESPONSE")+
+  scale_y_continuous(name="Neurologic Pain Signature Value Punishment Minus Reward\n(Subject Mean)")+
+  labs(title="Neurologic Pain Signature Value in Reversal learning\nBy Subject Response and Condition")
+
+
+data.to.graph.3<-data.to.graph[,ResponseCorrect:=NULL] %>% tidyr::spread(Response,ValueScaledBySub)
+data.to.graph.3$WrongMinusCorrect<-data.to.graph.3$Wrong-data.to.graph.3$Correct
+
+ggplot(data.to.graph.3,
+       aes(y=WrongMinusCorrect,x=Motivation,color=Motivation))+
+  scale_colour_manual(values=c("#ff0000", "#888888", "#888888","#888888"),guide=FALSE)+
+  geom_violin()+geom_jitter(width=0.3,height=0.0,alpha=0.2)+
+  stat_summary(fun.y = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..),
+                 width = 2, linetype = "dashed")+
+  #scale_x_discrete(labels=c("WRONG","CORRECT"),
+  #                 name="SUBJECT RESPONSE")+
+  scale_y_continuous(name="Neurologic Pain Signature Value Punishment Minus Reward\n(Subject Mean)")+
+  labs(title="Neurologic Pain Signature Value in Reversal learning\nBy Subject Response and Condition")
+```
+
+```{r, echo=TRUE}
+lm.beta.lmer(m.rp.0)
+
+```
+
+
+
+```{r, echo=TRUE}
+
+```

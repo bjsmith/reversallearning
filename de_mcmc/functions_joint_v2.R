@@ -15,85 +15,21 @@ use.phi[i,]=phi
 use.phi[i,]
 }
 
-# #an obsolete function.
-# crossover=function(i,pars,use.theta,use.like,hyper,...){
-# stop("BJS: This crossover function appeared to be obsolete, so I added this error just to make sure. If you're reading this, I was wrong about it being obsolete!")
-# use.weight=use.like[i] + log.dens.prior(use.theta[i,],hyper[i,])
-# gamma = 2.38/sqrt(2*length(pars))
-# index=sample(c(1:n.chains)[-i],2,replace=F)
-# theta=use.theta[i,]    				
-# theta[pars]=use.theta[i,pars] + gamma*(use.theta[index[1],pars]-use.theta[index[2],pars]) + runif(1,-b,b)
-# theta=matrix(theta,1,length(theta))
-# like=log.dens.like(theta,...)
-# weight=like + log.dens.prior(theta,hyper[i,])
-# if(is.na(weight))weight=-Inf
-# if(runif(1) < exp(weight-use.weight)) {							
-# use.theta[i,]=theta
-# use.like[i]=like
-# }
-# c(use.like[i],use.theta[i,])
-# }
-# #an obsolete function
-# crossover=function(i,pars,use.theta,use.like,data=data,use.mu,use.Sigma){
-#   stop("BJS: This crossover function appeared to be obsolete, so I added this error just to make sure. If you're reading this, I was wrong about it being obsolete!")
-#   
-#   require(msm)
-#   
-#   use.weight=use.like[i] + log.dens.prior(x=use.theta[i,],use.mu=use.mu[i,],use.Sigma=use.Sigma[i,])
-#   
-#   gamma = 2.38/sqrt(2*length(pars))
-#   
-#   
-#   index=sample(c(1:n.chains)[-i],2,replace=F)
-#   
-#   theta=use.theta[i,]						
-#   theta[pars]=use.theta[i,pars] + gamma*(use.theta[index[1],pars]-use.theta[index[2],pars]) + runif(1,-b,b)
-#   theta=matrix(theta,1,length(theta))
-#   like=log.dens.like(x=theta,use.data=data)
-#   
-#   weight=like + log.dens.prior(x=theta,use.mu=use.mu[i,],use.Sigma=use.Sigma[i,])
-#   if(is.na(weight))weight=-Inf
-#   if(runif(1) < exp(weight-use.weight)) {							
-#   use.theta[i,]=theta
-#   use.like[i]=like
-#   }
-#   c(use.like[i],use.theta[i,])
-# }
-# #an obsolete function
-# crossover=function(i,pars,use.theta,use.like,data=data,use.mu,use.Sigma,use.phi){
-#   stop("BJS: This crossover function appeared to be obsolete, so I added this error just to make sure. If you're reading this, I was wrong about it being obsolete!")
-#   require(msm)
-#   use.weight=use.like[i] + log.dens.prior(x=use.theta[i,],use.mu=use.mu[i,],use.Sigma=use.Sigma[i,],use.phi=use.phi[i,])
-#   gamma = 2.38/sqrt(2*length(pars))
-#   index=sample(c(1:n.chains)[-i],2,replace=F)
-#   theta=use.theta[i,]  					
-#   theta[pars]=use.theta[i,pars] + gamma*(use.theta[index[1],pars]-use.theta[index[2],pars]) + runif(1,-b,b)
-#   theta=matrix(theta,1,length(theta))
-#   like=log.dens.like(x=theta,use.data=data)
-#   weight=like + log.dens.prior(x=theta,use.mu=use.mu[i,],use.Sigma=use.Sigma[i,],use.phi=use.phi[i,])
-#   if(is.na(weight))weight=-Inf
-#   if(runif(1) < exp(weight-use.weight)) {							
-#   use.theta[i,]=theta
-#   use.like[i]=like
-#   }
-#   c(use.like[i],use.theta[i,])
-# }
-
 #main function to be called, via its wrapper function 
 crossover=function(i,pars,use.theta,use.like,use.data,use.mu,use.Sigma,
-                   use.phi){
+                   use.phi,log.dens.prior.f=log.dens.prior,log.dens.like.f=log.dens.like){
+  #print(i)
   #print(sum(sum(is.na(use.theta))))
   #this is a package for multi-state and hidden markov models in continuous time.
   require(msm)
-  
   #get the weight to use calculated as the sum of the current likelihood
   #and the calculated density likelihood of parameters given current parameter values and hyperparameters
-  use.weight=use.like[i] + log.dens.prior(
+  use.weight=use.like[i] + log.dens.prior.f(
     x=use.theta[i,],
     use.mu=use.mu[i,],
     use.Sigma=use.Sigma[i,],
     use.phi=use.phi[i,])
-  #from Turner et al. (2014, on de-MCMC), this is the tuning parameter for DE-MCMC, controlling the magnitude of the jumping distribution
+  #from Turner et al. (2013, on de-MCMC, Equation 3), this is the tuning parameter for DE-MCMC, controlling the magnitude of the jumping distribution
   gamma = 2.38/sqrt(2*length(pars))
   
   #get two randomly sampled without replacement chains
@@ -101,6 +37,7 @@ crossover=function(i,pars,use.theta,use.like,use.data,use.mu,use.Sigma,
   
   #recalculate theta values for each parameter
   theta=use.theta[i,]    				
+  
   #equation 3 in Turner et al. (2014). Ingenious - by using difference between two randomly chosen values
   #we can kind of bootstrap a variance in our estimation of theta
   #the tiny random noise at the end seems hacky, but what do I know?
@@ -111,19 +48,37 @@ crossover=function(i,pars,use.theta,use.like,use.data,use.mu,use.Sigma,
   #which is great - we can sample across chains to get the target distribution at the end.
   
   #define the log density likelihood based on the theta values and data, and the 
-  like=log.dens.like(x=theta,use.data=use.data)
+  #print(use.data)
+  #print(theta)
+  #print(like)
+  like=log.dens.like.f(x=theta,use.data=use.data)
+  
   #add the log density likelihood calculated for the model with the log density likelihood calculated for the link parameters and the hyperparameters
   #so this is quite an imporant pivot point because it combines the likelihood of the parameters based on DATA (log.dens.like) with likelihood of parameters based on HYPERS (log.dens.prior)
-  weight=like + log.dens.prior(x=theta,use.mu=use.mu[i,],use.Sigma=use.Sigma[i,],use.phi=use.phi[i,])
+  weight=like + log.dens.prior.f(x=theta,use.mu=use.mu[i,],use.Sigma=use.Sigma[i,],use.phi=use.phi[i,])
   
   
   if(is.na(weight))weight=-Inf
   #so here, we're comparing the weight of the current likelihoods ('use.like') and the density from the priors
   #with the weight from the priors and the newly calculated log density likelihood
   #and if the new weight exceeds the existing weight by more than a specified amount, we use the new one!
-  if(runif(1) < exp(weight-use.weight)) {							
-    use.theta[i,]=theta
-    use.like[i]=like
+  if(is.infinite(weight) | is.infinite(use.weight)){
+    #print(paste0("weight or use.weight are infinite; ",weight,",",use.weight))
+    if(is.infinite(weight) & is.infinite(use.weight)){
+      print("At crossover(), both weight and use weight are infinite. This might be a problem. Dumping info:")
+      for (param in c(i,pars,use.theta,use.data,use.mu,use.Sigma,
+      use.phi)){
+        print(param)
+      }
+      print("----")
+    }
+  }
+  if(!is.infinite(weight) | !is.infinite(use.weight)){
+    if(runif(1) < exp(weight-use.weight)) {							
+      use.theta[i,]=theta
+      use.like[i]=like
+    }
+    
   }
   c(use.like[i],use.theta[i,])
 }
@@ -284,8 +239,8 @@ update.sigma.vector=function(x,use.core,use.mu,prior){
 
 
 write.files = function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,use.weight.delta,append=TRUE){
-  print(dim(use.theta))
-  print(class(use.phi))
+  #print(dim(use.theta))
+  #print(class(use.phi))
   if (file.exists(paste0(mainDataDir,subDir))){
   setwd(file.path(mainDataDir, subDir))
   } else {
@@ -295,7 +250,7 @@ write.files = function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,use.weigh
   for(j in 1:S)write(round(use.theta[q,,j],6),paste("chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
   write(round(use.mu[q,],6),paste("chain",q,"_mu.txt",sep=""),ncolumns=n.mu,append=append)
   write(round(use.Sigma[q,],6),paste("chain",q,"_Sigma.txt",sep=""),ncolumns=n.Sigma,append=append)
-  print(use.phi)
+  #print(use.phi)
   if(class(use.phi)=="list"){
     for (phi_name in names(use.phi)){
       write(round(use.phi[[phi_name]][q,],6),paste("chain",q,"_hyper_",phi_name,".txt",sep=""),ncolumns=dim(use.phi[[phi_name]])[2],append=append)
@@ -334,7 +289,7 @@ write.files=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,append=TRUE
     dir.create(file.path(mainDataDir, subDir))
     setwd(file.path(mainDataDir, subDir))
   }
-  for(j in 1:S)write(round(use.theta[q,,j],6),paste("chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=n.pars,append=append)
+  for(j in 1:S)write(round(use.theta[q,,j],6),paste("chain",q,"_sub",j,"_lower.txt",sep=""),ncolumns=dim(use.theta)[2],append=append)
   if(n.mu>0) write(round(use.mu[q,],6),paste("chain",q,"_mu.txt",sep=""),ncolumns=n.mu,append=append)
   if(n.Sigma>0) write(round(use.Sigma[q,],6),paste("chain",q,"_Sigma.txt",sep=""),ncolumns=n.Sigma,append=append)
   if(class(use.phi)=="list"){
@@ -347,6 +302,32 @@ write.files=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,append=TRUE
   setwd(mainDir)
 }
 
+
+
+
+# write.files.3l=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,append=TRUE){
+#   if (file.exists(paste0(mainDataDir,subDir))){
+#     setwd(file.path(mainDataDir, subDir))
+#   } else {
+#     dir.create(file.path(mainDataDir, subDir))
+#     setwd(file.path(mainDataDir, subDir))
+#   }
+#   for(s in 1:S){
+#     for (r in 1:s_runs.N[s]){
+#       write(round(use.theta[q,,s],6),paste("chain",q,"_sub",s,"_run",r,".txt",sep=""),ncolumns=n.pars,append=append)
+#     }
+#   }
+#   if(n.mu>0) write(round(use.mu[q,],6),paste("chain",q,"_mu.txt",sep=""),ncolumns=n.mu,append=append)
+#   if(n.Sigma>0) write(round(use.Sigma[q,],6),paste("chain",q,"_Sigma.txt",sep=""),ncolumns=n.Sigma,append=append)
+#   if(class(use.phi)=="list"){
+#     for (phi_name in names(use.phi)){
+#       write(round(use.phi[[phi_name]][q,],6),paste("chain",q,"_hyper_",phi_name,".txt",sep=""),ncolumns=dim(use.phi[[phi_name]])[2],append=append)
+#     }
+#   }else write(round(use.phi[q,],6),paste("chain",q,"_hyper.txt",sep=""),ncolumns=dim(use.phi)[2],append=append)
+#   write(round(matrix(use.weight,nrow=dim(use.weight)[1],ncol=prod(dim(use.weight)[2:length(dim(use.weight))]))[q,],8),paste("chain",q,"_weights.txt",sep=""),ncolumns=dim(use.weight)[2],append=append)
+#   
+#   setwd(mainDir)
+# }
 
 write.param.key = function(param_key){
   if (file.exists(paste0(mainDataDir,subDir))){

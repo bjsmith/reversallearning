@@ -1,4 +1,4 @@
-source("negative_affect/negative_affect_trials_setup.R")
+source("negative-affect/negative_affect_trials_setup.R")
 
 warning("Should test several more runs to determine that the method is reliable.")
 
@@ -15,10 +15,12 @@ table(pain_data$presentation_n)
 table(pain_data$subid)
 table(pain_data$runid)
 
-
 table(pain_data$ResponseCorrect)
 ggplot(pain_data,aes(ResponseCorrect,Value))+
-  geom_boxplot()+ylim(c(-10,10))
+  geom_boxplot()+ylim(c(-100,100))
+
+ggplot(pain_data,aes(ResponseCorrect,Value))+
+  geom_violin()+coord_cartesian(ylim=c(-600,0))
 #the difference is in the right direction
 summary(lm(Value~ResponseCorrect,pain_data))
 pain_data$runid<-as.factor(pain_data$runid)
@@ -31,9 +33,8 @@ library(lme4)
 m.sronly<-lmer(ValueScaled~presentation_n_in_segment+ (1 | subid/runid),pain_data)
 summary(m.sronly)
 m.withReponseCorrect<-lmer(ValueScaled~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data)
-
-
 summary(m.withReponseCorrect)
+
 fixed_effects.w.p<-function(m){
   # extract coefficients
   coefs <- data.frame(coef(summary(m.withReponseCorrect)))
@@ -46,13 +47,9 @@ fixed_effects.w.p(m.withReponseCorrect)
 anova(m.withReponseCorrect)
 anova(m.sronly,m.withReponseCorrect)
 
-#ResponseCorrect should track the Value, because Value is a function of whether the shock was delivered or not
-#and ResponseCorrect tells us whether or not a shock was delivered
-#The fact we can't get a finding here suggests that our NPS signature is not that good at detecting a punishment signal.
 anova(m.sronly,m.withReponseCorrect)
 
 #Is there anything we're missing here that might improve?
-<<<<<<< HEAD
 #pain_data$
 #lmer(Value~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data))
 m.withImage<-lmer(Value~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid) + (1 | image),pain_data)
