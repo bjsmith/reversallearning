@@ -1,4 +1,4 @@
-
+s
 ########################################### Optimize and Initialize
 theta=array(NA,c(n.chains,param.N,S,R_max))
 weight=array(-Inf,c(n.chains,S,R_max))

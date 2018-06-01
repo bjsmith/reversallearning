@@ -15,6 +15,8 @@ use.phi[i,]=phi
 use.phi[i,]
 }
 
+gamma_numerator=2.38#the default; specified here so it can be overridden.
+
 #main function to be called, via its wrapper function 
 crossover=function(i,pars,use.theta,use.like,use.data,use.mu,use.Sigma,
                    use.phi,log.dens.prior.f=log.dens.prior,log.dens.like.f=log.dens.like){
@@ -24,13 +26,17 @@ crossover=function(i,pars,use.theta,use.like,use.data,use.mu,use.Sigma,
   require(msm)
   #get the weight to use calculated as the sum of the current likelihood
   #and the calculated density likelihood of parameters given current parameter values and hyperparameters
+  #If this here was giving two good fit an estimate then it sets the benchmark unfairly high
+  #these are effectively *multiplied* since they're on log scale.
   use.weight=use.like[i] + log.dens.prior.f(
     x=use.theta[i,],
     use.mu=use.mu[i,],
     use.Sigma=use.Sigma[i,],
     use.phi=use.phi[i,])
   #from Turner et al. (2013, on de-MCMC, Equation 3), this is the tuning parameter for DE-MCMC, controlling the magnitude of the jumping distribution
-  gamma = 2.38/sqrt(2*length(pars))
+  #gamma = 2.38/sqrt(2*length(pars))
+  gamma = gamma_numerator/sqrt(2*length(pars))
+  #gamma = 4/sqrt(2*length(pars))
   
   #get two randomly sampled without replacement chains
   index=sample(c(1:n.chains)[-i],2,replace=F)
@@ -42,23 +48,41 @@ crossover=function(i,pars,use.theta,use.like,use.data,use.mu,use.Sigma,
   #we can kind of bootstrap a variance in our estimation of theta
   #the tiny random noise at the end seems hacky, but what do I know?
   theta[pars]=use.theta[i,pars] + gamma*(use.theta[index[1],pars]-use.theta[index[2],pars]) + runif(1,-b,b)
-  theta=matrix(theta,1,length(theta))
+  theta=matrix(theta,1,length(theta)) #what is this?
   
   #Turner et al. (2014) notes "the stationary distribution of this chain will be the target distribution"
   #which is great - we can sample across chains to get the target distribution at the end.
   
   #define the log density likelihood based on the theta values and data, and the 
-  #print(use.data)
-  #print(theta)
-  #print(like)
+  #if this was somehow returning really low likelihoods we would also lose efficiency
+  #but it's difficult to see how this could be because it's simply the theta distributions and the data.
   like=log.dens.like.f(x=theta,use.data=use.data)
   
   #add the log density likelihood calculated for the model with the log density likelihood calculated for the link parameters and the hyperparameters
   #so this is quite an imporant pivot point because it combines the likelihood of the parameters based on DATA (log.dens.like) with likelihood of parameters based on HYPERS (log.dens.prior)
-  weight=like + log.dens.prior.f(x=theta,use.mu=use.mu[i,],use.Sigma=use.Sigma[i,],use.phi=use.phi[i,])
+  #if this is doing a BAD job then we might lose efficiency
+  prior_weight<-log.dens.prior.f(x=theta,use.mu=use.mu[i,],use.Sigma=use.Sigma[i,],use.phi=use.phi[i,])
+  weight=like + prior_weight
+  
   
   
   if(is.na(weight))weight=-Inf
+  
+  write.crossover.record<-function(filename){
+    use.data.names<-paste0(c(unlist(dimnames(use.data)),unlist(names(use.data))),collapse="")
+    write(c(i,like,prior_weight,use.weight,use.data.names),file=paste0(mainDataDir, subDir, filename),ncolumns=5,append=TRUE)
+  }
+  
+  if(is.infinite(weight)){
+    
+    if(is.infinite(like)){
+      write.crossover.record(filename="ln_density_likelihood.txt")
+
+    }
+    if(is.infinite(prior_weight)){
+      write.crossover.record("ln_density_prior.txt")
+    }
+  }
   #so here, we're comparing the weight of the current likelihoods ('use.like') and the density from the priors
   #with the weight from the priors and the newly calculated log density likelihood
   #and if the new weight exceeds the existing weight by more than a specified amount, we use the new one!
@@ -77,6 +101,9 @@ crossover=function(i,pars,use.theta,use.like,use.data,use.mu,use.Sigma,
     if(runif(1) < exp(weight-use.weight)) {							
       use.theta[i,]=theta
       use.like[i]=like
+      write.crossover.record("updated_weight.txt")
+    }else{
+      write.crossover.record("no_update_weight.txt")
     }
     
   }

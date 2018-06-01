@@ -1,12 +1,15 @@
-
+#setwd("/expdata/bensmith/joint-modeling/code/msm/reversallearning")
+#rm(list = ls())
+#/expdata/bensmith/joint-modeling/data
 ########################################## load the functions you will use
 source("../joint_msm_combined/bjs_misc_utils.R")
-version="h_m5"
+version="h_m5c"#with enhanced diagnostic data-gathering
+version.base<-"h_m5b"
 save.name=paste0("main_", version)
 source('de_mcmc/functions.R')
 source('de_mcmc/main_m1_setup.R')
 source('de_mcmc/functions_joint_v2.R')
-source(paste0('de_mcmc/functions_',version,'.R'))
+source(paste0('de_mcmc/functions_',version.base,'.R'))
 ########################################## generate data
 
 source("de_mcmc/raw_data_all_runs.R")
@@ -15,9 +18,22 @@ subjs.without.group<-unlist(lapply(data,function(d){is.na(d$group)}))
 
 data<-data[!safe_meth_subjs & !subjs.without.group]
 
+#get a set of subjects who are in each of the three groups.
+g1_subs<-which(unlist(lapply(data,function(d){d$group=="SafeNoMeth"})))
+g2_subs<-which(unlist(lapply(data,function(d){d$group=="RiskyNoMeth"})))
+g3_subs<-which(unlist(lapply(data,function(d){d$group=="RiskyMeth"})))
+subs_to_inc<-c(g1_subs[1:5],g2_subs[1:5],g3_subs[1:5])
+subs_to_inc#now what do we do with these subjects?
+data<-data[subs_to_inc]
+
 rm(rawdata,rawdata.dt) #save memory.
 
 ########################################## initialize
+#h_m5c omits the optimization step.
+#h_m5b sets a gamma numerator of 1 instead of 2.38.
+#This allows for a more delicate differential evolution algorithm and hopefully a better estimate.
+#with an extra level, 2.38 seems to be too much.
+#I'm trying to work out how to get this 3-level model working.
 #h_m5 includes a three-level model, with all four runs.
 
 #Safe Meth subjects are excluded.
@@ -67,6 +83,8 @@ param.l3.distributions.N<-param.l3.N/2
 #we'll need these separately for each group...
 #not sure how to handle that just yet.
 
+phi.ids<-as.list(1:(param.l3.N+param.l2.N))
+names(phi.ids)<-c(param.l3.names,param.l2.names)
 
 #hpar.names=par.names.l2
 
@@ -108,15 +126,16 @@ n.Sigma=n.link.pars^2
 
 # n.delta.pars=length(delta.pars)
 # n.theta.pars=length(theta.pars)
-nmc=5000
-burnin=4000
+nmc=200
+burnin=100
 thin=1
 keep.samples=seq(burnin,nmc,thin)
 length(keep.samples)*n.chains
 
-migrate.prob=.4
+migrate.prob=.1
 migrate.duration=round(burnin*.5) + 1
 b=.001
+gamma_numerator=1
 
 S=length(data)
 R_max=max(unlist(lapply(data,function(s){length(s$runs)})))#maximum number of runs for all subjects.
@@ -177,11 +196,13 @@ print("...snowfall initialized; running clustercd setup...")
 sfClusterSetupRNG()
 print("...cluster setup run.")
 
-source(paste("de_mcmc/de_",version,"_functions.R",sep=""))
-source(paste("de_mcmc/de_",version,".R",sep=""))
-#save.image(file=paste0(mainDataDir,"de_h_m5_testing2.RData"))
-#load(file=paste0(mainDataDir,"de_h_m5_testing2.RData"))
-source(paste("de_mcmc/de_",version,".R",sep=""))
+source(paste("de_mcmc/de_",version.base,"_functions.R",sep=""))
+source(paste("de_mcmc/de_",version,"_start.R",sep=""))
+#load(file=paste0(mainDataDir,"de_h_m5_testing3.RData"))
+source(paste("de_mcmc/de_",version.base,"_run.R",sep=""))
+#save.image(file=paste0(mainDataDir,"de_h_m5_testing3.RData"))
+
+#debugSource(paste("de_mcmc/de_",version,".R",sep=""))
 
 sfStop()
 

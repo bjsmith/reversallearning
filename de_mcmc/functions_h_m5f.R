@@ -11,16 +11,28 @@ wrap.crossover=function(x,idx,pars,use.theta,use.like,use.mu,use.Sigma,use.phi_s
   chain=idx[x,3]
   #to modify this for our three-level model we're to somehow run this for subject and run
   #I believe it still makes sense to run this separately for each subject and run.
-  crossover(chain,pars,
+  new.lt.pair <- crossover(chain,pars,
             use.theta=array(use.theta[,,sub,run],c(n.chains,n.pars)),
             use.like=use.like[,sub,run],
             use.mu=array(use.mu,c(n.chains,n.mu)),
             use.Sigma=array(use.Sigma,c(n.chains,n.Sigma)),
             #we're concatenating the phi vars at different levels. I *think* this is OK...
-            use.phi=array(cbind(use.phi_g[,,use.data[[idx[x,1]]]$group],use.phi_s[,,use.data[[idx[x,1]]]$SubID]),
-                          c(n.chains,param.l3.N+param.l2.N)),
+            #use.phi=array(cbind(use.phi_g[,,use.data[[idx[x,1]]]$group],use.phi_s[,,use.data[[idx[x,1]]]$SubID]),
+            #              c(n.chains,param.l3.N+param.l2.N)),
+            #just going to pass one level
+            use.phi=array(use.phi_s[,,use.data[[idx[x,1]]]$SubID],
+                          c(n.chains,param.l2.N)),
             use.data=use.data[[sub]]$runs[[run]]
             )
+  #paste0("datasize",paste0(dim(use.data),collapse="_"))
+  if(all(use.like[chain,sub,run]==new.lt.pair[[1]])){
+    diagnostic_record$crossover_l1_noupdate[sub]<<-diagnostic_record$crossover_l1_noupdate[sub]+1
+  }else{
+    diagnostic_record$crossover_l1_update[sub]<<-diagnostic_record$crossover_l1_update[sub]+1
+  }
+  
+  return(new.lt.pair)
+  
 }
 
 wrap.crossover.l2=function(x,idx,pars,use.theta,use.like,use.mu,use.Sigma,use.phi_s,use.phi_g,use.data){
@@ -33,7 +45,7 @@ wrap.crossover.l2=function(x,idx,pars,use.theta,use.like,use.mu,use.Sigma,use.ph
   #####WHEN WE PASS USE_PHI_S INTO THE THETA VALUE WE CREATE A POTENTIAL FOR THE SIGMAS TO BE NEGATIVE, WHICH IS NONSENSICAL
   #####BRANDON SAYS WE CAN ALSO JUST REJECT ANY DISTRIBUTION WHERE A SIGMA ENDS UP NEGATIVE.
   ####IS USE.SUB WRITTEN CORRECTLY HERE?
-  crossover(chain,pars,
+  new.lt.pair <- crossover(chain,pars,
             use.theta=array(use.phi_s[,,sub],c(n.chains,param.l2.N)),
             use.like=use.like[,sub],
             use.mu=array(use.mu,c(n.chains,n.mu)),
@@ -45,6 +57,13 @@ wrap.crossover.l2=function(x,idx,pars,use.theta,use.like,use.mu,use.Sigma,use.ph
             log.dens.prior.f=log.dens.prior.l2,
             log.dens.like.f=log.dens.like.l2
    )
+  
+  if(all(use.like[chain,sub]==new.lt.pair[[1]])){
+    diagnostic_record$crossover_l2_noupdate[sub]<<-diagnostic_record$crossover_l2_noupdate[sub]+1
+  }else{
+    diagnostic_record$crossover_l2_update[sub]<<-diagnostic_record$crossover_l2_update[sub]+1
+  }
+  return(new.lt.pair)
 }
 
 wrapper=function(x,idx,use.theta,use.like,log.dens,use.data,method){
@@ -56,6 +75,8 @@ wrapper=function(x,idx,use.theta,use.like,log.dens,use.data,method){
 
 wrapper.l2=function(x,use.phi_s,use.like,log.dens,use.theta,method){
   #Difference between this and crossover is that we don't call specific chain external to migrate.
+  #If we're migrating between CHAINS not SUBJECTS...which IS what is going on...then
+  #why was migration responsible for that weird effect of syncing up runs {1,3}, {2,4}????????
   return(migrate(
     use.theta=use.phi_s[,,x],#use.theta[,,x],
     use.like=use.like[,x],
@@ -70,28 +91,34 @@ wrapper.l2=function(x,use.phi_s,use.like,log.dens,use.theta,method){
 #does some kind of swapping 
 migrate=function(use.theta,use.like,log.dens,use.data,...){
   pars=dim(use.theta)[2]
-  lnum1=sample(c(1:n.chains),1)										# determine how many groups to work with
-  lnum2=sort(sample(c(1:n.chains),lnum1,replace=F))							# which groups we will work with
+  lnum1=sample(c(1:n.chains),1)										# determine how many chains to swap.
+  lnum2=sort(sample(c(1:n.chains),lnum1,replace=F))							# which chains we will work with
   thetaset=matrix(NA,lnum1,pars)									# initialize
   currentset=propset=propw=currw=numeric(lnum1)
-  index=numeric(lnum1)
+  #index=numeric(lnum1)
   #for each of the selected chains, in a randomly selected order
-  for(i in 1:lnum1){
-    index[i]=sample(1:n.chains,1,replace=F)	
-    thetaset[i,]=use.theta[lnum2[i],] + runif(1,-b,b)				# create a set of these particles to swap
+  for(i in 1:lnum1){ #iterate lnum1 number of times (ultimately iterating through lnum2, the 'current' chain we're proposing to replace)
+    #index[i]=sample(1:n.chains,1,replace=F)	#sample a random chain for this i (not necessarily in lnum2)
+    #this is doing nothing.
+
+    thetaset[i,]=use.theta[lnum2[i],] + runif(1,-b,b)				# thetas for a particular run*chain.
+    #how does this ever migrate?
+    #we pick a thetaset, calculate the log density likelihood for it, and hten compare it to the CORRESPONDING likelihood
+    #both the likelihood and the thetas we picked correspond to lnum2.
     
     if(!is.array(use.data)){
       #added this in because we have to cope with different levels
       ud<-use.data
     } else if(length(dim(use.data))==3){
-      ud<-use.data[lnum2[i],,]
+      #ud<-use.data[lnum2[i],,] #Select the 'data' relating to this specific chain for testing.
+      ud<-use.data[lnum2[i %% lnum1 +1],,] #Select the 'data' relating to the chain that this chain would replace.
     }else{
       stop("Unknown data format.")
     }
-    
+
     #the log density likelihood function
-    propset[i]=log.dens(thetaset[i,],use.data=ud,...)
-    currentset[i]=use.like[lnum2[i]]
+    propset[i]=log.dens(thetaset[i,], use.data=ud, ...) #fitting hte randomly sampled theta
+    currentset[i]=use.like[lnum2[i]] #and the current likelihood, specified by lnum2
     propw[i]=propset[i]
     currw[i]=currentset[i]
   }
@@ -103,10 +130,42 @@ migrate=function(use.theta,use.like,log.dens,use.data,...){
     for(i in 1:(lnum1-1)){		
       #compare the new proposal value with the recent value, and if a condition is met, replace the last used likelihood with the current value.
       if(runif(1) < exp(propw[i] - currw[i+1])){
+        #this is where the cycle happens!
         use.theta[lnum2[i+1],]=thetaset[i,]							# swap the first with the last (creating a circle)
         use.like[lnum2[i+1]]=propset[i]
       }}}
   return(list(weight=use.like,theta=use.theta))
+}
+
+write.files.3l=function(q,use.theta,use.mu,use.Sigma,use.phi,use.weight,append=TRUE){
+  if (file.exists(paste0(mainDataDir,subDir))){
+    setwd(file.path(mainDataDir, subDir))
+  } else {
+    dir.create(file.path(mainDataDir, subDir))
+    setwd(file.path(mainDataDir, subDir))
+  }
+  print("write.files.3l being run.")
+  
+  for(s in 1:S){
+    for (r in 1:s_runs.N[s]){
+      #run-level
+      write(round(use.theta[q,,s,r],6),paste("chain",q,"_sub",s,"_run",r,".txt",sep=""),ncolumns=n.pars,append=append)
+    }
+    #subject-level?
+    #write(round(use.phi$phi_s[q,,s],6),paste("chain",q,"_sub",s,".txt",sep=""),ncolumns=n.pars,append=append)
+  }
+  #group level
+  if(n.mu>0) write(round(use.mu[q,],6),paste("chain",q,"_mu.txt",sep=""),ncolumns=n.mu,append=append)
+  if(n.Sigma>0) write(round(use.Sigma[q,],6),paste("chain",q,"_Sigma.txt",sep=""),ncolumns=n.Sigma,append=append)
+  if(class(use.phi)=="list"){
+    #this includes subject-level and group-level
+    for (phi_name in names(use.phi)){
+      write(round(use.phi[[phi_name]][q,],6),paste("chain",q,"_hyper_",phi_name,".txt",sep=""),ncolumns=dim(use.phi[[phi_name]])[2],append=append)
+    }
+  }else write(round(use.phi[q,],6),paste("chain",q,"_hyper.txt",sep=""),ncolumns=dim(use.phi)[2],append=append)
+  write(round(matrix(use.weight,nrow=dim(use.weight)[1],ncol=prod(dim(use.weight)[2:length(dim(use.weight))]))[q,],8),paste("chain",q,"_weights.txt",sep=""),ncolumns=dim(use.weight)[2],append=append)
+
+  setwd(mainDir)
 }
 
 
@@ -114,5 +173,7 @@ migrate=function(use.theta,use.like,log.dens,use.data,...){
 f_alpha_s_tr<-function(alpha){invlogit(alpha)}
 f_thresh_s_tr<-function(thresh){exp(thresh)}
 f_tau_s_tr<-function(tau){exp(tau)}
+
+diagnostic_record<-list()
 
 

@@ -1,11 +1,12 @@
 ########################################## load the functions you will use
 source("../joint_msm_combined/bjs_misc_utils.R")
-version="h_m4"
+version.base="h_m4"
+version="h_m4c"
 save.name=paste0("main_", version)
 source('de_mcmc/functions.R')
 source('de_mcmc/main_m1_setup.R')
 source('de_mcmc/functions_joint_v2.R')
-source(paste0('de_mcmc/functions_',version,'.R'))
+source(paste0('de_mcmc/functions_',version.base,'.R'))
 ########################################## generate data
 
 source("de_mcmc/raw_data_all_runs_flat_v2.R")
@@ -30,6 +31,9 @@ data<-data[subs_to_inc]
 #but I want to do this as an intermediate step, as Brandon suggested.
 #h_m4a removes a bad run from the data.
 #h_m4b removes three subjects whose classification into risk groups may be inaccurate.
+#h_m5c experiments with replacing the invlogit function, 
+#which gets the strength of evidence accumulation, and replaces it with the logit function.
+
 
 par.names.l1=c("alpha",#"beta",
                "thresh","tau")

@@ -1,7 +1,16 @@
 require(MCMCpack)
 require(dplyr)
 
+diagnostic_record$NaN_densities_l1<-0
+diagnostic_record$NaN_densities_l2<-0
+diagnostic_record$NaN_density_likelihood<-0
+diagnostic_record$base_rate_density_likelihood<-0
+diagnostic_record$crossover_l2_noupdate<-rep(0,S)
+diagnostic_record$crossover_l2_update<-rep(0,S)
+diagnostic_record$crossover_l1_noupdate<-rep(0,S)
+diagnostic_record$crossover_l1_update<-rep(0,S)
 
+#this may be problematic
 log.dens.prior=function(x_s,
                         use.mu,
                         use.Sigma,
@@ -9,8 +18,9 @@ log.dens.prior=function(x_s,
 ){
   #phi includes level 2 and level 3 phi values.
   #add phi values here.
+  #we have to add param.l3.N because use.phi is a concatenated vector of group-level and subject-level parameters.
   dens.prior.code<-function(){
-    sum(dnorm(x_s[param.l1.ids[["alpha"]]],use.phi[param.l2.ids[["alpha_s_mu"]]],absI(use.phi[param.l2.ids[["alpha_s_sigma"]]]),log=TRUE)) + 
+    sum(dnorm(x_s[param.l1.ids[["alpha"]]],use.phi[param.l2.ids[["alpha_s_mu"]]],abs(use.phi[param.l2.ids[["alpha_s_sigma"]]]),log=TRUE)) + 
     sum(dnorm(x_s[param.l1.ids[["thresh"]]],use.phi[param.l2.ids[["thresh_s_mu"]]],abs(use.phi[param.l2.ids[["thresh_s_sigma"]]]),log=TRUE)) +
     sum(dnorm(x_s[param.l1.ids[["tau"]]],use.phi[param.l2.ids[["tau_s_mu"]]],abs(use.phi[param.l2.ids[["tau_s_sigma"]]]),log=TRUE))
   }
@@ -30,12 +40,13 @@ log.dens.prior=function(x_s,
   
   if(is.na(dens)){
     dens=-Inf
+    diagnostic_record$NaN_densities_l1<<-diagnostic_record$NaN_densities_l1+1
   }
   
   dens
 }
 
-
+#this may also be problematic
 log.dens.prior.l2=function(x_s,        #  actually these are phi, just a lower level phi
                            use.mu,
                            use.Sigma,
@@ -128,6 +139,7 @@ log.dens.like=function(x_s,use.data_s,method="full"){
       diagnostic_record$NaN_density_likelihood<<-diagnostic_record$NaN_density_likelihood+1
       #print(use.data_s$rt[1:3])
     }
+    diagnostic_record$base_rate_density_likelihood<<-diagnostic_record$base_rate_density_likelihood+1
     #end_time <- Sys.time()
     #log.dens.like.h.m1.timer.sectionB<<-log.dens.like.h.m1.timer.sectionB+(end_time-start_time)
     #printv("running getting density")
@@ -138,7 +150,7 @@ log.dens.like=function(x_s,use.data_s,method="full"){
     #I think we can just do density for the subject-level variables; and since they are being fit from the group-level,
     #that in itself tells us how close we're getting.
     #we have no group-level 'data' to fit so it wouldn't make sense to get any density for hte group level.
-    #print(dens)
+    
     out=dens
     if(is.na(out))out=-Inf
   } else {

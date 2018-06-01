@@ -1,23 +1,57 @@
-
+#setwd("/expdata/bensmith/joint-modeling/code/msm/reversallearning")
+#rm(list = ls())
+#/expdata/bensmith/joint-modeling/data
 ########################################## load the functions you will use
 source("../joint_msm_combined/bjs_misc_utils.R")
-version="h_m5"
+version="h_m5d"#with enhanced diagnostic data-gathering
+version.base<-"h_m5b"
 save.name=paste0("main_", version)
 source('de_mcmc/functions.R')
 source('de_mcmc/main_m1_setup.R')
 source('de_mcmc/functions_joint_v2.R')
-source(paste0('de_mcmc/functions_',version,'.R'))
+source(paste0('de_mcmc/functions_',version.base,'.R'))
 ########################################## generate data
 
 source("de_mcmc/raw_data_all_runs.R")
 safe_meth_subjs<-unlist(lapply(data,function(d){d$group=="SafeMeth"}))
 subjs.without.group<-unlist(lapply(data,function(d){is.na(d$group)}))
-
 data<-data[!safe_meth_subjs & !subjs.without.group]
+#exclude subjects who seem to be just repeatedly pressing buttons.
+changeDetect<-function(vec){sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])}
+buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
+#a more sophisticated model might have a policy detection which probabilitistically detects which policy a subject
+#uses to press buttons but I'm not using that for now.
+#also accuracy data will be useful.
+overallperformance<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){sum(r$outcome==1)/length(r$outcome)})))}))
+cbind(buttonChanges,overallperformance)
+#plot(buttonChanges,overallperformance)
+data<-data[buttonChanges>90 & overallperformance>0.4] 
+table(unlist(lapply(data,function(d){d$group})))
+  #performance worse than 0.4 may suggest the subject has misunderstood the task.
 
+# data.scramble<-data[sample(1:length(data),length(data),replace=FALSE)]
+# data<-data.scramble
+# unlist(lapply(data,function(d){d$group}))
+# 
+
+# # 
+# # #get a set of subjects who are in each of the three groups.
+# g1_subs<-which(unlist(lapply(data,function(d){d$group=="SafeNoMeth"})))
+# g2_subs<-which(unlist(lapply(data,function(d){d$group=="RiskyNoMeth"})))
+# g3_subs<-which(unlist(lapply(data,function(d){d$group=="RiskyMeth"})))
+# subs_to_inc<-c(g1_subs[1:5],g2_subs[1:5],g3_subs[1:5])
+# subs_to_inc#now what do we do with these subjects?
+# data<-data[subs_to_inc]
+# 
 rm(rawdata,rawdata.dt) #save memory.
 
 ########################################## initialize
+#h_m5d contains some misc fixes, notably, ending chain migration at the second level.
+#h_m5c omits the optimization step.
+#h_m5b sets a gamma numerator of 1 instead of 2.38.
+#This allows for a more delicate differential evolution algorithm and hopefully a better estimate.
+#with an extra level, 2.38 seems to be too much.
+#I'm trying to work out how to get this 3-level model working.
 #h_m5 includes a three-level model, with all four runs.
 
 #Safe Meth subjects are excluded.
@@ -44,7 +78,7 @@ rm(rawdata,rawdata.dt) #save memory.
 
 param.l1.names=c("alpha",#"beta",
                    "thresh","tau")
-param.l1.ids<-as.list(1:3)
+param.l1.ids<-as.list(1:length(param.l1.names))
 param.l1.N<-length(param.l1.names)
 names(param.l1.ids)=param.l1.names
 par.names=c(param.l1.names)
@@ -57,6 +91,7 @@ param.l2.distributions.N<-param.l2.N/2
 
 
 #level three parameters.
+#param.l3.names<-c(paste0(param.l2.names[1:(length(param.l2.names))], "_g_mu"),paste0(param.l2.names[1:(length(param.l2.names))], "_g_sigma"))
 param.l3.names<-c(paste0(param.l2.names[1:3], "_g_mu"),paste0(param.l2.names[1:3], "_g_sigma"))
 #Let's NOT sample subject variance from a random distribution, for now. Instead,
 #we'll just assume constant run-level variance across subjects. That will halve the number of third-level parameters we have to estimate.
@@ -67,6 +102,8 @@ param.l3.distributions.N<-param.l3.N/2
 #we'll need these separately for each group...
 #not sure how to handle that just yet.
 
+phi.ids<-as.list(1:(param.l3.N+param.l2.N))
+names(phi.ids)<-c(param.l3.names,param.l2.names)
 
 #hpar.names=par.names.l2
 
@@ -114,9 +151,10 @@ thin=1
 keep.samples=seq(burnin,nmc,thin)
 length(keep.samples)*n.chains
 
-migrate.prob=.4
+migrate.prob=0.1
 migrate.duration=round(burnin*.5) + 1
 b=.001
+gamma_numerator=0.5
 
 S=length(data)
 R_max=max(unlist(lapply(data,function(s){length(s$runs)})))#maximum number of runs for all subjects.
@@ -127,10 +165,11 @@ param.l1.init=array(NA,c(S,R_max, param.l1.N))#renamed x.init to param.l1.init
 #initial values for alpha and thresh
 for(j in 1:S){#j<-1
   for (r in 1:s_runs.N[j]){#r<-1
-    param.l1.init[j,r,param.l1.ids$alpha]=-3
-    param.l1.init[j,r,param.l1.ids$thresh]=log(2)
-    #we're giving every single run a default tau based on the minimum RT in that run.
-    param.l1.init[j,r,param.l1.ids$tau]=log(.6*(min(data[[j]]$runs[[r]]$rt,na.rm=TRUE)))
+    param.l1.init[j,r,param.l1.ids$alpha] = -3
+    param.l1.init[j,r,param.l1.ids$thresh] = log(2)
+    #we're giving every single run a default tau based on the 20th percentile RT in that run.
+    #had been doing min() but 5th percentile will ignore influence of outliers.
+    param.l1.init[j,r,param.l1.ids$tau] = log(0.45*(quantile(data[[j]]$runs[[r]]$rt,c(0.05),na.rm=TRUE)[[1]]))
   }
 }
 
@@ -177,11 +216,14 @@ print("...snowfall initialized; running clustercd setup...")
 sfClusterSetupRNG()
 print("...cluster setup run.")
 
-source(paste("de_mcmc/de_",version,"_functions.R",sep=""))
-source(paste("de_mcmc/de_",version,".R",sep=""))
-#save.image(file=paste0(mainDataDir,"de_h_m5_testing2.RData"))
-#load(file=paste0(mainDataDir,"de_h_m5_testing2.RData"))
-source(paste("de_mcmc/de_",version,".R",sep=""))
+source(paste("de_mcmc/de_",version.base,"_functions.R",sep=""))
+source(paste("de_mcmc/de_",version,"_start.R",sep=""))
+
+#load(file=paste0(mainDataDir,"de_h_m5_testing3.RData"))
+source(paste("de_mcmc/de_",version,"_run.R",sep=""))
+
+
+#debugSource(paste("de_mcmc/de_",version,".R",sep=""))
 
 sfStop()
 
