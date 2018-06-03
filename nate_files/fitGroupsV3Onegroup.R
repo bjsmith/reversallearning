@@ -16,7 +16,7 @@ if(length(grep("nate_files",getwd()))>0){
   modelcode_rl<-"../nate_files/"
   apply_local_settings("../")
 }else{
-  source("util/apply_local_settings.R")
+  source("../util/apply_local_settings.R")
   source("read_nps_output.R")
   modelcode_rl<-"nate_files/"
   apply_local_settings()

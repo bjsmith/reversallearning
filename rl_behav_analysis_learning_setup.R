@@ -100,11 +100,28 @@ for (condition in c("reward","punishment")){
         "score","onset_time_designed","onset_time_actual",
         "reversal_trial","runid","blockid")
     #record the actual response key
-    if((as.numeric(regexpr("_sub",basename(sub.filename))[1])%%2)==1){
-      sub.data$cor_res_Counterbalanced= 3-sub.data$cor_res
-    }else{
+    subid_from_filename<-as.numeric(substr(basename(sub.filename),regexpr("_sub",basename(sub.filename))[1]+4,regexpr("_sub",basename(sub.filename))[1]+6))
+    # if((subid_from_filename%%2)==1){
+    #   sub.data$cor_res_Counterbalanced=sub.data$cor_res
+    # }else{
+    #   sub.data$cor_res_Counterbalanced= 3 - sub.data$cor_res
+    # }
+    
+    #so for each sub.data, 
+    sub.data.no0<-sub.data[sub.data$score!=0,c("cor_res","response_key","score")]
+    #is there another way I can detect whether the subject's cor_res needs to be reversed???
+    # table(sub.data.no0$cor_res,sub.data.no0$response_key,sub.data.no0$score)
+    score_for_match<-(sub.data.no0$cor_res==sub.data.no0$response_key)==(sub.data.no0$score==1)
+    if(all(score_for_match)){
+      print(paste0("for sub ",subid_from_filename,", cor_res MATCHES response_key for correct items"))
       sub.data$cor_res_Counterbalanced=sub.data$cor_res
+    }else if (all(!score_for_match)){
+      print(paste0("for sub ",subid_from_filename,", cor_res MISMATCHES response_key for correct items. Remapping."))
+      sub.data$cor_res_Counterbalanced= 3 - sub.data$cor_res
+    }else{
+      stop(paste0("inconsistent cor_res, response_key, score alignment for sub",subid_from_filename))
     }
+    
     
     # MID=1; %
     #   %Mtrial=2; %
@@ -229,7 +246,13 @@ if (exists("nonResponseTimeAsNA")){
   }
 }
 
+#now let's create a column that indicates the required response for this subject
 
+table(rl.all.subjects.list$cor_res_Counterbalanced,
+      rl.all.subjects.list$response_key,
+      rl.all.subjects.list$correct)
+
+#We should throw out, then print a warning.
 break.labels=c("1\nPre-reversal",2:8,"1\nReversal",2:5)
 
 

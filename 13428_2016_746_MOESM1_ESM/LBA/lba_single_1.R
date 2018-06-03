@@ -7,13 +7,13 @@ library(parallel)
 options(mc.cores = 3)
 #make simualated data
           #n,   b,A,vs,     s,t0,
-out = rlba(300,1,.5,c(3,2),1,.5)
-hist(out$rt)
+out = rlba(300,1,.5,c(3,2),1,0.4)
+hist(out$rt,breaks=100)
 rt = cbind(out$rt,out$resp)
 len = length(rt[,1])
 #run the Stan model
 fit <- stan(file='lba_single.stan', 
-            data = list(RT=rt,LENGTH=len,NUM_CHOICES=3),
+            data = list(RT=rt,LENGTH=len,NUM_CHOICES=2),
             warmup = 500, 
             iter = 1000,
             chains = 3)
