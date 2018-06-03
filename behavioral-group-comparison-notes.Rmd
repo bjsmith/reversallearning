@@ -47,7 +47,7 @@ rl.all.subjects.list.clean<-rl.all.subjects.list[score!=0]
 
 After eliminating `r rl.all.subjects.list[score==0,.N]` non-response trials across the subjects, `r rl.all.subjects.list[score!=0,.N]` trials remain. 
 
-```{r}
+```{r, echo=FALSE}
 
 
 #what does reaction time look like in a distribution?

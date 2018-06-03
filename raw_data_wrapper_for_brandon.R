@@ -1,3 +1,4 @@
+stop("This is obsolete. See _amendment1 unless running for archival purposes.")
 source("../util/apply_local_settings.R")
 apply_local_settings()
 dd<-localsettings$data.dir

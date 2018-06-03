@@ -1,3 +1,4 @@
+stop("This is obsolete. See savehBayesInput_amendment1 unless running for archival purposes.")
 #this file is written to generate hierarchical bayesian data from the learning setup.
 source("get_risk_group.R")
 
@@ -28,10 +29,10 @@ rl.all.subjects.list.punishment<-rl.all.subjects.list.run1[Motivation=="punishme
 
 library(parallel)
 
-filename<-"../data/run1_subjs_datacomplete_reward.txt"
+filename<-paste0(localsettings$data.dir,"run1_subjs_datacomplete_reward.txt")
 write.table(rl.all.subjects.list.reward,filename,row.names = FALSE)
 
-filename<-"../data/run1_subjs_datacomplete_punishment.txt"
+filename<-paste0(localsettings$data.dir,"run1_subjs_datacomplete_punishment.txt")
 write.table(rl.all.subjects.list.punishment,filename,row.names = FALSE)
 
 rl.all.subjects.list.reward<-rl.all.subjects.list.complete[Motivation=="reward"]
@@ -44,13 +45,13 @@ cols.to.export<-c(
   "Motivation", "presentation_n_over_segments", "RiskCat", "RiskLabel", "MethUse", 
   "SexRisk", "choice", "outcome", "cue", "SubjectGroup","cor_res_Counterbalanced")
 
-filename<-"../data/all_subjs_datacomplete_reward.txt"
+filename<-paste0(localsettings$data.dir,"all_subjs_datacomplete_reward.txt")
 write.table(rl.all.subjects.list.reward[,cols.to.export,with=FALSE],filename,row.names = FALSE)
 
-filename<-"../data/all_subjs_datacomplete_punishment.txt"
+filename<-paste0(localsettings$data.dir,"all_subjs_datacomplete_punishment.txt")
 write.table(rl.all.subjects.list.punishment[,cols.to.export,with=FALSE],filename,row.names = FALSE)
 
-filename<-"../data/all_subjs_datacomplete_reward_and_punishment.txt"
+filename<-paste0(localsettings$data.dir,"all_subjs_datacomplete_reward_and_punishment.txt")
 write.table(rl.all.subjects.list.complete[,cols.to.export,with=FALSE],filename,row.names = FALSE)
 
 #matrix of posterior estimates

@@ -1,3 +1,4 @@
+
 library(compiler)
 
 logit=function(x){
@@ -22,7 +23,9 @@ invlogit=function(x){
 #sqrt2pixtothe3<-approxfun(-10^7:10^7/10^7,sqrt(2*pi*(-10^7:10^7/10^7)^3))
 #pnorm.approx<-approxfun(-10^7:10^7/10^6,pnorm(-10^7:10^7/10^6))
 time.wald.pdf<-0
+wald.pdf.raw.warned.about.short.trials.excluded<-FALSE
 wald.pdf.raw.warned.about.short.trials.excluded<<-FALSE
+wald.pdf.raw.warned.about.short.trials.excluded=FALSE
 wald.pdf.raw=function(t,alpha,v,theta){#,x_w,idx){
   # alpha is threshold
   # v is drift
@@ -55,6 +58,8 @@ wald.pdf.c<-cmpfun(wald.pdf.raw)
 
 time.wald.cdf<-0
 wald.cdf.raw.warned.about.short.trials.excluded<<-FALSE
+wald.cdf.raw.warned.about.short.trials.excluded<-FALSE
+wald.cdf.raw.warned.about.short.trials.excluded=FALSE
 wald.cdf.raw=function(t,alpha,v,theta){#,x_w,idx){
   #print(idx)
   # alpha is threshold

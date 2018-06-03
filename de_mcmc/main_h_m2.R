@@ -16,7 +16,8 @@ par.ids.l1<-as.list(1:3)
 names(par.ids.l1)=par.names.l1
 
 par.names.l2<-c(paste0(par.names.l1, "_mu"),paste0(par.names.l1, "_sigma"))
-
+par.ids.l2<-as.list(1:length(par.names.l2))
+names(par.ids.l2)<-par.names.l2
 par.names=c(par.names.l1)
 #if I understand correctly, these are hyper-parameters because they are describing the distribution of individual subject parameters
 #Each subject has a mu (which decomposes to eta, I think???? need to drill down to this),
@@ -37,12 +38,12 @@ n.phi.mu=n.hpars/2
 #so it seems that we aren't calculating sigmas across all subjects; if we were, they'd be hyper-parameters
 
 #link parameters are parameters for which we're creating sigma correlations at the end.
-link.pars=NULL #at this stage
+link.pars=c() #at this stage
 #link.pars=c(1:n.components, n.components+1, n.components+2, n.components+3)
-#unlink.pars=n.components + c(4,5,6,7)
+unlink.pars=c(1:n.phi.mu)
   
 n.link.pars=length(link.pars)
-#n.unlink.pars=length(unlink.pars)
+n.unlink.pars=length(unlink.pars)
 
 n.mu=n.link.pars
 n.Sigma=n.link.pars^2
@@ -70,24 +71,25 @@ for(j in 1:S){
 x.init[,par.ids.l1$tau]=log(.6*(sapply(data,function(x)min(x$rt,na.rm=TRUE))))
 
 
-########################################## prior
+########################################## prior values for the hypers, I think
 prior.big=NULL
 #prior.big$mu=rep(0,n.link.pars)
 prior.big$m=1/10
 #prior.big$phi=diag(n.link.pars)
 prior.big$n0=length(prior.big$mu) + 2
 
-# prior=NULL
-# prior$sigma.go=list(mu=1.5,sigma=0.8,alpha=4,beta=10)
-# prior$tau.go=list(mu=.75,sigma=0.5,alpha=4,beta=10)
-# prior$sigma.stop=list(mu=1.5,sigma=0.8,alpha=4,beta=10)
-# prior$tau.stop=list(mu=.75,sigma=.5,alpha=4,beta=10)
+prior=NULL
+prior$alpha=list("mu"=-3,"sigma"=1,alpha=4,beta=10)
+prior$thresh=list("mu"=log(2),"sigma"=sqrt(log(2)),alpha=4,beta=10)
+prior$tau=list("mu"=mean(log(.6*(sapply(data,function(x)min(x$rt,na.rm=TRUE))))),
+               "sigma"=sqrt(mean(abs(log(.6*(sapply(data,function(x)min(x$rt,na.rm=TRUE))))))),
+               alpha=4,beta=10)
 
 ########################################## run it
 cores=8#detectCores()
 print(paste0("Starting sfInit to run sfInit with ",cores," cores..."))
 sfInit(parallel=TRUE, cpus=cores, type="SOCK")
-print("...snowfall initialized; running cluster setup...")
+print("...snowfall initialized; running clustercd setup...")
 sfClusterSetupRNG()
 print("...cluster setup run.")
 

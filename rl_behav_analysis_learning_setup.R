@@ -274,8 +274,8 @@ accuracy.by.pres_seg<-
 #   .(presentation_n_over_segments,Motivation)]
 
 break.labels=c("1\nPre-reversal",2:last_nonreversal,"1\nReversal",2:6)
-accuracy.by.pres_seg.subid.finalpc<-
-  accuracy.by.pres_seg.subid[presentation_n_over_segments==4,.(final.prop.correct=prop.correct),.(subid,Motivation)]
-accuracy.by.pres_seg.subid<-merge(accuracy.by.pres_seg.subid,accuracy.by.pres_seg.subid.finalpc,by=c("subid","Motivation"))
-
+# accuracy.by.pres_seg.subid.finalpc<-
+#   accuracy.by.pres_seg.subid[presentation_n_over_segments==4,.(final.prop.correct=prop.correct),.(subid,Motivation)]
+# accuracy.by.pres_seg.subid<-merge(accuracy.by.pres_seg.subid,accuracy.by.pres_seg.subid.finalpc,by=c("subid","Motivation"))
+warning("NB to self: stopped the calculation of proportion correct because it was wrong. If you restore this, (a) fix it and (b) make sure fixing this doesn't break other things!")
 

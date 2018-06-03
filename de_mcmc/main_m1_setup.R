@@ -5,6 +5,7 @@ run.ts<-get.datetimestamp()
 
 source("de_mcmc/functions.R")
 library("data.table")
+library("parallel")
 library("snowfall") # install.packages("snowfall")
 library("MASS")
 library("msm")      # install.packages("msm")
@@ -16,8 +17,8 @@ setwd(mainDir)
 
 save.dir <- paste0(localsettings$data_dir, "/de_mcmc/")
 mainDataDir <- save.dir
-
-save.name <- paste("output_",version,run.ts,sep="")
+if(!exists("folderappend"))folderappend<-""
+save.name <- paste("output_",version,run.ts,folderappend,sep="")
 subDir <- paste(save.name,"/",sep="")
 
 dir.create(paste0(mainDataDir,subDir))

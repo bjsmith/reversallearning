@@ -2,6 +2,7 @@
 .Rproj.user/
 .Rhistory
 .RData
+*.RData
 .Ruserdata
 .DS_Store
 Icon\r
@@ -11,6 +12,7 @@ Icon?
 Rlocalsettings.RData
 Rscript.e*
 Rscript.o*
+MLEs_output*.txt
 bash.e*
 bash.o*
 notebooks/cache/*
@@ -23,3 +25,7 @@ core
 *.pdf
 *.PDF
 *.Rdata
+.nb.html
+*.nb.html
+fsl_sub_archive
+fsl_sub_archive/*

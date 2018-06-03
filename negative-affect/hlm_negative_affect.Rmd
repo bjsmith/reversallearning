@@ -90,7 +90,11 @@ Over all pain datasets, the model with correct response has much lower AIC and B
 
 
 ```{r, echo=TRUE}
+<<<<<<< HEAD
+anova(m.0,m.withResponseCorrect)
+=======
 anova(m.0,m.withResponseCorrect,m.withResponseCorrectInteract)
+>>>>>>> 6f7f50affd0a45d303d41dfec1bb7d98769c6f55
 ```
 
 This suggests that responses are predictive of the NPS value detected. The beta value estimate representing the response fixed effect suggests that NPS is lower for correct responses (no electric shock) than incorrect responses (electric shock), which is consistent with the purpose of the NPS to measure pain.
