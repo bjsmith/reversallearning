@@ -122,15 +122,7 @@ table(rlba(3000,1,.01,c(1,1),1,0.4)$resp)
 #I'm not sure if this would capture the learning relationship we want or not.
 logit(seq(-0.9,0.9,0.1)/2+0.5)
 table(rlba(300,1,.5,c(10,-10),1,0.4)$resp)
-alpha<-0.2
-ev<-0
-iter<-13
-ev_rec<-rep(NA,iter)
-for (i in 1:iter){
-  pe<-1-ev
-  ev<-ev+pe*alpha
-  ev_rec[i]<-ev
-}
+
 
 logit_ev<-logit(ev_rec/2+0.5)
 invlogit_ev<-inv.logit(ev_rec/2+0.5)

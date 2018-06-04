@@ -220,6 +220,7 @@ model {
   real exp_val[NUM_RUNS,max(cue),NUM_CHOICES];
   real pred_err;
   real outcome;
+  vector[NUM_CHOICES] v;
   //int curRunId=0;//just for printout diagnostic
   
   exp_val = rep_array(0,NUM_RUNS,max(cue),NUM_CHOICES);
@@ -243,6 +244,7 @@ model {
     // }
     
     for(j in 1:NUM_CHOICES){
+      v[j]=logit(exp_val[cue[i],j]/4+0.75);
       //this might be problematic for more than two choices, but for two, it'll work.
       //assuming the participant infers that for every choice made, the opposite is the *wrong choice*
       //now, if j was the correct choice, then pred_err should be 1-exp_val.
@@ -257,7 +259,7 @@ model {
       
     }
     //print("t=",t,"; ",exp_val[NUM_RUNS,cue[t],]);
-    response_time[t] ~ lba(response[t],k,A,to_vector(exp_val[trial_runid[t],cue[t],]),s,tau);
+    response_time[t] ~ lba(response[t],k,A,v,s,tau);
     
   }
   

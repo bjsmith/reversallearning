@@ -214,6 +214,7 @@ model {
   matrix[max(cue),NUM_CHOICES] exp_val = rep_matrix(0,max(cue),NUM_CHOICES);
   real pred_err;
   real outcome;
+  vector[NUM_CHOICES] v;
   
   alpha_pr ~ normal(-3,3);//weak prior for no learning.  
   k_pr ~ normal(log(.5),1);
@@ -227,6 +228,7 @@ model {
   for (i in 1:LENGTH){//loop through timesteps.
     
     for(j in 1:NUM_CHOICES){
+      v[j]=logit(exp_val[cue[i],j]/4+0.75);
       //this might be problematic for more than two choices, but for two, it'll work.
       //assuming the participant infers that for every choice made, the opposite is the *wrong choice*
       //now, if j was the correct choice, then pred_err should be 1-exp_val.
@@ -245,7 +247,7 @@ model {
       
     }
     //print("i=",i,"; ",exp_val[cue[i],])
-    response_time[i] ~ lba(response[i],k,A,to_vector(exp_val[cue[i],]),s,tau);
+    response_time[i] ~ lba(response[i],k,A,v,s,tau);
   }
   
     
