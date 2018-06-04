@@ -1,0 +1,57 @@
+---
+title: "drift rate example"
+author: "Ben Smith"
+date: "6/4/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(LaplacesDemon)
+library(dplyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r ev_to_function}
+
+expected_value <- seq(-1,1,0.01)
+f_ev_1<-logit((expected_value+3)/4)
+f_ev_2<-expected_value+1
+mappings<-data.frame("Expected Value"=expected_value,"f_1"=f_ev_1,"f_2"=f_ev_2) %>% tidyr::gather("Function","Value",f_1:f_2)
+
+ggplot(mappings,aes(x=Expected.Value,y=Value,group=Function,color=Function))+geom_line()
+
+```
+
+Applying a model, we would see expected value proceeding along a curve as the subject learns. With a learning rate of alpha=0.2, and steady learning, this would look like:
+
+```{r ev_over_time}
+alpha<-0.2
+ev<-0
+iter<-20
+ev_rec<-rep(NA,iter)
+for (i in 1:iter){
+  ev_rec[i]<-ev
+  pe<-1-ev
+  ev<-ev+pe*alpha
+  
+}
+mappings2<-data.frame("Expected Value"=ev_rec,"learning_iteration"=1:iter)
+ggplot(mappings2,aes(x=learning_iteration,y=Expected.Value))+geom_line()
+
+```
+
+Thus, the two functions would proceed as the subject learns as:
+
+
+```{r ev_and_functions_over_time}
+mappings2$f_1<-logit((mappings2$Expected.Value+3)/4)
+mappings2$f_2<-mappings2$Expected.Value+1
+mappings2_ggplot<-tidyr::gather(mappings2,"Function","Value",c(Expected.Value,f_1,f_2))
+ggplot(mappings2_ggplot,aes(x=learning_iteration,y=Value,group=Function,color=Function))+geom_line()+labs(y="Drift rate")
+
+```
+
+Thus, as long as the subject steadily learns, the drift rate will increase linearly with learning in the first model, whereas it reaches an asymptote with the other models. A linearly, infinitely increasing drift rate seems not plausible; however, consider that this parameter itslef operates according to a function....
+
