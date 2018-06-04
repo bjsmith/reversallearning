@@ -1,5 +1,5 @@
 
-setwd(file.path(mainDir, subDir))
+setwd(file.path(paste0(mainDataDir, subDir)))
 
 tnmc=length(keep.samples)
 

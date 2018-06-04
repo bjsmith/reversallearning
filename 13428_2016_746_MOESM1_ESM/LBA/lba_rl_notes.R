@@ -3,8 +3,21 @@ rm(list=ls())
 source('lba-math.r')
 library(rstan)
 library(parallel)
+library(dplyr)
 
 options(mc.cores = 3)
+
+
+#right, this time, we need to get some real data.
+source("../../../util/apply_local_settings.R")
+apply_local_settings("../../")
+dd<-localsettings$data.dir
+library(data.table)
+
+
+rawdata <- data.table(read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment.txt"), header=T))
+colnames(rawdata)
+
 #make simualated data
           #n,   b,A,vs,     s,t0,
 out = rlba(300,1,.5,c(3,2),1,0.4)
@@ -125,15 +138,6 @@ plot(logit_ev)
 plot(ev_rec)
 plot(invlogit_ev)
 
-#right, this time, we need to get some real data.
-source("../../../util/apply_local_settings.R")
-apply_local_settings("../../")
-dd<-localsettings$data.dir
-library(data.table)
-
-
-rawdata <- data.table(read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment.txt"), header=T))
-colnames(rawdata)
 sub108data<-rawdata[subid==108 & Motivation=="reward" & runid==1,.(reaction_time,outcome,cue,choice,cor_res_Counterbalanced)]
 
 table(rawdata$choice,rawdata$response_key)#'choice' and 'response_key' are the same
@@ -444,3 +448,37 @@ print(fit_rl_lba_rl_multi_subj_3_2level_3subj_strongpriors)
 #(1) the strength of the prior and 
 #(2) the bias of the prior
 #do NOT really give us any different alpha values, but substantially lower efficiency. So let's keep priors pessimistic and weakly informative.
+
+#next step is a three level model. Let's create the data we'll use to test it:
+
+multisubj_multirun_threesubs<-rawdata[subid %in% c(105,106,108) & Motivation=="reward",
+                             .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
+                               ConsecSubId=as.integer(as.factor(as.character(subid))),
+                               UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
+
+multisubj_multirun_threesubs$ConsecSubId
+table(multisubj_multirun_threesubs$UniqueRunID,multisubj_multirun_threesubs$ConsecSubId)
+
+#here is the three level model.
+
+fit_rl_lba_multi_subj_4_3level <- stan(file='lba_rl_multi_subj_4_3level.stan', 
+                                                             #fit=fit_rl_lba_multi_subj_proto1,
+                                                             data = list(
+                                                               NUM_CHOICES=2,
+                                                               A=0.01,
+                                                               NUM_SUBJECTS=length(unique(multisubj_multirun_threesubs$subid)),
+                                                               NUM_TRIALS=dim(multisubj_multirun_threesubs)[1],
+                                                               NUM_RUNS=length(unique(multisubj_multirun_threesubs$UniqueRunID)),
+                                                               run_subjid=multisubj_multirun_threesubs[,.(RunID=unique(UniqueRunID)),by=ConsecSubId] %>% .[order(RunID),ConsecSubId],
+                                                               trial_runid=as.numeric(multisubj_multirun_threesubs$UniqueRunID),
+                                                               
+                                                               response_time=multisubj_multirun_threesubs$reaction_time,
+                                                               response=multisubj_multirun_threesubs$choice,
+                                                               required_choice=multisubj_multirun_threesubs$cor_res_Counterbalanced,
+                                                               cue=multisubj_multirun_threesubs$cue
+                                                             ),
+                                                             warmup = 500, 
+                                                             iter = 1000,
+                                                             chains = 3,
+                                                             control = list(max_treedepth = 15))
+print(fit_rl_lba_multi_subj_4_3level)
