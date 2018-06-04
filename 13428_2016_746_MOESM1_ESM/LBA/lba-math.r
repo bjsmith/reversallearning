@@ -1,3 +1,5 @@
+#from Palmeri et al. (2017). All credit in this file due to them.
+
 fptcdf=function(z,x0max,chi,driftrate,sddrift) {
   if (x0max<1e-10) return(pnorm(chi/z,mean=driftrate,sd=sddrift,lower.tail=F))
   zs=z*sddrift ; zu=z*driftrate ; chiminuszu=chi-zu ; xx=chiminuszu-x0max
