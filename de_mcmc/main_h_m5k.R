@@ -3,7 +3,7 @@
 #rm(list = ls())
 ########################################## load the functions you will use
 source("../joint_msm_combined/bjs_misc_utils.R")
-version="h_m5k"
+version="h_m5k" 
 version.base<-"h_m5f"
 folderappend="_15subs"
 

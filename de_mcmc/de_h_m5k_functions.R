@@ -115,8 +115,8 @@ log.dens.like=function(x_s,use.data_s,method="full"){
         #v_t[tr,]=invlogit(ev[use.data_s$cue[tr],])
         #v_t[tr,]=softmax(ev[use.data_s$cue[tr],])
         #v_t[tr,]=ev[use.data_s$cue[tr],]
-        v_t[tr,]=logit(ev[use.data_s$cue[tr],]/4+0.5)
-        print(paste0("v_t[tr,]:",v_t[tr,],"; ev[use.data_s$cue[tr],]:",ev[use.data_s$cue[tr],]))
+        v_t[tr,]=logit(ev[use.data_s$cue[tr],]/4+0.75)
+        #print(paste0("v_t[tr,]:",v_t[tr,],"; ev[use.data_s$cue[tr],]:",ev[use.data_s$cue[tr],]))
         
         # prediction error
         PE   =  use.data_s$outcome[tr] - ev[use.data_s$cue[tr],use.data_s$choice[tr]]

@@ -51,8 +51,8 @@ vis_1<-100
 for(i in 2:nmc){#loop through iterations#i<-2
   
   #Not *really* struggling at this level.
-  temp=sfLapply(
-    #lapply( 
+  temp=#sfLapply(
+    lapply( 
     1:n.grid,
     wrap.crossover,idx=grid,
     pars=1:n.pars,
@@ -71,8 +71,8 @@ for(i in 2:nmc){#loop through iterations#i<-2
   
   #and we are also struggling HERE, in calculating phis at the subject level
   #sfLapply(
-  temp.l2=sfLapply(
-    #lapply(
+  temp.l2=#sfLapply(
+    lapply(
     1:n.grid.l2,
     wrap.crossover.l2,idx=grid.l2,
     pars=1:param.l2.N,
@@ -93,8 +93,8 @@ for(i in 2:nmc){#loop through iterations#i<-2
   if(i<migrate.duration){
     if(runif(1)<migrate.prob){
       #print(paste0("migrating at i=",i))
-      out=sfLapply(
-        #lapply(
+      out=#sfLapply(
+        lapply(
         1:nrow(grid.migrate),
         wrapper,idx=grid.migrate,
         use.theta=array(theta,c(n.chains,n.pars,S,R_max)),
@@ -112,8 +112,8 @@ for(i in 2:nmc){#loop through iterations#i<-2
       #I've taken it out for now.
       #Brandon says it is probably unnecessary.
       #level 2
-      out2=#lapply(
-        sfLapply(
+      out2=lapply(
+        #sfLapply(
           1:S,wrapper.l2,use.theta=array(theta,c(n.chains,n.pars,S,R_max)),use.phi_s=phi_s,use.like=weight.l2,log.dens=log.dens.like.l2,method="block")
       
       for(s in 1:S){#s<-5]
