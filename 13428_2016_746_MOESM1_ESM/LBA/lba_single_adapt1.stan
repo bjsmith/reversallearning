@@ -85,6 +85,16 @@ functions{
                }		
           }
           out = sum(log(prob));
+          if (is_nan(out)){
+            print("matrix RT, real k, real A, vector v, real s, real tau")
+            print(RT)
+            print(k)
+            print(A)
+            print(v)
+            print(s)
+            print(tau)
+          }
+          
           return out;		
      }
      
@@ -158,31 +168,49 @@ data{
      matrix[LENGTH,2] RT;
      int NUM_CHOICES;
 }
-
+transformed data{
+  real s = 1;
+  real A = 0.01;
+}
 parameters {
-     real<lower=0> k;
-     real<lower=0> A;
-     real<lower=0> tau;
-     vector<lower=0>[NUM_CHOICES] v;
+     real k_pr;
+     //real<lower=0> A;
+     real tau_pr;
+     //vector<lower=0>[NUM_CHOICES] v;
+     real<lower=-1,upper=1> ev1;
 }
 
 transformed parameters {
-     real s;
-     s = 1;
+  real<lower=0> k;
+  real<lower=0> tau;
+  k=exp(k_pr);
+  tau=exp(tau_pr);
 }
 
 model {
-     k ~ normal(.5,1)T[0,];
-     A ~ normal(.5,1)T[0,];
-     tau ~ normal(.5,.5)T[0,];
-     for(n in 1:NUM_CHOICES){
-          v[n] ~ normal(2,1)T[0,];
-     }
-     RT ~ lba(k,A,v,s,tau);
+  vector[2] v;
+  ev1 ~ uniform(-1,1);
+   //k ~ normal(.5,1)T[0,];
+   //print(k)
+   //A ~ normal(.5,1)T[0,];
+   k_pr ~ normal(0,1);
+   tau_pr ~ normal(0,1);
+   // for(n in 1:NUM_CHOICES){
+   //      v[n] ~ logit();
+   // }
+   v[1] = logit(ev1/4+0.75);
+   v[2] = logit(-ev1/4+0.75);
+   print(v)
+   RT ~ lba(k,A,v,s,tau);
 }
 
 generated quantities {
      vector[2] pred;
+     vector [2] v;
+     
+     v[1] = logit(ev1/4+0.75);
+    v[2] = logit(-ev1/4+0.75);
+   
      pred = lba_rng(k,A,v,s,tau);
 }
 

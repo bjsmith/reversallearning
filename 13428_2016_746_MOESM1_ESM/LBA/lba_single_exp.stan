@@ -157,24 +157,30 @@ data{
      int LENGTH;
      matrix[LENGTH,2] RT;
      int NUM_CHOICES;
+     real<lower=0> A;
 }
 
 parameters {
-     real<lower=0> k;
-     real<lower=0> A;
-     real<lower=0> tau;
+     real k_pr;
+     
+     real tau_pr;
      vector<lower=0>[NUM_CHOICES] v;
 }
 
 transformed parameters {
-     real s;
+     real<lower=0> s;
+     real<lower=0> k;
+     real<lower=0> tau;
      s = 1;
+     k = exp(k_pr);
+     tau = exp(tau_pr);
+     
 }
 
 model {
-     k ~ normal(.5,1)T[0,];
-     A ~ normal(.5,1)T[0,];
-     tau ~ normal(.5,.5)T[0,];
+     k_pr ~ normal(log(.5),1);
+     #A ~ normal(.5,1)T[0,];
+     tau_pr ~ normal(log(.5),0.5);#normal(.5,.5)T[0,];
      for(n in 1:NUM_CHOICES){
           v[n] ~ normal(2,1)T[0,];
      }

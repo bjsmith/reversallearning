@@ -43,7 +43,7 @@ cols.to.export<-c(
   "blockid", "presentation_n", "first_reversal", "presentation_n_after_reversal", 
   "trial_contains_reversal", "presentation_n_in_segment", "correct", "fileid", 
   "Motivation", "presentation_n_over_segments", "RiskCat", "RiskLabel", "MethUse", 
-  "SexRisk", "choice", "outcome", "cue", "SubjectGroup")
+  "SexRisk", "choice", "outcome", "cue", "SubjectGroup","cor_res_Counterbalanced")
 
 filename<-paste0(localsettings$data.dir,"all_subjs_datacomplete_reward.txt")
 write.table(rl.all.subjects.list.reward[,cols.to.export,with=FALSE],filename,row.names = FALSE)

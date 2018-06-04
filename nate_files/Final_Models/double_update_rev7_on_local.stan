@@ -100,6 +100,7 @@ functions{
                }		
           }
           out = sum(log(prob));
+          print(out);
           return out;		
      }
      
@@ -178,7 +179,7 @@ data {
   int subjid[N,T];
   int cor_resp[N,T];
   int cue_freq[N,T];
-  real outcome[N,T];
+  real<lower=-1,upper=1> outcome[N,T];
   int sample_from_prior;
   //int subj_level_params;
   
@@ -191,7 +192,7 @@ data {
   int<lower=0> run_ot[N,R];
   
   //response time and choice
-  real rt[N,T];
+  real<lower=0,upper=0.1> rt[N,T];
   int<lower=0,upper=2> choice[N,T];
   
 }
@@ -245,8 +246,6 @@ parameters {
   //real beta_pr[N, R];  // inverse temperature, run estimate
   real lba_k_pr[N, R];  // relative threshold
   real lba_tau_pr[N, R];  // indecision period
-  
-  
 }
 
 transformed parameters {
@@ -375,7 +374,15 @@ model {
            //the standard deviation of the drift rates, s; 
            //and the nondecision time, tau.
            //real lba_log(matrix RT, real k, real A, vector v, real s, real tau){
-          RT_choice[s,,] ~ lba(lba_k[s, run], 0, to_vector(ev[cue[s,t],]), 1, lba_tau[s, run]);
+          #the two values in cue should really approach 0 and 1, respectively.
+          //print(to_vector(ev[cue[s,t],]))
+          //not sure of the change that ev[cue[s,t],] takes
+          //but I think it is [-1, 1]
+          //in which case, to transform it using a logit function to [0, Inf] we need
+          //logit(seq(-1,1,0.1)/4+0.75)
+          //If it's actually [0, 1] then the transformation we need is
+          //logit(seq(0,1,0.1)/2+0.5)
+          RT_choice[s,,] ~ lba(lba_k[s, run], 0.01, logit(to_vector(ev[cue[s,t],])/4+0.75), 1, lba_tau[s, run]);
           
         
           // prediction error

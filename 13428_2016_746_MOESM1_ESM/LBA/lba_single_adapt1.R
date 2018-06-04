@@ -2,20 +2,16 @@ rm(list=ls())
 
 source('lba-math.r')
 library(rstan)
-library(parallel)
 
-options(mc.cores = 3)
 #make simualated data
-          #n,   b,A,vs,     s,t0,
-out = rlba(300,1,.5,c(3,2),1,.5)
-hist(out$rt)
+out = rlba(300,1,.5,c(3,2,1),1,.5)
 rt = cbind(out$rt,out$resp)
 len = length(rt[,1])
 #run the Stan model
 fit <- stan(file='lba_single.stan', 
             data = list(RT=rt,LENGTH=len,NUM_CHOICES=3),
-            warmup = 500, 
-            iter = 1000,
+            warmup = 50, 
+            iter = 100 ,
             chains = 3)
 
 #model summary

@@ -1,11 +1,11 @@
 #Purposes:
 #1) Compare the non-centered parameterization of 
 print("initializing...")
-source("util/get_my_preferred_cores.R")
+source("../util/get_my_preferred_cores.R")
 options(mc.cores = get_my_preferred_cores())
 #options(mc.cores = NULL)
 #source files
-debugSource("nate_files/fitGroupsV3Onegroup.R")
+source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
