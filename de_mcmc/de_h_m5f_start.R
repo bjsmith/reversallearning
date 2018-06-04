@@ -47,7 +47,7 @@ for(j in 1:S){
       }
       
       temp.weight=log.dens.like(new.x_s,use.data=data[[j]]$runs[[r]])
-      print(paste(j,r))
+      #print(paste(j,r))
       a<-min(a+0.01,1)
       
     }
@@ -57,7 +57,7 @@ for(j in 1:S){
                     #     optim(new.x_s,function(x_s,data)-log.dens.like(x_s,data),data=data[[j]]$runs[[r]])$par))#compromise
     init.pars[j,r,]=(1-max(a,0))*new.x_s+(max(a,0))*optim(new.x_s,function(x_s,data)-log.dens.like(x_s,data),data=data[[j]]$runs[[r]])$par
     
-    print(init.pars[j,r,])
+    #print(init.pars[j,r,])
     #compromise based on trying a value based on random generation but move up toward optimization if the default random generation is unsuitable.
     #only apply optimization if we tried really hard to randomly settle on something and it didn't work.
 

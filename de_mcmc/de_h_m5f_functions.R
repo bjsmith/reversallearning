@@ -100,7 +100,7 @@ log.dens.like=function(x_s,use.data_s,method="full"){
         
         #this must come first - this represents the choice being made.
         # there is some transformation based on ev and beta needed before a drift rate can be obtained
-        v_t[tr,]=invlogit(ev[use.data_s$cue[tr],])
+        v_t[tr,]=ev[use.data_s$cue[tr],]
         
         
         # prediction error

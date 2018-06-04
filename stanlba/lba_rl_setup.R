@@ -5,14 +5,16 @@ source("../util/apply_local_settings.R")
 apply_local_settings("")
 dd<-localsettings$data.dir
 library(data.table)
-
+source('nate_files/fitGroupsV3Onegroup.R')
+source("../util/get_my_preferred_cores.R")
 
 
 source('stanlba/lba-math.R')
+
 library(rstan)
 library(parallel)
 library(dplyr)
-library(LaplacesDemon)
+#library(LaplacesDemon)
 library(data.table)
 
 
