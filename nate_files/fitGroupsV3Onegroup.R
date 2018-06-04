@@ -6,17 +6,17 @@ library(ggplot2)
 library(data.table)
 
 if(length(grep("nate_files",getwd()))>0){
-  source("../util/apply_local_settings.R")
+  source("../../util/apply_local_settings.R")
   source("../read_nps_output.R")
   modelcode_rl<-""
   apply_local_settings("../")
 }else if(length(grep("notebooks",getwd()))>0){
-  source("../util/apply_local_settings.R")
+  source("../../util/apply_local_settings.R")
   source("../read_nps_output.R")
   modelcode_rl<-"../nate_files/"
   apply_local_settings("../")
 }else{
-  source("util/apply_local_settings.R")
+  source("../util/apply_local_settings.R")
   source("read_nps_output.R")
   modelcode_rl<-"nate_files/"
   apply_local_settings()
@@ -266,6 +266,10 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   print("Preparing data...")
   #remove subject 153
   
+  # cbind(buttonChanges,overallperformance)
+  # #plot(buttonChanges,overallperformance)
+  # data<-data[buttonChanges>90 & overallperformance>0.4] 
+  # 
   # if(model_rp_separately){
   #   stop("we don't yet support modelling R and P separately")
   # }else{
@@ -278,11 +282,14 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   
   # Separate groups (Risky Meth == 3, Risky No Meth == 2, Safe Meth == 4, Safe No Meth == 1)
   group.description<-get_group_description(groups_to_fit)
+  
   rawdata <- subset(rawdata, cue != 0 & RiskCat %in% group.description$group & runid %in% run)
   
   # Create cue frequency
   rawdata$cue_freq <- freq_replace(rawdata$cue, by_var = rawdata$subjID)
   rawdata.dt<-data.table(rawdata)
+  
+  
   
   #make sure each subject has two runs (or modify this to simply exclude subjects that don't have two runs)
   if (length(run)>1 & model_runs_separately==TRUE){
@@ -302,13 +309,35 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   #exclude any trials that seem to have been aborted and print a warning about them.
   #View(rawdata.dt[subjID %in% unique(rawdata.dt[reaction_time==0& response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual),subjID])])
   
-  first.aborted.trial.by.run<-rawdata.dt[reaction_time==0& response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual),
+  first.aborted.trial.by.run<-rawdata.dt[(reaction_time==0 | is.na(reaction_time)) & response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual),
                                           .(FirstOnsetTime=min(onset_time_designed)),by=.(subjID,runid,Motivation)]
   if(dim(first.aborted.trial.by.run)[1]>0){
     warning(paste0("excluded trials from ", as.character(dim(first.aborted.trial.by.run)[1]), " runs that were designed but not presented."))
-    rawdata.dt<-rawdata.dt[!(reaction_time==0& response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual))]
+    rawdata.dt<-rawdata.dt[!((reaction_time==0 | is.na(reaction_time)) & response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual))]
     rawdata<-data.frame(rawdata.dt)
   }
+  
+  changeDetectWithCheck<-function(vec,vec_onset){
+    onset_timelag <- vec_onset[2:length(vec_onset)]-vec_onset[1:(length(vec_onset)-1)]
+    if(any(onset_timelag<0)){
+      stop("vector out of order")
+    }else{
+      #print(summary(onset_timelag))
+      #print(length(vec))
+    }
+    sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])
+  }
+  
+  changesTable<-rawdata.dt[choice %in% c(1,2),.(change=changeDetectWithCheck(choice,onset_time_actual),trialCount=.N),.(subjID,runid,Motivation)] %>% 
+    .[,.(MeanChange=mean(change)),.(subjID)]
+  
+  performanceTable<-rawdata.dt[choice %in% c(1,2),.(performance=sum(outcome==1)/.N),.(subjID,runid,Motivation)] %>% 
+    .[,.(MeanPerformance=mean(performance)),.(subjID)]
+  
+  #now get the set of subjects who have both changes and performance within the rquired range
+  rawdata.dt<-rawdata.dt[subjID %in% intersect(changesTable[MeanChange>90,subjID],performanceTable[MeanPerformance>0.4,subjID])]
+  # buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
+  # overallperformance<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){sum(r$outcome==1)/length(r$outcome)})))}))
   
   # apply(first.aborted.trial.by.run,1,function(r){
   #   
@@ -317,7 +346,7 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   # })
   # 
   # Individual Subjects
-  subjList  <- unique(rawdata[,"subjID"])  # list of subjects x blocks
+  subjList  <- unique(rawdata.dt$subjID)  # list of subjects x blocks
   numSubjs  <- length(subjList)  # number of subjects
   Tsubj     <- as.vector( rep( 0, numSubjs ) ) # number of trials for each subject
   subjGroup   <- as.vector( rep( 0, numSubjs ) ) #subject group
@@ -328,6 +357,7 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   for ( i in 1:numSubjs )  {
     curSubj   <- subjList[ i ]
     Tsubj[i]  <- sum( rawdata$subjID == curSubj )  # Tsubj[N]
+    
     N_cues[i] <- length(unique(rawdata$cue))
     #classify the subject's group.
     curSubjRiskCat<-rawdata.dt[subjID==curSubj,RiskCat]
@@ -390,6 +420,7 @@ for (i in 1:numSubjs) {
     # }
     tmp <- subset(rawdata, rawdata$subjID == curSubj)
     choice[i, 1:useTrials]  <- tmp$choice
+    tmp$reaction_time[is.na(tmp$reaction_time)]<-0
     rt[i,1:useTrials] <- tmp$reaction_time
     
     cue[i, 1:useTrials]     <- as.numeric(as.factor(tmp$cue))
@@ -445,15 +476,23 @@ for (i in 1:numSubjs) {
     reversal[i, 1:useTrials] <- as.numeric(tmp$reversal_trial)
     cue_pos[i, 1:useTrials] <- tmp$presentation_n_after_reversal
     trial[i, 1:useTrials] <- as.numeric(as.factor(tmp$onset_time_actual))
+
+    if(any(is.na(as.factor(tmp$onset_time_actual)))){
+      stop("whoops. gotta debug this.")
+    }
+    
     if(any(trial[i, 1:useTrials]==0)){
       print("there's an 0 trial value.")
     }
     subjid[i, 1:useTrials] <- tmp$subjID
     cor_resp[i, 1:useTrials] <- tmp$cor_res
     outcome[i, 1:useTrials] <- tmp$outcome#ifelse(tmp$outcome==1, 0, tmp$outcome)
-    pain_signal[i,1:useTrials]<-sapply(tmp$Value,function(x){if(is.na(x)){return(0);}else{return(x);}})
+    
+    if(include_pain){
+      pain_signal[i,1:useTrials]<-sapply(tmp$Value,function(x){if(is.na(x)){return(0);}else{return(x);}})
       #It doesn't matter what value reward trials hold here so long as it isn't NA (which can't be processed by stan)
       #because the stan code will just ignore pain values associated with reward trials.
+    }
   }
   #print(run_id_ot)
   
@@ -563,6 +602,8 @@ for (i in 1:numSubjs) {
     
   }
   
+  
+  
   cat("Fitting model...")
   estimation.start<-proc.time()
   if (estimation_method==ESTIMATION_METHOD.VariationalBayes){
@@ -580,6 +621,7 @@ for (i in 1:numSubjs) {
       }else{
         warmup_iter<-warmup_iter.set
       }
+      
       fit <- vb(m1, data = dataList, adapt_engaged = F, eta = 1,iter=iterations,seed=bseed)
     }
   }else if (estimation_method==ESTIMATION_METHOD.MCMC){
