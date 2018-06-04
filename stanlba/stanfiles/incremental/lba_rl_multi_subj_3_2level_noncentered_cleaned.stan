@@ -36,6 +36,7 @@ model {
   real exp_val[N,max(cue),NUM_CHOICES];
   real pred_err;
   real outcome;
+  vector[NUM_CHOICES] v;
 
   ////////////////////
   //GROUP LEVEL
@@ -62,12 +63,13 @@ model {
 
   for (t in 1:NUM_TRIALS){//loop through timesteps.
     for(j in 1:NUM_CHOICES){
+      v[j]=logit(exp_val[cue[i],j]/4+0.75);
       #reinforcement learning
       pred_err=choice_outcomes[t,j]-exp_val[trial_runid[t],cue[t],j]; 
       exp_val[trial_runid[t],cue[t],j] = exp_val[trial_runid[t],cue[t],j] + alpha[trial_runid[t]]*pred_err;
     }
     #user-defined linear ballistic accumulator function based on that written by Annis, Miller, & Palmeri (2017)
-    response_time[t] ~ lba(response[t],k[trial_runid[t]],A,to_vector(exp_val[trial_runid[t],cue[t],]),s,tau[trial_runid[t]]);
+    response_time[t] ~ lba(response[t],k[trial_runid[t]],A,v,s,tau[trial_runid[t]]);
   }
 }
 

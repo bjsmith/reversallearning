@@ -232,6 +232,8 @@ model {
   real exp_val[NUM_RUNS,max(cue),NUM_CHOICES];
   real pred_err;
   real outcome;
+  vector[NUM_CHOICES] v;
+  
   //int curRunId=0;//just for printout diagnostic
   
   ////////////////////
@@ -268,6 +270,7 @@ model {
   for (t in 1:NUM_TRIALS){//loop through timesteps.
     
     for(j in 1:NUM_CHOICES){
+      v[j]=logit(exp_val[cue[i],j]/4+0.75);
       //our LBA model relies on getting values for *each choice* so we do need to model that.
       //if j was the reinforced choice and it was the response value,
       pred_err=choice_outcomes[t,j]-exp_val[trial_runid[t],cue[t],j]; 
@@ -277,7 +280,7 @@ model {
       
     }
     //print("t=",t,"; ",exp_val[NUM_RUNS,cue[t],]);
-    response_time[t] ~ lba(response[t],k[trial_runid[t]],A,to_vector(exp_val[trial_runid[t],cue[t],]),s,tau[trial_runid[t]]);
+    response_time[t] ~ lba(response[t],k[trial_runid[t]],A,v,s,tau[trial_runid[t]]);
     
   }
   
