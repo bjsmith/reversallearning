@@ -236,10 +236,10 @@ transformed parameters {
   
   //////////////////////
   //SUBJECT LEVEL
-  
   for (s in 1:NUM_SUBJECTS){
     run_mu[s,] = subj_mu + run_mu_var[s,] * subj_sigma;
-  }
+  }//according to the stan manual, an elementwise vector operation would NOT be more efficient.
+  
   
   //////////////////////
   //RUN LEVEL
