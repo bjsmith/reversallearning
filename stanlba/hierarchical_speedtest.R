@@ -22,9 +22,9 @@ multisubj_multirun_twosubs<-rawdata[subid %in% c(105,106) & Motivation=="reward"
                                       UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
 
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
-bseed<-1683441357#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
-iter<-100
-warmup_iter=40
+bseed<-168344357#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+iter<-400
+warmup_iter=200
 
 run_model<-function(model_filename,model_description,model_folder=""){
   tstart<-Sys.time()
@@ -77,3 +77,27 @@ fit_rl_lba_multi_subj_4_3level_phiapproxvectorized <- run_model("lba_rl_multi_su
 print("------------------------")
 print("Running the CENTERED MODEL (base model)")
 fit_rl_lba_multi_subj_4_3level <- run_model("lba_rl_multi_subj_4_3level","2sub")
+
+common_cols<-intersect(intersect(intersect(rownames(summary(fit_lba_rl_multi_subj_4_3level_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary),
+          rownames(summary(fit_lba_rl_multi_subj_4_3level_noncentered_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary)),
+          rownames(summary(fit_lba_rl_multi_subj_4_3level_phiapproxvectorized_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary)),
+          rownames(summary(fit_lba_rl_multi_subj_4_3level_phiapproxvectorized_noncentered_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary))
+
+fit_comparison_Rhat<-cbind(summary(fit_lba_rl_multi_subj_4_3level_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"Rhat"],
+       summary(fit_lba_rl_multi_subj_4_3level_noncentered_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"Rhat"],
+      summary(fit_lba_rl_multi_subj_4_3level_phiapproxvectorized_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"Rhat"],
+      summary(fit_lba_rl_multi_subj_4_3level_phiapproxvectorized_noncentered_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"Rhat"])
+View(fit_comparison_Rhat)
+
+fit_comparison_efficiency<-cbind(summary(fit_lba_rl_multi_subj_4_3level_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"n_eff"],
+                           summary(fit_lba_rl_multi_subj_4_3level_noncentered_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"n_eff"],
+                           summary(fit_lba_rl_multi_subj_4_3level_phiapproxvectorized_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"n_eff"],
+                           summary(fit_lba_rl_multi_subj_4_3level_phiapproxvectorized_noncentered_2sub_run12_model_distinct_runs_itercount400_wup200_MCMC)$summary[common_cols,"n_eff"])
+View(fit_comparison_efficiency)
+
+
+#It does seem like the third one, i.e., using phi_approx and vectorization, is the best.
+#HOWEVER there's no way that Phi_approximation and vectorization should improve efficency. At best, they improve speed in real time.
+#Thus the variance we're seeing across these, at least in terms of efficiency and probably Rhat, are probably not meaningful.
+#we can ignore them and focus on the method that works.
+#I might want positive proof of the non-centered parameterization so let's continue with the centered parameterization for now while we try out other methods for speed improvement.

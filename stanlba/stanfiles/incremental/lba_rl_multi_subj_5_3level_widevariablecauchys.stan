@@ -13,9 +13,9 @@ functions{
           
           b_A_tv_ts = (b - A - t*v)/(t*s);
           b_tv_ts = (b - t*v)/(t*s);
-          term_1 = v*Phi(b_A_tv_ts);
+          term_1 = v*Phi_approx(b_A_tv_ts);
           term_2 = s*exp(normal_lpdf(b_A_tv_ts | 0,1)); 
-          term_3 = v*Phi(b_tv_ts);
+          term_3 = v*Phi_approx(b_tv_ts);
           term_4 = s*exp(normal_lpdf(b_tv_ts | 0,1)); 
           pdf = (1/A)*(-term_1 + term_2 + term_3 - term_4);
           
@@ -37,8 +37,8 @@ functions{
           b_A_tv = b - A - t*v;
           b_tv = b - t*v;
           ts = t*s;
-          term_1 = b_A_tv/A * Phi(b_A_tv/ts);	
-          term_2 = b_tv/A   * Phi(b_tv/ts);
+          term_1 = b_A_tv/A * Phi_approx(b_A_tv/ts);	
+          term_2 = b_tv/A   * Phi_approx(b_tv/ts);
           term_3 = ts/A     * exp(normal_lpdf(b_A_tv/ts | 0,1)); 
           term_4 = ts/A     * exp(normal_lpdf(b_tv/ts | 0,1)); 
           cdf = 1 + term_1 - term_2 + term_3 - term_4;
@@ -56,6 +56,7 @@ functions{
           real prob;
           real out;
           real prob_neg;
+          real prob_neg_over_v[num_elements(v)];
 
           b = A + k;
           // for (i in 1:rows(RT)){	
@@ -70,10 +71,15 @@ functions{
                             cdf = (1-lba_cdf(t, b, A, v[j], s)) * cdf;
                        }
                   }
-                  prob_neg = 1;
+                  // prob_neg = 1;
+                  // for(j in 1:num_elements(v)){
+                  //      prob_neg = Phi_approx(-v[j]/s) * prob_neg;    
+                  // }
                   for(j in 1:num_elements(v)){
-                       prob_neg = Phi(-v[j]/s) * prob_neg;    
-                  }
+                       prob_neg_over_v[j] = Phi_approx(-v[j]/s);    
+                    }
+                  prob_neg = prod(prob_neg_over_v);
+                  
                   prob = pdf*cdf;		
                   prob = prob/(1-prob_neg);	
                   if(prob < 1e-10){
@@ -177,6 +183,8 @@ transformed data{
   int PARID_alpha = 1;
   int PARID_lba_k = 2;
   int PARID_lba_tau = 3;
+  real priors_lba_k=log(0.5);
+  real priors_lba_tau=log(0.5);
   //from stan manual:
   //Before generating any samples, data variables are read in, 
   //then the transformed data variables are declared and the associated statements executed to define them. 
@@ -210,6 +218,8 @@ parameters {
   //GROUP LEVEL
   real subj_mu[3];
   real<lower=0> subj_sigma[3];
+  
+  real run_sigma_sigma[3];
   
   
   ////////////////////
@@ -247,14 +257,16 @@ model {
   
   //priors for mean of subject params
   subj_mu[PARID_alpha] ~ normal(-3,3);
-  subj_mu[PARID_lba_k] ~ normal(log(.5),1);
-  subj_mu[PARID_lba_tau] ~ normal(log(.5),0.5);
+  subj_mu[PARID_lba_k] ~ normal(priors_lba_k,1);
+  subj_mu[PARID_lba_tau] ~ normal(priors_lba_tau,0.5);
   
   //priors for deviation of subject params from their mean.
-  subj_sigma[PARID_alpha] ~ cauchy(0,7); 
+  subj_sigma[PARID_alpha] ~ cauchy(0,5); 
   //these have lower prior SDs because our priors for them originally, from Palmeri et al., were lower.
-  subj_sigma[PARID_lba_k] ~ cauchy(0,7); 
-  subj_sigma[PARID_lba_tau] ~ cauchy(0,7);
+  subj_sigma[PARID_lba_k] ~ cauchy(0,5); 
+  subj_sigma[PARID_lba_tau] ~ cauchy(0,5);
+  
+  run_sigma_sigma ~ cauchy(0,5);
   
   ////////////////////
   //RUN LEVEL
@@ -265,9 +277,8 @@ model {
     //this simplifies the calculation although with sigma unconstrained across subjects it may make the estimation actually harder.
     //these might be too narrow, but I'm wary of having so much variance at every level!
     
-    run_sigma[s,PARID_alpha] ~ cauchy(0,7); 
-    run_sigma[s,PARID_lba_k] ~ cauchy(0,7); 
-    run_sigma[s,PARID_lba_tau] ~ cauchy(0,7);
+    //vectorized
+    run_sigma[s,] ~ cauchy(0,run_sigma_sigma); 
   }
   
   for (r in 1:NUM_RUNS){
@@ -281,8 +292,9 @@ model {
   
   
   for (t in 1:NUM_TRIALS){//loop through timesteps.
+    
     for(j in 1:NUM_CHOICES){
-      v[j]=logit(exp_val[trial_runid[t],cue[t],j]/4.0+0.75);
+      v[j]=logit(exp_val[trial_runid[t],cue[t],j]/4+0.75);
       //our LBA model relies on getting values for *each choice* so we do need to model that.
       //if j was the reinforced choice and it was the response value,
       pred_err=choice_outcomes[t,j]-exp_val[trial_runid[t],cue[t],j]; 
@@ -293,6 +305,7 @@ model {
     }
     //print("t=",t,"; ",exp_val[NUM_RUNS,cue[t],]);
     response_time[t] ~ lba(response[t],k[trial_runid[t]],A,v,lba_sd,tau[trial_runid[t]]);
+    
   }
   
     
