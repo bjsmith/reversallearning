@@ -81,11 +81,11 @@ prior.l3$tau=list("mu"=log(.6*(rt_s_mean_all_mean)),
 #but we still need to estimate the other values.
 #We start with priors that are the same for each subject
 prior.l2=NULL
-prior.l2$alpha=list("mu"=-3,"sigma"=1,alpha=4,beta=10,sigma_sigma=10)
-prior.l2$thresh=list("mu"=log(2),"sigma"=sqrt(log(2)),alpha=4,beta=10,sigma_sigma=10)
+prior.l2$alpha=list("mu"=-3,"sigma"=1,alpha=4,beta=10,sigma_gamma=10)
+prior.l2$thresh=list("mu"=log(2),"sigma"=sqrt(log(2)),alpha=4,beta=10,sigma_gamma=10)
 prior.l2$tau=list("mu"=log(.6*(rt_s_mean_all_mean)),
   "sigma"=sqrt(abs(log(.6*(rt_s_mean_all_mean)))),
-                  alpha=4,beta=10,sigma_sigma=10)
+                  alpha=4,beta=10,sigma_gamma=10)
 
 #useful for updating sigma vectors. 
 #these are the set parameters for the priors
@@ -104,8 +104,8 @@ print("...cluster setup run.")
 source(paste("de_mcmc/de_",version,"_functions.R",sep=""))
 source(paste("de_mcmc/de_",version.base,"_start.R",sep=""))
 
-#sfStop();save.image(file=paste0(mainDataDir,"de_h_m5f_testing.RData"))
-#sfStop();load(file="/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/de_h_m5f_testing.RData")
+#sfStop();save.image(file=paste0(mainDataDir,"de_h_m5k_testing.RData"))
+#sfStop();load(file="/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/de_h_m5k_testing.RData")
 
 #debugSource(paste("/expdata/bensmith/joint-modeling/code/msm/reversallearning/de_mcmc/functions_h_m5j.R",sep=""))
 source(paste("de_mcmc/de_",version.base,"_run.R",sep=""))

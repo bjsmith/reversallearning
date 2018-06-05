@@ -34,12 +34,12 @@ fit_rl_lba_multi_subj_4_3level <- stan(file=paste0(stanfiledir,'lba_rl_multi_sub
                                        ),
                                        warmup = warmup_iter, 
                                        iter = iter,
-                                       chains = min(get_my_preferred_cores(),12), #run as many chains as we have cores to run them, but no more than 12 necessary.
+                                       chains = min(get_my_preferred_cores(),3), #run as many chains as we have cores to run them, but no more than 12 necessary.
                                        seed=bseed,
                                        refresh=5,
                                        control = list(max_treedepth = 15))
 
-file_save_name<-get_fit_desc(use_model = "hierarchical_3l_initial_test",descr = "3sub_update_driftrate",run=c(1,2),
+file_save_name<-get_fit_desc(use_model = "hierarchical_3l_initial_test",descr = "3sub_update_driftrate_3chain",run=c(1,2),
              model_rp_separately=TRUE,model_runs_separately=TRUE,
              use_pain=FALSE,fastDebug=FALSE,fileSuffix="",
              estimation_method=ESTIMATION_METHOD.MCMC,
