@@ -1,7 +1,9 @@
-#Try out some of the suggestions suggested from the stan forum:
+#uses two of the suggestions from the stan forum.
 # - higher warmup
 # - more subjects
-# - normals instead of cauchys (really!??)
+# does NOT do reparameterization or normal sigma distributions.
+# If we try normal sigma distributions, I think a better alternative would be exponential(normal) distributions.
+
 
 source("stanlba/lba_rl_setup.R")
 

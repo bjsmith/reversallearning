@@ -219,7 +219,7 @@ parameters {
   real subj_mu[3];
   real<lower=0> subj_sigma[3];
   
-  real run_sigma_sigma[3];
+  real<lower=0> run_sigma_sigma[3];
   
   
   ////////////////////
