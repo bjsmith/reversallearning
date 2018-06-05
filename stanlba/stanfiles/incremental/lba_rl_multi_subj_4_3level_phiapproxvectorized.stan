@@ -287,7 +287,6 @@ model {
   
   
   for (t in 1:NUM_TRIALS){//loop through timesteps.
-    
     for(j in 1:NUM_CHOICES){
       v[j]=logit(exp_val[trial_runid[t],cue[t],j]/4+0.75);
       //our LBA model relies on getting values for *each choice* so we do need to model that.
@@ -296,7 +295,6 @@ model {
 
       exp_val[trial_runid[t],cue[t],j] = exp_val[trial_runid[t],cue[t],j] + alpha[trial_runid[t]]*pred_err;
       //for occam's razor, I'm going to avoid any transformation from expected value to drift rate. we'll treat expected value as drift rate exactly!
-      
     }
     //print("t=",t,"; ",exp_val[NUM_RUNS,cue[t],]);
     response_time[t] ~ lba(response[t],k[trial_runid[t]],A,v,lba_sd,tau[trial_runid[t]]);

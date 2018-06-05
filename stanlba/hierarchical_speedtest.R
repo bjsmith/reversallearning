@@ -22,9 +22,9 @@ multisubj_multirun_twosubs<-rawdata[subid %in% c(105,106) & Motivation=="reward"
                                       UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
 
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
-bseed<-1683441357#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
-iter<-100
-warmup_iter=40
+bseed<-805651699#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+iter<-400
+warmup_iter=200
 
 run_model<-function(model_filename,model_description,model_folder=""){
   tstart<-Sys.time()
