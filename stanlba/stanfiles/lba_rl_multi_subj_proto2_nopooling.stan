@@ -244,7 +244,7 @@ model {
     // }
     
     for(j in 1:NUM_CHOICES){
-      v[j]=logit(exp_val[cue[i],j]/4+0.75);
+      v[j]=logit(exp_val[cue[t],j]/4+0.75);
       //this might be problematic for more than two choices, but for two, it'll work.
       //assuming the participant infers that for every choice made, the opposite is the *wrong choice*
       //now, if j was the correct choice, then pred_err should be 1-exp_val.

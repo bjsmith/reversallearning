@@ -283,7 +283,7 @@ model {
   for (t in 1:NUM_TRIALS){//loop through timesteps.
     
     for(j in 1:NUM_CHOICES){
-      v[j]=logit(exp_val[cue[i],j]/4+0.75);
+      v[j]=logit(exp_val[cue[t],j]/4+0.75);
       //our LBA model relies on getting values for *each choice* so we do need to model that.
       //if j was the reinforced choice and it was the response value,
       pred_err=choice_outcomes[t,j]-exp_val[trial_runid[t],cue[t],j]; 

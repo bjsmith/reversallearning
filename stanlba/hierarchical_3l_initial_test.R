@@ -39,7 +39,7 @@ fit_rl_lba_multi_subj_4_3level <- stan(file=paste0(stanfiledir,'lba_rl_multi_sub
                                        refresh=5,
                                        control = list(max_treedepth = 15))
 
-file_save_name<-get_fit_desc(use_model = "hierarchical_3l_initial_test",descr = "3sub",run=c(1,2),
+file_save_name<-get_fit_desc(use_model = "hierarchical_3l_initial_test",descr = "3sub_update_driftrate",run=c(1,2),
              model_rp_separately=TRUE,model_runs_separately=TRUE,
              use_pain=FALSE,fastDebug=FALSE,fileSuffix="",
              estimation_method=ESTIMATION_METHOD.MCMC,

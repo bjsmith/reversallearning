@@ -3,7 +3,7 @@ source("stanlba/lba_rl_setup.R")
 options(mc.cores = 3)
 
 sub105data<-rawdata[subid==105 & Motivation=="reward" & runid==1,.(reaction_time,outcome,cue,choice,cor_res_Counterbalanced)]
-fit_rl_lba_proto4_sub105 <- stan(file='stanlba/stanfiles/lba_rl_single_exp.stan', 
+fit_rl_lba_proto4_sub105 <- stan(file='stanlba/stanfiles/drift_rate_mapping/lba_rl_single_exp_drm_unit.stan', 
                                  data = list(
                                    LENGTH=dim(sub105data)[1],
                                    NUM_CHOICES=2,
