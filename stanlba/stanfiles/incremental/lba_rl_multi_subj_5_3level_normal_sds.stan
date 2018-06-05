@@ -286,6 +286,8 @@ model {
     tau_pr[r] ~ normal(run_mu[run_subjid[r],PARID_lba_tau],run_sigma[run_subjid[r],PARID_lba_tau]);
   }
   
+  print()
+  
   
   
   for (t in 1:NUM_TRIALS){//loop through timesteps.
