@@ -164,10 +164,10 @@ data{
      int<lower=2> NUM_CHOICES;
      real<lower=0> A;
      
-     int<lower=1> NUM_SUBJECTS;
+     //int<lower=1> NUM_SUBJECTS;
      int<lower=1> NUM_TRIALS;
      int<lower=1> NUM_RUNS;
-     int<lower=1> trial_subjid[NUM_TRIALS];
+     //int<lower=1> trial_subjid[NUM_TRIALS];
      int<lower=1> trial_runid[NUM_TRIALS];
      
      //matrix[NUM_TRIALS,2] RT;
@@ -202,10 +202,10 @@ transformed data{
   
   print("matrix of choice outcomes generated from required_choice and response input data:")
   print(choice_outcomes);
-  print(NUM_SUBJECTS);
+  //print(NUM_SUBJECTS);
   print(NUM_TRIALS);
   print(NUM_RUNS);
-  print(trial_subjid);
+  //print(trial_subjid);
   print(trial_runid);
   
   
@@ -214,11 +214,11 @@ transformed data{
 parameters {
   ////////////////////
   //GROUP LEVEL
-  real subj_mu[3];
-  real<lower=0> subj_sigma[3];
+  real run_mu[3];
+  real<lower=0> run_sigma[3];
   
   ////////////////////
-  //SUBJECT LEVEL
+  //RUN LEVEL
   real alpha_pr[NUM_RUNS];
   real k_pr[NUM_RUNS];
   real tau_pr[NUM_RUNS];
@@ -245,26 +245,26 @@ model {
   ////////////////////
   //GROUP LEVEL
   
-  //priors for mean of subject params
-  subj_mu[PARID_alpha] ~ normal(-3,3);
-  subj_mu[PARID_lba_k] ~ normal(log(.5),1);
-  subj_mu[PARID_lba_tau] ~ normal(log(.5),0.5);
+  //priors for mean of run params
+  run_mu[PARID_alpha] ~ normal(-3,3);
+  run_mu[PARID_lba_k] ~ normal(log(.5),1);
+  run_mu[PARID_lba_tau] ~ normal(log(.5),0.5);
   
-  //priors for deviation of subject params from their mean.
-  subj_sigma[PARID_alpha] ~ cauchy(0,5); 
+  //priors for deviation of run params from their mean.
+  run_sigma[PARID_alpha] ~ cauchy(0,5); 
   //these have lower prior SDs because our priors for them originally, from Palmeri et al., were lower.
-  subj_sigma[PARID_lba_k] ~ cauchy(0,3); 
-  subj_sigma[PARID_lba_tau] ~ cauchy(0,2);
+  run_sigma[PARID_lba_k] ~ cauchy(0,3); 
+  run_sigma[PARID_lba_tau] ~ cauchy(0,2);
   
   
   ////////////////////
-  //SUBJECT LEVEL
+  //RUN LEVEL
   exp_val = rep_array(0,NUM_RUNS,max(cue),NUM_CHOICES);
   
-  alpha_pr ~ normal(subj_mu[PARID_alpha],subj_sigma[PARID_alpha]);//weak prior for no learning.  
+  alpha_pr ~ normal(run_mu[PARID_alpha],run_sigma[PARID_alpha]);//weak prior for no learning.  
   //k_pr ~ normal(log(.5),1);
-  k_pr ~ normal(subj_mu[PARID_lba_k],subj_sigma[PARID_lba_k]);
-  tau_pr ~ normal(subj_mu[PARID_lba_tau],subj_sigma[PARID_lba_tau]);
+  k_pr ~ normal(run_mu[PARID_lba_k],run_sigma[PARID_lba_k]);
+  tau_pr ~ normal(run_mu[PARID_lba_tau],run_sigma[PARID_lba_tau]);
   //now we need to loop through the trials, modelin
   //print("alpha_pr:",alpha_pr,"; k_pr:",k_pr,"; tau_pr:",tau_pr)
   //print("alpha:",alpha,"; k:",k,"; tau:",tau)
