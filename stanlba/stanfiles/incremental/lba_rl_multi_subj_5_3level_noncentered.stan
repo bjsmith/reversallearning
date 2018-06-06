@@ -183,6 +183,7 @@ transformed data{
   int PARID_alpha = 1;
   int PARID_lba_k = 2;
   int PARID_lba_tau = 3;
+  int NUM_PARAMS = 3;
   //from stan manual:
   //Before generating any samples, data variables are read in, 
   //then the transformed data variables are declared and the associated statements executed to define them. 
@@ -214,14 +215,14 @@ transformed data{
 parameters {
   ////////////////////
   //GROUP LEVEL
-  real subj_mu[3];
-  real<lower=0> subj_sigma[3];
+  vector[NUM_PARAMS] subj_mu;
+  vector<lower=0>[NUM_PARAMS] subj_sigma;
   
   
   ////////////////////
   //SUBJECT LEVEL
-  real run_mu_var[NUM_SUBJECTS,3];
-  real<lower=0> run_sigma[NUM_SUBJECTS,3];
+  real run_mu_var[NUM_SUBJECTS,NUM_PARAMS];
+  real<lower=0> run_sigma[NUM_SUBJECTS,NUM_PARAMS];
   
   ////////////////////
   //RUN LEVEL
@@ -240,7 +241,7 @@ transformed parameters {
   //////////////////////
   //SUBJECT LEVEL
   for (s in 1:NUM_SUBJECTS){
-    run_mu[s,] = run_mu_var[s,] * subj_sigma + subj_mu;
+    run_mu[s,] = to_vector(run_mu_var[s,]) .* subj_sigma + subj_mu;
   }//according to the stan manual, an elementwise vector operation would NOT be more efficient.
   
   
@@ -262,8 +263,8 @@ transformed parameters {
   //combine the two steps of (1) non-cemtered to centered and (2) transformed to model-space.
   for (r in 1:NUM_RUNS){
     alpha[r] = inv_logit(run_mu[run_subjid[r],PARID_alpha] + run_sigma[run_subjid[r],PARID_alpha] * alpha_pr_var[r]);
-    k[r] = exp(run_mu[run_subjid[r],PARID_k] + run_sigma[run_subjid[r],PARID_k] * k_pr_var[r]);
-    tau[r] = exp(run_mu[run_subjid[r],PARID_tau] + run_sigma[run_subjid[r],PARID_tau] * tau_pr_var[r]);
+    k[r] = exp(run_mu[run_subjid[r],PARID_lba_k] + run_sigma[run_subjid[r],PARID_lba_k] * k_pr_var[r]);
+    tau[r] = exp(run_mu[run_subjid[r],PARID_lba_tau] + run_sigma[run_subjid[r],PARID_lba_tau] * tau_pr_var[r]);
   }
 }
 
