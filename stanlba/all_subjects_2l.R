@@ -1,4 +1,4 @@
-#going to try looping though every subject and running a two-level model across each subjects runs. From this we can get an estimate suitable for setting priors for the third level.
+#estimate a single model across all subjects so that we can get a better estimate of run-level values.
 
 
 source("stanlba/lba_rl_setup.R")
@@ -10,7 +10,7 @@ multisubj_threesubs<-rawdata[subid %in% c(105,106,108) & Motivation=="reward" & 
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
 bseed<-76128931#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
 iter<-500
-warmup_iter=250
+warmup_iter=450
 chains<-min(get_my_preferred_cores(),3)
 cores_to_use <- chains
 options(mc.cores = cores_to_use)
