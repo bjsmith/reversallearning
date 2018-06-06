@@ -13,9 +13,9 @@ functions{
           
           b_A_tv_ts = (b - A - t*v)/(t*s);
           b_tv_ts = (b - t*v)/(t*s);
-          term_1 = v*Phi(b_A_tv_ts);
+          term_1 = v*Phi_approx(b_A_tv_ts);
           term_2 = s*exp(normal_lpdf(b_A_tv_ts | 0,1)); 
-          term_3 = v*Phi(b_tv_ts);
+          term_3 = v*Phi_approx(b_tv_ts);
           term_4 = s*exp(normal_lpdf(b_tv_ts | 0,1)); 
           pdf = (1/A)*(-term_1 + term_2 + term_3 - term_4);
           
@@ -37,8 +37,8 @@ functions{
           b_A_tv = b - A - t*v;
           b_tv = b - t*v;
           ts = t*s;
-          term_1 = b_A_tv/A * Phi(b_A_tv/ts);	
-          term_2 = b_tv/A   * Phi(b_tv/ts);
+          term_1 = b_A_tv/A * Phi_approx(b_A_tv/ts);	
+          term_2 = b_tv/A   * Phi_approx(b_tv/ts);
           term_3 = ts/A     * exp(normal_lpdf(b_A_tv/ts | 0,1)); 
           term_4 = ts/A     * exp(normal_lpdf(b_tv/ts | 0,1)); 
           cdf = 1 + term_1 - term_2 + term_3 - term_4;
@@ -56,6 +56,7 @@ functions{
           real prob;
           real out;
           real prob_neg;
+          real prob_neg_over_v[num_elements(v)];
 
           b = A + k;
           // for (i in 1:rows(RT)){	
@@ -70,10 +71,15 @@ functions{
                             cdf = (1-lba_cdf(t, b, A, v[j], s)) * cdf;
                        }
                   }
-                  prob_neg = 1;
+                  // prob_neg = 1;
+                  // for(j in 1:num_elements(v)){
+                  //      prob_neg = Phi_approx(-v[j]/s) * prob_neg;    
+                  // }
                   for(j in 1:num_elements(v)){
-                       prob_neg = Phi(-v[j]/s) * prob_neg;    
-                  }
+                       prob_neg_over_v[j] = Phi_approx(-v[j]/s);    
+                    }
+                  prob_neg = prod(prob_neg_over_v);
+                  
                   prob = pdf*cdf;		
                   prob = prob/(1-prob_neg);	
                   if(prob < 1e-10){
