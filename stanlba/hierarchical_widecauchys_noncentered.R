@@ -22,8 +22,8 @@ unique(multisubj_multirun_moresubs$ConsecSubId)
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
 bseed<-1972789847#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
 
-warmup_iter=90 #450
-iter<-100 #500
+warmup_iter=10 #450
+iter<-12 #500
 print(paste0("warmup_iter: ",warmup_iter))
 print(paste0("iter: ",iter))
 
