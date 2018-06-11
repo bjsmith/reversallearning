@@ -161,42 +161,25 @@ functions{
 }
 
 data{
+     int<lower=1> LENGTH;
      int<lower=2> NUM_CHOICES;
      real<lower=0> A;
-     
-     int<lower=1> NUM_SUBJECTS;
-     int<lower=1> NUM_TRIALS;
-     int<lower=1> NUM_RUNS;
-     //int<lower=1> trial_subjid[NUM_TRIALS];
-     int<lower=1> run_subjid[NUM_RUNS];
-     int<lower=1> trial_runid[NUM_TRIALS];
-     
-     //matrix[NUM_TRIALS,2] RT;
-     vector[NUM_TRIALS] response_time;
-     int response[NUM_TRIALS];
-     int required_choice[NUM_TRIALS];//the choice which would be reinforced on each round.
-     int cue[NUM_TRIALS];
-     
-     real priors_lba_alpha;
-     real priors_lba_k;
-     real priors_lba_tau;
+     //matrix[LENGTH,2] RT;
+     vector[LENGTH] response_time;
+     int response[LENGTH];
+     int required_choice[LENGTH];//the choice which would be reinforced on each round.
+     int cue[LENGTH];
      
 }
 transformed data{
-  real<lower=0> lba_sd = 1;
-  int PARID_alpha = 1;
-  int PARID_lba_k = 2;
-  int PARID_lba_tau = 3;
-  int NUM_PARAMS = 3;
-  //real priors_lba_k=log(0.5);
-  //real priors_lba_tau=log(.2*0.9); #a more realistic mean non-decision time.
+  real<lower=0> s = 1;
   //from stan manual:
   //Before generating any samples, data variables are read in, 
   //then the transformed data variables are declared and the associated statements executed to define them. 
   //This means the statements in the transformed data block are only ever evaluated once.
   
-  matrix[NUM_TRIALS,NUM_CHOICES] choice_outcomes;
-  for (i in 1:NUM_TRIALS){
+  matrix[LENGTH,NUM_CHOICES] choice_outcomes;
+  for (i in 1:LENGTH){
     //if the required choice was chosen then assign the value of 1 to it and distribute the value of -1 across all alternatives.
     //or if the required choice was not chosen, assign the value of -1 to it and distribute the value of 1 across all alternatives.
     for (j in 1:NUM_CHOICES){
@@ -209,136 +192,82 @@ transformed data{
   }
   
   print("matrix of choice outcomes generated from required_choice and response input data:")
-  print(choice_outcomes);
-  print(NUM_SUBJECTS);
-  print(NUM_TRIALS);
-  print(NUM_RUNS);
-  print(trial_runid);
+  print(choice_outcomes)
   
   
 }
 
 parameters {
-  ////////////////////
-  //GROUP LEVEL
-  vector[NUM_PARAMS] subj_mu;
-  vector<lower=0>[NUM_PARAMS] subj_sigma;
+  real alpha_pr;
+  real k_pr;
+  real tau_pr;
+  //vector<lower=0>[NUM_CHOICES] v;
   
-  real<lower=0> run_sigma_gamma[NUM_PARAMS];
-  
-  
-  ////////////////////
-  //SUBJECT LEVEL
-  //real run_mu[NUM_SUBJECTS,3];
-  real run_mu_var[NUM_SUBJECTS,NUM_PARAMS];
-  real<lower=0> run_sigma[NUM_SUBJECTS,NUM_PARAMS];
-  
-  ////////////////////
-  //RUN LEVEL
-  // real alpha_pr[NUM_RUNS];
-  // real k_pr[NUM_RUNS];
-  // real tau_pr[NUM_RUNS];
-  real alpha_pr_var[NUM_RUNS];
-  real k_pr_var[NUM_RUNS];
-  real tau_pr_var[NUM_RUNS];
 }
 
 transformed parameters {
-  vector[NUM_PARAMS] run_mu[NUM_SUBJECTS];
+  real <lower=0,upper=1> alpha;
+  real<lower=0> k;
+  real<lower=0> tau;
+
   
-  real <lower=0,upper=1> alpha[NUM_RUNS];
-  real<lower=0> k[NUM_RUNS];
-  real<lower=0> tau[NUM_RUNS];
-  
-  //////////////////////
-  //SUBJECT LEVEL
-  for (s in 1:NUM_SUBJECTS){
-    run_mu[s,] = to_vector(run_mu_var[s,]) .* subj_sigma + subj_mu;
-  }//according to the stan manual, an elementwise vector operation would NOT be more efficient.
-  
-  //////////////////////
-  //RUN LEVEL
-  // alpha = inv_logit(alpha_pr);
-  // k = exp(k_pr);
-  // tau = exp(tau_pr);
-  for (r in 1:NUM_RUNS){
-    alpha[r] = inv_logit(run_mu[run_subjid[r],PARID_alpha] + run_sigma[run_subjid[r],PARID_alpha] * alpha_pr_var[r]);
-    k[r] = exp(run_mu[run_subjid[r],PARID_lba_k] + run_sigma[run_subjid[r],PARID_lba_k] * k_pr_var[r]);
-    tau[r] = exp(run_mu[run_subjid[r],PARID_lba_tau] + run_sigma[run_subjid[r],PARID_lba_tau] * tau_pr_var[r]);
-  }
+  alpha = inv_logit(alpha_pr);
+  k = exp(k_pr);
+  tau = exp(tau_pr);
 }
 
 model {
-  real exp_val[NUM_RUNS,max(cue),NUM_CHOICES];
+  matrix[max(cue),NUM_CHOICES] exp_val = rep_matrix(0,max(cue),NUM_CHOICES);
   real pred_err;
   real outcome;
   vector[NUM_CHOICES] v;
-  //int curRunId=0;//just for printout diagnostic
-  exp_val = rep_array(0,NUM_RUNS,max(cue),NUM_CHOICES);
   
-  ////////////////////
-  //GROUP LEVEL
+  alpha_pr ~ normal(-3,3);//weak prior for no learning.  
+  k_pr ~ normal(log(.5),1);
+  //A ~ normal(.5,1)T[0,];
+  tau_pr ~ normal(log(.5),0.5);#normal(.5,.5)T[0,];
+  //now we need to loop through the trials, modelin
+  //print("alpha_pr:",alpha_pr,"; k_pr:",k_pr,"; tau_pr:",tau_pr)
+  //print("alpha:",alpha,"; k:",k,"; tau:",tau)
+  //so how do we model choices in this context?
   
-  //priors for mean of subject params
-  subj_mu[PARID_alpha] ~ normal(priors_lba_alpha,3);
-    //also changed this. -3 was a pessimistic, implausible prior. -1 is more realistic
-    //and might be a better place to start.
-    // At least, this cannot possibly make estimation harder.
-    // in a three-parameter model, a pessimistic alpha would force k and tau to make up for it and that's no good.
-  subj_mu[PARID_lba_k] ~ normal(priors_lba_k,1);
-  subj_mu[PARID_lba_tau] ~ normal(priors_lba_tau,0.5);
-  
-  //priors for deviation of subject params from their mean.
-  subj_sigma[PARID_alpha] ~ cauchy(0,5); 
-  //these have lower prior SDs because our priors for them originally, from Palmeri et al., were lower.
-  subj_sigma[PARID_lba_k] ~ cauchy(0,5); 
-  subj_sigma[PARID_lba_tau] ~ cauchy(0,5);
-  
-  run_sigma_gamma ~ cauchy(0,5);
-  
-  ////////////////////
-  //RUN LEVEL
-  for (s in 1:NUM_SUBJECTS){
-    run_mu_var[s,] ~ normal(0,1);//non-centered data
-    //run_mu[s,] ~ normal(subj_mu,subj_sigma);//I think we can do this vectorized here.
-  
-    //we do NOT assume same run-level variance across subjects but we do assume a constant prior for these.
-    //this simplifies the calculation although with sigma unconstrained across subjects it may make the estimation actually harder.
-    //these might be too narrow, but I'm wary of having so much variance at every level!
-    
-    //vectorized
-    run_sigma[s,] ~ cauchy(0,run_sigma_gamma); 
-  }
-  
-  // for (r in 1:NUM_RUNS){
-  //   ////////////////////
-  //   //SUBJECT LEVEL
-  //   alpha_pr[r] ~ normal(run_mu[run_subjid[r],PARID_alpha],run_sigma[run_subjid[r],PARID_alpha]);//weak prior for no learning.  
-  //   k_pr[r] ~ normal(run_mu[run_subjid[r],PARID_lba_k],run_sigma[run_subjid[r],PARID_lba_k]);
-  //   tau_pr[r] ~ normal(run_mu[run_subjid[r],PARID_lba_tau],run_sigma[run_subjid[r],PARID_lba_tau]);
-  // }
-  alpha_pr_var ~ normal(0,1);
-  k_pr_var ~ normal(0,1);
-  tau_pr_var ~ normal(0,1);
-  
-  
-  for (t in 1:NUM_TRIALS){//loop through timesteps.
+  for (i in 1:LENGTH){//loop through timesteps.
     
     for(j in 1:NUM_CHOICES){
-      v[j]=logit(exp_val[trial_runid[t],cue[t],j]/4+0.75);
+      v[j]=logit(exp_val[cue[i],j]/4+0.75);
+      //this might be problematic for more than two choices, but for two, it'll work.
+      //assuming the participant infers that for every choice made, the opposite is the *wrong choice*
+      //now, if j was the correct choice, then pred_err should be 1-exp_val.
+      //  But if j was the incorrect choice, pred_err should be -1-exp_val.
+      // so...because we are identifying particular choices, we do need to know which was the rewarded choice.
       //our LBA model relies on getting values for *each choice* so we do need to model that.
       //if j was the reinforced choice and it was the response value,
-      pred_err=choice_outcomes[t,j]-exp_val[trial_runid[t],cue[t],j]; 
-
-      exp_val[trial_runid[t],cue[t],j] = exp_val[trial_runid[t],cue[t],j] + alpha[trial_runid[t]]*pred_err;
+      pred_err=choice_outcomes[i,j]-exp_val[cue[i],j]; 
+      //print("pred_err:",pred_err)
+      
+      exp_val[cue[i],j] = exp_val[cue[i],j] + alpha*pred_err;
+      
+      #pred_err_alt=actual_outcome-exp_val[cue[i,j]];
+          //v[n] ~ normal(2,1)T[0,];
       //for occam's razor, I'm going to avoid any transformation from expected value to drift rate. we'll treat expected value as drift rate exactly!
       
     }
-    //print("t=",t,"; ",exp_val[NUM_RUNS,cue[t],]);
-    response_time[t] ~ lba(response[t],k[trial_runid[t]],A,v,lba_sd,tau[trial_runid[t]]);
-    
+    //print("i=",i,"; ",exp_val[cue[i],])
+    response_time[i] ~ lba(response[i],k,A,v,s,tau);
   }
   
     
 }
+
+
+
+// generated quantities {
+//      vector[2] pred;
+//      pred = lba_rng(k,A,v,s,tau);
+// }
+
+
+
+
+
 
