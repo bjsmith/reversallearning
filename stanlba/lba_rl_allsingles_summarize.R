@@ -146,3 +146,5 @@ sd(results.summary.dt[param_name=="tau_pr" & !(FullRunId %in% improperly.estimat
 library(LaplacesDemon)
 alpha_sd<-sd(results.summary.dt[param_name=="alpha_pr" & !(FullRunId %in% improperly.estimated.runs$FullRunId),mean])
 plot(seq(0,10,0.1),phalfcauchy(seq(0,10,0.1),alpha_sd),type="l")
+
+results.summary.dt[param_name=="alpha_pr",] %>% .[order(-mean)]
