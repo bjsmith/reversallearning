@@ -221,11 +221,13 @@ model {
   real pred_err;
   real outcome;
   vector[NUM_CHOICES] v;
-  
-  alpha_pr ~ normal(0,4);//weak prior, agnostic about learning rate.
-  k_pr ~ normal(log(.5),1);
+  //these use VERY weak priors because we are going to use this data to set priors for future analyses
+  //so it's important that we don't unduly bias analysis at this level.
+  alpha_pr ~ normal(-1,4);//weak prior, agnostic about learning rate, but still biased to low learning rates.
+    //as a compromise between an absolute 0 learning rate (-Inf) and a learning rate flat in the middle of the possible distribution (0).
+  k_pr ~ normal(log(.5),2); 
   //A ~ normal(.5,1)T[0,];
-  tau_pr ~ normal(log(.5),0.5);#normal(.5,.5)T[0,];
+  tau_pr ~ normal(log(.5),1);#normal(.5,.5)T[0,];
   //now we need to loop through the trials, modelin
   //print("alpha_pr:",alpha_pr,"; k_pr:",k_pr,"; tau_pr:",tau_pr)
   //print("alpha:",alpha,"; k:",k,"; tau:",tau)
