@@ -178,14 +178,14 @@ data{
      int cue[NUM_TRIALS];
      
      real priors_alpha;
-     real priors_k;
-     real priors_tau;
+     real priors_lba_k;
+     real priors_lba_tau;
      
-     real priors_lba_alpha_spread;
+     real priors_alpha_spread;
      real priors_lba_k_spread;
      real priors_lba_tau_spread;
      
-     real priors_lba_alpha_sd_gamma;
+     real priors_alpha_sd_gamma;
      real priors_lba_k_sd_gamma;
      real priors_lba_tau_sd_gamma;
      
@@ -296,8 +296,8 @@ model {
     //and might be a better place to start.
     // At least, this cannot possibly make estimation harder.
     // in a three-parameter model, a pessimistic alpha would force k and tau to make up for it and that's no good.
-  subj_mu[PARID_lba_k] ~ normal(priors_lba_k,priors_lba_alpha_spread);
-  subj_mu[PARID_lba_tau] ~ normal(priors_lba_tau,0.5);
+  subj_mu[PARID_lba_k] ~ normal(priors_lba_k,priors_lba_k_spread);
+  subj_mu[PARID_lba_tau] ~ normal(priors_lba_tau,priors_lba_tau_spread);
   
   //priors for deviation of subject params from their mean.
   subj_sigma[PARID_alpha] ~ cauchy(0,priors_alpha_sd_gamma); 
