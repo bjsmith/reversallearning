@@ -177,9 +177,9 @@ data{
      int required_choice[NUM_TRIALS];//the choice which would be reinforced on each round.
      int cue[NUM_TRIALS];
      
-     real priors_lba_alpha;
-     real priors_lba_k;
-     real priors_lba_tau;
+     real priors_alpha;
+     real priors_k;
+     real priors_tau;
      
      real priors_lba_alpha_spread;
      real priors_lba_k_spread;
@@ -189,6 +189,9 @@ data{
      real priors_lba_k_sd_gamma;
      real priors_lba_tau_sd_gamma;
      
+     real priors_alpha_run_sigma_gamma;
+     real priors_lba_k_run_sigma_gamma;
+     real priors_lba_tau_run_sigma_gamma;
 }
 transformed data{
   real<lower=0> lba_sd = 1;
@@ -288,23 +291,23 @@ model {
   //GROUP LEVEL
   
   //priors for mean of subject params
-  subj_mu[PARID_alpha] ~ normal(priors_lba_alpha,3);
+  subj_mu[PARID_alpha] ~ normal(priors_alpha,priors_alpha_spread);
     //also changed this. -3 was a pessimistic, implausible prior. -1 is more realistic
     //and might be a better place to start.
     // At least, this cannot possibly make estimation harder.
     // in a three-parameter model, a pessimistic alpha would force k and tau to make up for it and that's no good.
-  subj_mu[PARID_lba_k] ~ normal(priors_lba_k,1);
+  subj_mu[PARID_lba_k] ~ normal(priors_lba_k,priors_lba_alpha_spread);
   subj_mu[PARID_lba_tau] ~ normal(priors_lba_tau,0.5);
   
   //priors for deviation of subject params from their mean.
-  subj_sigma[PARID_alpha] ~ cauchy(0,priors_lba_alpha_sd_gamma); 
+  subj_sigma[PARID_alpha] ~ cauchy(0,priors_alpha_sd_gamma); 
   //these have lower prior SDs because our priors for them originally, from Palmeri et al., were lower.
   subj_sigma[PARID_lba_k] ~ cauchy(0,priors_lba_k_sd_gamma); 
   subj_sigma[PARID_lba_tau] ~ cauchy(0,priors_lba_tau_sd_gamma);
   
   run_sigma_gamma[PARID_alpha] ~ cauchy(0,priors_alpha_run_sigma_gamma);
-  run_sigma_gamma[PARID_lba_k] ~ cauchy(0,priors_k_run_sigma_gamma);
-  run_sigma_gamma[PARID_lba_tau] ~ cauchy(0,priors_tau_run_sigma_gamma);
+  run_sigma_gamma[PARID_lba_k] ~ cauchy(0,priors_lba_k_run_sigma_gamma);
+  run_sigma_gamma[PARID_lba_tau] ~ cauchy(0,priors_lba_tau_run_sigma_gamma);
   
   ////////////////////
   //RUN LEVEL

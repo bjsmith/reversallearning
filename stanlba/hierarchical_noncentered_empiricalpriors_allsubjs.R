@@ -42,20 +42,24 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
       response=multisubj_multirun_moresubs$choice,
       required_choice=multisubj_multirun_moresubs$cor_res_Counterbalanced,
       cue=multisubj_multirun_moresubs$cue,
-      priors_lba_alpha=alpha_pr_mean,
-      priors_lba_alpha_spread=alpha_pr_var,
+      priors_alpha=alpha_pr_mean,
+      priors_alpha_spread=alpha_pr_var,
+      priors_alpha_sd_gamma=alpha_run_sigma_gamma,
+      priors_alpha_run_sigma_gamma=alpha_run_sigma_gamma,
       # these priors could probably be set even narrower than this, but let's ease into it.
-      priors_lba_alpha_sd_gamma=alpha_sd_prior*2,
+      
       
       priors_lba_k=k_pr_mean,
       priors_lba_k_spread=k_pr_var,
       priors_lba_k_sd_gamma=k_sd_prior*2,
+      priors_lba_k_sd_gamma=k_run_sigma_gamma,
+      priors_lba_k_run_sigma_gamma=lba_k_run_sigma_gamma,
       
       priors_lba_tau=tau_pr_mean,
       priors_lba_tau_spread=tau_pr_var,
-      priors_lba_tau_sd_gamma=tau_sd_prior*2
-      
-      
+      priors_lba_tau_sd_gamma=tau_sd_prior*2,
+      priors_lba_tau_sd_gamma=tau_run_sigma_gamma,
+      priors_lba_tau_run_sigma_gamma=lba_tau_run_sigma_gamma
     )
   }else{
     data_to_pass<- list(
