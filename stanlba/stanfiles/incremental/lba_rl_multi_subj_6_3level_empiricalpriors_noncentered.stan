@@ -181,6 +181,14 @@ data{
      real priors_lba_k;
      real priors_lba_tau;
      
+     real priors_lba_alpha_spread;
+     real priors_lba_k_spread;
+     real priors_lba_tau_spread;
+     
+     real priors_lba_alpha_sd_gamma;
+     real priors_lba_k_sd_gamma;
+     real priors_lba_tau_sd_gamma;
+     
 }
 transformed data{
   real<lower=0> lba_sd = 1;
@@ -289,10 +297,10 @@ model {
   subj_mu[PARID_lba_tau] ~ normal(priors_lba_tau,0.5);
   
   //priors for deviation of subject params from their mean.
-  subj_sigma[PARID_alpha] ~ cauchy(0,5); 
+  subj_sigma[PARID_alpha] ~ cauchy(0,priors_lba_alpha_sd_gamma); 
   //these have lower prior SDs because our priors for them originally, from Palmeri et al., were lower.
-  subj_sigma[PARID_lba_k] ~ cauchy(0,5); 
-  subj_sigma[PARID_lba_tau] ~ cauchy(0,5);
+  subj_sigma[PARID_lba_k] ~ cauchy(0,priors_lba_k_sd_gamma); 
+  subj_sigma[PARID_lba_tau] ~ cauchy(0,priors_lba_tau_sd_gamma);
   
   run_sigma_gamma ~ cauchy(0,5);
   
