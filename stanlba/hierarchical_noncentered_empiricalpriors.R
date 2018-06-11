@@ -109,7 +109,7 @@ fit_informative_priors <- run_model("lba_rl_multi_subj_6_3level_empiricalpriors_
 # 
 # print("------------------------")
 print("Running the base model")
-fit_weakly_informative_priors <- run_model("lba_rl_multi_subj_6_3level_widevariablecauchys_noncentered","15sub",filedir="incremental/",informative_priors = FALSE)
+fit_weakly_informative_priors <- run_model("lba_rl_multi_subj_6_3level_empiricalpriors_noncentered","15sub",filedir="incremental/",informative_priors = FALSE)
 # 
 #save(fit_normalsds,fit_widevariablecauchys,fit_base,file=paste0(dd, "Fits/hierarchical_stanforum_suggestion_results.RData"))
 save(fit_informative_priors,fit_weakly_informative_priors,file=paste0(dd, "Fits/informative_priors_test.RData"))
