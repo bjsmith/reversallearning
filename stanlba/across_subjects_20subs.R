@@ -1,16 +1,16 @@
 #estimate a single model across all subjects so that we can get a better estimate of run-level values.
-
+#only one run per subject.
 
 source("stanlba/lba_rl_setup.R")
 
-multisubj_threesubs<-rawdata[subid %in% c(105:120) & Motivation=="reward" & runid==1,
+multisubj_threesubs<-rawdata[subid %in% c(105:125) & Motivation=="reward" & runid==1,
                              .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,UniqueRunID=interaction(subid,runid,Motivation,drop = TRUE))]
 
 
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
-bseed<-76128931#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
-iter<-50
-warmup_iter=45
+bseed<-766128931#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+iter<-500
+warmup_iter=300
 chains<-min(get_my_preferred_cores(),3)
 cores_to_use <- chains
 options(mc.cores = cores_to_use)
@@ -41,7 +41,7 @@ fit_rl_lba_rl_multi_subj_3_2level_3subj <- stan(file=paste0(stanfiledir,'lba_rl_
 print(fit_rl_lba_rl_multi_subj_3_2level_3subj)
 
 #will this offer faster iterations? We want to get those priors as close to empirical values as possible.
-fit_rl_lba_rl_multi_subj_3_2level_3subj_v2 <- stan(file=paste0(stanfiledir,'lba_rl_multi_run_4_2level_v2.stan'), 
+fit_rl_lba_rl_multi_subj_3_2level_3subj_v3 <- stan(file=paste0(stanfiledir,'lba_rl_multi_run_4_2level_v3.stan'), 
                                                 #fit=fit_rl_lba_multi_subj_proto1,
                                                 data = list(
                                                   NUM_CHOICES=2,
@@ -61,4 +61,4 @@ fit_rl_lba_rl_multi_subj_3_2level_3subj_v2 <- stan(file=paste0(stanfiledir,'lba_
                                                 iter = iter,
                                                 chains = 3,
                                                 control = list(max_treedepth = 15))
-print(fit_rl_lba_rl_multi_subj_3_2level_3subj_v2)
+print(fit_rl_lba_rl_multi_subj_3_2level_3subj_v3)

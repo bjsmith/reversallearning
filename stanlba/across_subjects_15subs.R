@@ -1,9 +1,9 @@
 #estimate a single model across all subjects so that we can get a better estimate of run-level values.
-
+#only one run per subject.
 
 source("stanlba/lba_rl_setup.R")
 
-multisubj_threesubs<-rawdata[subid %in% c(105:120) & Motivation=="reward" & runid==1,
+multisubj_threesubs<-rawdata[subid %in% c(105:125) & Motivation=="reward" & runid==1,
                              .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,UniqueRunID=interaction(subid,runid,Motivation,drop = TRUE))]
 
 

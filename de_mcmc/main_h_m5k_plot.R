@@ -11,7 +11,7 @@ plot.priors=FALSE
 #load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T120720_15subs.RData")
 #load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T121720.RData")
 #load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T184405_15subs_iterations20000.RData")
-load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5k20180605")
+load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5k20180605T122611_15subs.RData")
 
 
 start=2 
