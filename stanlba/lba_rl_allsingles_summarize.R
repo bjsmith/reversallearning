@@ -1,7 +1,5 @@
 source("stanlba/lba_rl_setup.R")
 
-options(mc.cores = 3)
-
 # sub105data<-rawdata[subid==105 & Motivation=="reward" & runid==1,.(reaction_time,outcome,cue,choice,cor_res_Counterbalanced)]
 
 #we have problems running all subjects in a single run.

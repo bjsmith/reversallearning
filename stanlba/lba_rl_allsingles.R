@@ -6,7 +6,7 @@ options(mc.cores = 3)
 
 #we have problems running all subjects in a single run.
 #so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
-lba_rl_version<-"20180609_1"
+lba_rl_version<-"20180610_alpha_noninformative"
 
 single_run_dir<-paste0(localsettings$data.dir,"lba_rl")
 output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")
@@ -16,7 +16,7 @@ dir.create(output_dir, showWarnings = FALSE)
 #load(file=file_folder)
 
 results.list<-list()
-lba_rl_single<-stan_model('stanlba/stanfiles/lba_rl_single_exp_v2.stan')
+lba_rl_single<-stan_model('stanlba/stanfiles/lba_rl_single_exp_v3.stan')
 for (sid in unique(rawdata$subid)){#sid<-105
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     for(m in unique(rawdata[subid==sid & runid==r,Motivation])){#m<-"punishment"

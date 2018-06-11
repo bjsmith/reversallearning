@@ -1,8 +1,11 @@
 #uses the non-centered models
 #and uses empirical priors.
+#the informative priors model took 3.8 hours. With 10x the number of subjects, I might estimate 40 hours; 
+#with double the number of iterations I'd estimate 80 hours. 
+#That's 3-4 days, which seems acceptable for a large model.
 
 source("stanlba/lba_rl_setup.R")
-
+source("stanlba/lba_rl_allsingles_get_results_summary.R")
 chains<-min(get_my_preferred_cores(),3)
 cores_to_use <- chains
 options(mc.cores = cores_to_use)
@@ -16,10 +19,10 @@ multisubj_multirun_moresubs<-rawdata[subid %in% c(105:115) #& Motivation=="rewar
                                       UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
 unique(multisubj_multirun_moresubs$ConsecSubId)
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
-bseed<-586651014#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+bseed<-712363934#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
 
-warmup_iter=400
-iter<-500
+warmup_iter=10
+iter<-12
 print(paste0("warmup_iter: ",warmup_iter))
 print(paste0("iter: ",iter))
 
@@ -39,18 +42,18 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
       response=multisubj_multirun_moresubs$choice,
       required_choice=multisubj_multirun_moresubs$cor_res_Counterbalanced,
       cue=multisubj_multirun_moresubs$cue,
-      priors_lba_alpha=-3.24,
-      priors_lba_alpha_spread=2,
+      priors_lba_alpha=alpha_pr_mean,
+      priors_lba_alpha_spread=alpha_pr_var,
       # these priors could probably be set even narrower than this, but let's ease into it.
-      priors_lba_alpha_sd_gamma=1.596763*2,
+      priors_lba_alpha_sd_gamma=alpha_sd_prior*2,
       
-      priors_lba_k=-0.31,
-      priors_lba_k_spread=0.1,
-      priors_lba_k_sd_gamma=0.2549544*2,
+      priors_lba_k=k_pr_mean,
+      priors_lba_k_spread=k_pr_var,
+      priors_lba_k_sd_gamma=k_sd_prior*2,
       
-      priors_lba_tau=-0.95,
-      priors_lba_tau_spread=0.5,
-      priors_lba_tau_sd_gamma=0.6146147*2
+      priors_lba_tau=tau_pr_mean,
+      priors_lba_tau_spread=tau_pr_var,
+      priors_lba_tau_sd_gamma=tau_sd_prior*2
       
       
     )
@@ -99,21 +102,15 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
   return(rmfit)
 }
 print("running...")
-# print("Running the STANFORUM SUGGESTIONS 20180605 model.")
-# fit_normalsds <- run_model("lba_rl_multi_subj_5_3level_normal_sds","15sub",filedir="incremental/")
-# 
-# print("------------------------")
+
 
 print("Running the INFORMATIVE PRIORS model.")
-fit_informative_priors <- run_model("lba_rl_multi_subj_6_3level_empiricalpriors_noncentered","15sub",filedir="incremental/",informative_priors = TRUE)
+fit_informative_priors <- run_model("lba_rl_multi_subj_6_3level_empiricalpriors_noncentered","allsubs",filedir="incremental/",informative_priors = TRUE)
 # 
 # print("------------------------")
 print("Running the base model")
-fit_weakly_informative_priors <- run_model("lba_rl_multi_subj_6_3level_empiricalpriors_noncentered","15sub",filedir="incremental/",informative_priors = FALSE)
+fit_weakly_informative_priors <- run_model("lba_rl_multi_subj_6_3level_empiricalpriors_noncentered","allsubs",filedir="incremental/",informative_priors = FALSE)
 # 
 #save(fit_normalsds,fit_widevariablecauchys,fit_base,file=paste0(dd, "Fits/hierarchical_stanforum_suggestion_results.RData"))
-save(fit_informative_priors,fit_weakly_informative_priors,file=paste0(dd, "Fits/informative_priors_test_450.RData"))
+save(fit_informative_priors,fit_weakly_informative_priors,file=paste0(dd, "Fits/informative_priors_test_allsubs_450.RData"))
 
-#based on intial transition estimates, going from 2s*2r/s=4r to 10s*4r/s=60r has increased the "1000 transitions" estimate from 11 s to 218.13 s. For the final model we'd be hoping to increase iterations by a factor of 10 and subjects by a factor of 15, so our estimate should be that the final model will take 150x as long, 
-#i.e., if we aim for a 168 hour limit, this practice should take no longer than about 1 hour.
-#considering the pattern we're observing of slower and slower iterations as we move through, we might really want a faster speed than that even.
