@@ -323,7 +323,9 @@ functions{
       //we do NOT assume same run-level variance across subjects but we do assume a constant prior for these.
       //this simplifies the calculation although with sigma unconstrained across subjects it may make the estimation actually harder.
       //these might be too narrow, but I'm wary of having so much variance at every level!
-        
+      
+      #this should probably be non-centered too.  
+      #but we are going to focus on changing one thing at a time.
       run_sigma[s,PARID_alpha] ~ cauchy(0,run_sigma_gamma[PARID_alpha]); 
       run_sigma[s,PARID_lba_k] ~ cauchy(0,run_sigma_gamma[PARID_lba_k]); 
       run_sigma[s,PARID_lba_tau] ~ cauchy(0,run_sigma_gamma[PARID_lba_tau]); 
