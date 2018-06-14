@@ -1,12 +1,19 @@
-#uses the non-centered models
-#and uses empirical priors.
-#the informative priors model took 3.8 hours. With 10x the number of subjects, I might estimate 40 hours; 
-#with double the number of iterations I'd estimate 80 hours. 
-#That's 3-4 days, which seems acceptable for a large model.
+
+#the informative priors model took 4.45 hours compared to 12.70 hours for the weakly informative priors model.
+#so it may have sped up the model, although this is hard to judge because:
+#(1) the server might be doing other things;
+#(2) random chance for the very first starting values
+
+print("It's possible that with the more strongly informed priors we can relax the conditions a little bit.")
+print("soooo...I am going to extend the testing in THREE directions:")
+print("(1) repeat the informative priors but with an adapt delta back to 0.8")
+print("(2) repeat the informative priors but with 500,1000 iterations.")
+print("(3) repeat the informative priors but with the full subject set.")
+
 
 source("stanlba/lba_rl_setup.R")
 source("stanlba/lba_rl_allsingles_get_results_summary.R")
-chains<-min(get_my_preferred_cores(),3)
+chains<-min(get_my_preferred_cores(),6)
 cores_to_use <- chains
 options(mc.cores = cores_to_use)
 print(paste0("using ", cores_to_use, " cores."))
@@ -17,31 +24,38 @@ multisubj_multirun_moresubs<-rawdata[subid %in% c(105:115) #& Motivation=="rewar
                                     .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
                                       ConsecSubId=as.integer(as.factor(as.character(subid))),
                                       UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
-unique(multisubj_multirun_moresubs$ConsecSubId)
+
+multisubj_multirun_allsubs<-rawdata[subid #%in% c(105:115) #& Motivation=="reward" 
+                                     & reaction_time>0,
+                                     .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
+                                       ConsecSubId=as.integer(as.factor(as.character(subid))),
+                                       UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
+
+
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
 bseed<-712363934#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
 
-warmup_iter=450
-iter<-500
-print(paste0("warmup_iter: ",warmup_iter))
-print(paste0("iter: ",iter))
 
-run_model<-function(model_filename,model_description,filedir="",informative_priors=FALSE){
+run_model<-function(model_filename,model_description,filedir="",informative_priors=FALSE,
+                    a_delta=0.9,data_to_use=multisubj_multirun_moresubs,warmup_iter=450,iter=500){
   tstart<-Sys.time()
+  print(paste0("warmup_iter: ",warmup_iter))
+  print(paste0("iter: ",iter))
+  
   if(informative_priors){
     data_to_pass<- list(
       NUM_CHOICES=2,
       A=0.01,
-      NUM_SUBJECTS=length(unique(multisubj_multirun_moresubs$subid)),
-      NUM_TRIALS=dim(multisubj_multirun_moresubs)[1],
-      NUM_RUNS=length(unique(multisubj_multirun_moresubs$UniqueRunID)),
-      run_subjid=multisubj_multirun_moresubs[,.(RunID=unique(UniqueRunID)),by=ConsecSubId] %>% .[order(RunID),ConsecSubId],
-      trial_runid=as.numeric(multisubj_multirun_moresubs$UniqueRunID),
+      NUM_SUBJECTS=length(unique(data_to_use$subid)),
+      NUM_TRIALS=dim(data_to_use)[1],
+      NUM_RUNS=length(unique(data_to_use$UniqueRunID)),
+      run_subjid=data_to_use[,.(RunID=unique(UniqueRunID)),by=ConsecSubId] %>% .[order(RunID),ConsecSubId],
+      trial_runid=as.numeric(data_to_use$UniqueRunID),
       
-      response_time=multisubj_multirun_moresubs$reaction_time,
-      response=multisubj_multirun_moresubs$choice,
-      required_choice=multisubj_multirun_moresubs$cor_res_Counterbalanced,
-      cue=multisubj_multirun_moresubs$cue,
+      response_time=data_to_use$reaction_time,
+      response=data_to_use$choice,
+      required_choice=data_to_use$cor_res_Counterbalanced,
+      cue=data_to_use$cue,
       priors_alpha=alpha_pr_mean,
       priors_alpha_spread=alpha_pr_var,
       priors_alpha_sd_gamma=alpha_run_sigma_gamma,
@@ -63,16 +77,16 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
     data_to_pass<- list(
       NUM_CHOICES=2,
       A=0.01,
-      NUM_SUBJECTS=length(unique(multisubj_multirun_moresubs$subid)),
-      NUM_TRIALS=dim(multisubj_multirun_moresubs)[1],
-      NUM_RUNS=length(unique(multisubj_multirun_moresubs$UniqueRunID)),
-      run_subjid=multisubj_multirun_moresubs[,.(RunID=unique(UniqueRunID)),by=ConsecSubId] %>% .[order(RunID),ConsecSubId],
-      trial_runid=as.numeric(multisubj_multirun_moresubs$UniqueRunID),
+      NUM_SUBJECTS=length(unique(data_to_use$subid)),
+      NUM_TRIALS=dim(data_to_use)[1],
+      NUM_RUNS=length(unique(data_to_use$UniqueRunID)),
+      run_subjid=data_to_use[,.(RunID=unique(UniqueRunID)),by=ConsecSubId] %>% .[order(RunID),ConsecSubId],
+      trial_runid=as.numeric(data_to_use$UniqueRunID),
       
-      response_time=multisubj_multirun_moresubs$reaction_time,
-      response=multisubj_multirun_moresubs$choice,
-      required_choice=multisubj_multirun_moresubs$cor_res_Counterbalanced,
-      cue=multisubj_multirun_moresubs$cue,
+      response_time=data_to_use$reaction_time,
+      response=data_to_use$choice,
+      required_choice=data_to_use$cor_res_Counterbalanced,
+      cue=data_to_use$cue,
       
       priors_alpha=-3,
       priors_alpha_spread=3,
@@ -101,7 +115,7 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
        chains = chains, #run as many chains as we have cores to run them, but no more than 12 necessary.
        seed=bseed,
        refresh=5,
-       control = list(max_treedepth = 13,adapt_delta=0.9))
+       control = list(max_treedepth = 13,adapt_delta=a_delta))
   tend<-Sys.time()
   print(tend-tstart)
   file_save_name<-get_fit_desc(use_model = model_filename,descr = model_description,run=c(1,2),
@@ -118,13 +132,19 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
 print("running...")
 
 
-print("Running the INFORMATIVE PRIORS model.")
-fit_informative_priors <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_informativepriors",filedir="incremental/",informative_priors = TRUE)
+
+print("Running the informative priors model with a MODIFIED DELTA.")
+fit_modified_delta <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_informativepriors_ad08",filedir="incremental/",informative_priors = TRUE,a_delta=0.8)
 # 
-# print("------------------------")
-print("Running the base model")
-fit_weakly_informative_priors <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_30iter_weakpriors",filedir="incremental/",informative_priors = FALSE)
-# 
+print("------------------------")
+print("Running the informative priors model with 500 warmup, 1000 real iterations.")
+fit_modified_delta <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_informativepriors_1000iter",filedir="incremental/",informative_priors = TRUE,warmup=500,iter=1000)
+
+print("------------------------")
+print("Running the informative priors model with ALL SUJBJECTS.")
+fit_modified_delta <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_informativepriors_allsubjs",filedir="incremental/",informative_priors = TRUE,data_to_use=multisubj_multirun_allsubs)
+
+
 #save(fit_normalsds,fit_widevariablecauchys,fit_base,file=paste0(dd, "Fits/hierarchical_stanforum_suggestion_results.RData"))
 save(fit_informative_priors,fit_weakly_informative_priors,file=paste0(dd, "Fits/informative_priors_test_allsubs_450.RData"))
 

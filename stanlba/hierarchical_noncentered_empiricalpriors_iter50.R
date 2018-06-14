@@ -12,7 +12,7 @@ options(mc.cores = cores_to_use)
 print(paste0("using ", cores_to_use, " cores."))
 
 #Get a minimal amount of data to test a three level model.
-multisubj_multirun_moresubs<-rawdata[subid #%in% c(105:115) #& Motivation=="reward" 
+multisubj_multirun_moresubs<-rawdata[subid %in% c(105:115) #& Motivation=="reward" 
                                      & reaction_time>0,
                                     .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
                                       ConsecSubId=as.integer(as.factor(as.character(subid))),
@@ -21,8 +21,8 @@ unique(multisubj_multirun_moresubs$ConsecSubId)
 #hmmm, before we can speedtest, we need to ensure the damn thing actually works.
 bseed<-712363934#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
 
-warmup_iter=25
-iter<-30
+warmup_iter=30
+iter<-50
 print(paste0("warmup_iter: ",warmup_iter))
 print(paste0("iter: ",iter))
 
@@ -119,12 +119,12 @@ print("running...")
 
 
 print("Running the INFORMATIVE PRIORS model.")
-fit_informative_priors <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","allsubs_30iter_informativepriors",filedir="incremental/",informative_priors = TRUE)
+fit_informative_priors <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_informativepriors",filedir="incremental/",informative_priors = TRUE)
 # 
 # print("------------------------")
 print("Running the base model")
-fit_weakly_informative_priors <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","allsubs_30iter_weakpriors",filedir="incremental/",informative_priors = FALSE)
+fit_weakly_informative_priors <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_weakpriors",filedir="incremental/",informative_priors = FALSE)
 # 
 #save(fit_normalsds,fit_widevariablecauchys,fit_base,file=paste0(dd, "Fits/hierarchical_stanforum_suggestion_results.RData"))
-save(fit_informative_priors,fit_weakly_informative_priors,file=paste0(dd, "Fits/informative_priors_test_allsubs_450.RData"))
+save(fit_informative_priors,fit_weakly_informative_priors,file=paste0(dd, "Fits/informative_priors_test_allsubs_50.RData"))
 
