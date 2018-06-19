@@ -24,73 +24,24 @@ Created on Sat Aug 19 19:05:48 2017
 @author: benjaminsmith
 """
 
-class RLPain:
+class TimeseriesProcessor:
     
 
     def __init__(self):
         #learning model
-        self.pain_decoder=''
-        self.fMRI_dir=''
+        #self.pain_decoder=''
+        #self.fMRI_dir=''
         self.onset_dir=''
         self.regressor_output_filepathprefix=''
-        self.decoder_file = ''
+        #self.decoder_file = ''
         self.stats=None
-        self.decoder=None
-        self.decoder_origin=''
+        #self.decoder=None
+        #self.decoder_origin=''
 
-        self.nps_map_dir=''
+        #self.nps_map_dir=''
         self.onset_file_version='20170819T170218'
 
-    def get_wager_nps_map(self,nps_map_filepath=None):
-        using_custom_filepath=False
-        if nps_map_filepath is not None:
-            using_custom_filepath=True
-        else:
-            nps_map_filepath = self.nps_map_filepath
-        if(os.path.isfile(nps_map_filepath)):
-            nps = Brain_Data(nps_map_filepath)
-            self.decoder=nps
-            if using_custom_filepath:
-                self.decoder_origin = nps_map_filepath
-            else:
-                self.decoder_origin='nps'
-        else:
-            raise Exception("error; cannot find NPS map")
-
-
-    def compile_pain_decoder(self,pain_dir=None):
-        print("compiling pain dir")
-
-        if os.path.isfile(self.decoder_file):
-            print("pain data pre-saved, loading...")
-            stats = pickle.load(open(self.decoder_file, "rb"))
-
-            # pdata = Brain_Data(self.decoder_file)
-        else:
-            print("pain data doesn't exist, getting...")
-            if (pain_dir is None):
-                pdata = fetch_pain()
-            else:
-                pdata = fetch_pain(pain_dir)
-            pdata.Y = pdata.X["PainLevel"]
-            stats = pdata.predict(algorithm='ridge', plot=False)
-            with open(self.decoder_file, "wb") as f:
-                pickle.dump(stats, f, pickle.HIGHEST_PROTOCOL)
-        self.decoder_origin='chang_pain_data'
-
-        print ("pain data loaded.")
-
-        #train_subjs=pandas.DataFrame(data_subjs).sample(frac=0.9,random_state=2057)
-        #test_subjs= [s for s in data_subjs if s not in train_subjs[0]]
-
-        #data_train = pdata[train_subjs[0]]
-        #data_test = pdata[test_subjs]
-        #stats = data_train.predict(algorithm='ridge',plot=False)
-
-        self.stats = stats
-        self.decoder = stats['weight_map']
-
-    def process_detailed_regressors(self,subid_range=range(1,500),custom_pain_map_lambda=None,motivations_all=False):
+    def process_detailed_regressors(self,subid_range=range(1,500),motivations_all=False):
 
 
         if motivations_all is None or motivations_all==False:
@@ -103,6 +54,7 @@ class RLPain:
             #csvfile=None
         header_written=False
         for sid in subid_range:
+            print sid
             for rid in [1,2]:
                 for m in motivations:
                     nifti_file=self.fMRI_dir + 'sub'+str(sid) + 'ReversalLearning' + m[0:6] + 'run'+str(rid)
@@ -116,11 +68,6 @@ class RLPain:
                             print ('we have a match; '+ onset_file)
                             #print("done the regressing :-)")
 
-                            if custom_pain_map_lambda is not None:
-                                #create the custom pain map in this subject's native space
-                                custom_pain_map_filepath = custom_pain_map_lambda(sid,rid,m[0:6])
-                                self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath)
-
                             msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
                             msm_predicted_pain_dict['subid'] = sid
                             msm_predicted_pain_dict['runid'] = rid
@@ -130,13 +77,6 @@ class RLPain:
                                 w.writeheader()
                                 w.writerow(msm_predicted_pain_dict)
             gc.collect()
-
-
-        if custom_pain_map_lambda is not None:
-            self.get_wager_nps_map()#restore original.
-                        #attach the subject and run ID to the output and concatenate.
-        #if(csvfile is not None):
-        #    csvfile.close(self)
 
     def process_all_punishment_subjects(self):
         for sid in range(1,500):
