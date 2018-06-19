@@ -44,7 +44,7 @@ multisubj_multirun_Group1<-rawdata[SubjectGroup==1
 
 source("bootstrap_smart_init_vals.R")
 smart_init_vals<-bootstrap_smart_init_vals(n_samples = n_chains,
-                                           subid_set = sort(unique(multisubj_multirun_Group1$subid)),
+                                           subid_set = sort(unique(multisubj_multirun_moresubs$subid)),
                                            bootstrap_seed = c(1973449269))
 
 
@@ -52,7 +52,7 @@ smart_init_vals<-bootstrap_smart_init_vals(n_samples = n_chains,
 bseed<-1236512756#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
 
 run_model<-function(model_filename,model_description,filedir="",informative_priors=FALSE,
-                    a_delta=0.9,data_to_use=multisubj_multirun_moresubs,warmup_iter=19,iter=20,
+                    a_delta=0.9,data_to_use=multisubj_multirun_moresubs,warmup_iter=450,iter=500,
                     init_vals="auto"){
   tstart<-Sys.time()
   print(paste0("warmup_iter: ",warmup_iter))
@@ -136,80 +136,7 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
   #####(2) Are these cauchys going to screw us? I think we need a flatter-tailed distribution. The truncated normals might end up being what we need.
   #####(3) Do we have to define transformed parameters? A: Probably not.
   
-  get_bootstrapped_init_vals<- function(bootstrapped_sample){#bootstrapped_sample<-smart_init_vals[[1]]
-    set.seed(1761614456)
-    return(
-      list(
-        ################
-        ######GROUP LEVEL
-        subj_mu=c(bootstrapped_sample$alpha_pr_mean,bootstrapped_sample$k_pr_mean,bootstrapped_sample$tau_pr_mean),
-        subj_sigma=c(bootstrapped_sample$alpha_sd_prior,bootstrapped_sample$k_sd_prior,bootstrapped_sample$tau_sd_prior),
-        run_sigma_gamma=c(bootstrapped_sample$alpha_run_sigma_gamma,bootstrapped_sample$k_run_sigma_gamma,bootstrapped_sample$tau_run_sigma_gamma),
-        
-        #not sure that we really need to define transformed parameters, maybe only sampled parameters.
-        ################
-        ####SUBJECT LEVEL
-        run_mu_var=matrix(rnorm(data_to_pass$NUM_SUBJECTS*3,0,1),ncol=3),
-        
-        #NUM_SUBJECTS rows, NUM_PARAMS columns
-        #[NUM_SUBJECTS,NUM_PARAMS];
-        #might need to get these empirically rather than just trying to filter down.
-        #or convert it into non-centered and then see where we go from there.
-        run_sigma=cbind(sample(seq(.1,2,2/data_to_pass$NUM_SUBJECTS)*bootstrapped_sample$alpha_run_sigma_gamma,replace=FALSE),
-                        sample(seq(.1,2,2/data_to_pass$NUM_SUBJECTS)*bootstrapped_sample$k_run_sigma_gamma,replace=FALSE),
-                        sample(seq(.1,2,2/data_to_pass$NUM_SUBJECTS)*bootstrapped_sample$tau_run_sigma_gamma,replace=FALSE)),
-        #I think these cauchys are probably going to screw us!
-        #no way we can start with these starting values.
-        
-        ################
-        ######RUN LEVEL
-        alpha_pr_var=rnorm(data_to_pass$NUM_RUNS,0,1),
-        k_pr_var=rnorm(data_to_pass$NUM_RUNS,0,1),
-        tau_pr_var=rnorm(data_to_pass$NUM_RUNS,0,1)
-      )
-    )
-  }
-  get_init_vals<-function(){
-    return(
-      list(
-        ################
-        ######GROUP LEVEL
-        subj_mu=c(rnorm(1,data_to_pass$priors_alpha,data_to_pass$priors_alpha_spread),
-                  rnorm(1,data_to_pass$priors_lba_k,data_to_pass$priors_lba_k_spread),
-                  rnorm(1,data_to_pass$priors_lba_tau,data_to_pass$priors_lba_tau_spread)),
-        subj_sigma=c(abs(rnorm(1,0,data_to_pass$priors_alpha_sd_gamma)),
-                     abs(rnorm(1,0,data_to_pass$priors_lba_k_sd_gamma)),
-                     abs(rnorm(1,0,data_to_pass$priors_lba_tau_sd_gamma))),
-        run_sigma_gamma=c(abs(rnorm(1,0,data_to_pass$priors_alpha_run_sigma_gamma)),
-                          abs(rnorm(1,0,data_to_pass$priors_lba_k_run_sigma_gamma)),
-                          abs(rnorm(1,0,data_to_pass$priors_lba_tau_run_sigma_gamma))),
-        
-        #not sure that we really need to define transformed parameters, maybe only sampled parameters.
-        ################
-        ####SUBJECT LEVEL
-        run_mu_var=matrix(rnorm(data_to_pass$NUM_SUBJECTS*3,0,1),ncol=3),
-        
-        #NUM_SUBJECTS rows, NUM_PARAMS columns
-        #[NUM_SUBJECTS,NUM_PARAMS];
-        # run_sigma=cbind(abs(rnorm(data_to_pass$NUM_SUBJECTS,0,data_to_pass$priors_alpha_run_sigma_gamma)),
-        #                 abs(rnorm(data_to_pass$NUM_SUBJECTS,0,data_to_pass$priors_k_run_sigma_gamma)),#this seems to be an error.
-        #                 abs(rnorm(data_to_pass$NUM_SUBJECTS,0,data_to_pass$priors_tau_run_sigma_gamma))),
-        run_sigma=cbind(sample(seq(.1,2,2/data_to_pass$NUM_SUBJECTS)*data_to_pass$priors_alpha_run_sigma_gamma,replace=FALSE),
-                        sample(seq(.1,2,2/data_to_pass$NUM_SUBJECTS)*data_to_pass$priors_lba_k_run_sigma_gamma,replace=FALSE),
-                        sample(seq(.1,2,2/data_to_pass$NUM_SUBJECTS)*data_to_pass$priors_lba_tau_run_sigma_gamma,replace=FALSE)),
-        
-        #I think these cauchys are probably going to screw us!
-        #no way we can start with these starting values.
-        
-        ################
-        ######RUN LEVEL
-        alpha_pr_var=rnorm(data_to_pass$NUM_RUNS,0,1),
-        k_pr_var=rnorm(data_to_pass$NUM_RUNS,0,1),
-        tau_pr_var=rnorm(data_to_pass$NUM_RUNS,0,1)
-      )
-    )
-    
-  }
+  source("init_vals_generate.R")
   # 
   # get_init_vals_imitate_default<-function(){
   #   return(
@@ -286,20 +213,20 @@ print("running...")
 
 print("------------------------")
 print("Running the informative priors model WITHOUT INITIAL VALUES SPECIFIED.")
-fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_10subjs_initvalsspecified",
-                                filedir="incremental/",informative_priors = TRUE,
-                                init_vals="auto")
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_auto_init_12c",
+                                       filedir="incremental/",informative_priors = TRUE,
+                                       init_vals="auto")
 
 print("------------------------")
 print("Running the informative priors model WITH RANDOM INITIAL VALUES SPECIFIED.")
-fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_10subjs_initvalsspecified",
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_randomized_init_12c",
                                        filedir="incremental/",informative_priors = TRUE,
                                        init_vals="randomized")
 
 
 print("------------------------")
 print("Running the informative priors model WITH BOOTSTRAPPED INITIAL VALUES SPECIFIED.")
-fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_10subjs_initvalsspecified",
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_bootstrapped_init_12c",
                                        filedir="incremental/",informative_priors = TRUE,
                                        init_vals="bootstrapped")
 

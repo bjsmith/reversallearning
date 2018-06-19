@@ -3,13 +3,16 @@ apply_local_settings()
 source("../util/bjs_misc_utils.R")
 run.ts<-get.datetimestamp()
 
+
 source("de_mcmc/functions.R")
+library(rlang)
 library("data.table")
 library("parallel")
 library("snowfall") # install.packages("snowfall")
 library("MASS")
 library("msm")      # install.packages("msm")
 library("MCMCpack") # install.packages("MCMCpack")
+library(dplyr)
 
 mainDir <- getwd()
 
@@ -44,3 +47,4 @@ de_mcmc_execute <- function (log.dens.like.f,log.dens.prior.f){
   
   return(environment())
 }
+

@@ -35,7 +35,8 @@ for(j in 1:S){#j=1
         "cue"=as.vector(temp.data[,cue]),
         "choice"=as.vector(temp.data[,choice]),
         "rt"=rt,"outcome"=as.vector(temp.data[,outcome]),
-        "motivation"=m
+        "motivation"=m,
+        "runid"=m_r
         )
       #}
     }

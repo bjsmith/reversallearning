@@ -1,4 +1,10 @@
-rm(list=ls())
+library(rstan)
+library(parallel)
+library(dplyr)
+library(data.table)
+library(tidyr)
+
+#rm(list=ls())
 
 #right, this time, we need to get some real data.
 source("../util/apply_local_settings.R")
@@ -11,11 +17,7 @@ source("../util/get_my_preferred_cores.R")
 
 source('stanlba/lba-math.R')
 
-library(rstan)
-library(parallel)
-library(dplyr)
-#library(LaplacesDemon)
-library(data.table)
+
 
 
 

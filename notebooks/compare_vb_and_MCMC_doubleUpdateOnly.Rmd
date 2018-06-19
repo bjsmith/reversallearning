@@ -20,6 +20,7 @@ apply_local_settings()
 knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
 source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
+source("data_summarize_lbarlmodel.R")
 library(data.table)
 library(ggplot2)
 ```

@@ -1,0 +1,271 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Comparing starting values},
+            pdfauthor={Ben Smith},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{Comparing starting values}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Ben Smith}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{6/4/2018}
+
+
+\begin{document}
+\maketitle
+
+I previously found that although my model could under some circumstances
+produce reasonable estimates using 3 chains, for a specific starting
+seed, further testing showed that this broke down for a 6-chain or
+12-chain model, because not all chains starting in reasonable places.
+
+So, I tried two different methods of specifying starting values based on
+the empirical data. First, a randomized method, and second, a
+bootstrapped distribution method.
+
+I compared models with 500 iterations, sampled from 450 to 500, with a
+delta adaption of 0.9. Both models were identical, and used non-centered
+priors, except that one model used weak, uninformative priors and one
+model used informative priors.
+
+I compared starting values generated three different ways for a
+10-subject, 12-run model.
+
+\begin{itemize}
+\tightlist
+\item
+  Using the default initial priors that R uses. Unconstrained variables
+  are set on a uniform distribution between -2 and 2; variables
+  constrained to be non-negative are set on an exponential transform of
+  a normal distribution between \(exp(-2)\) and \(exp(2)\).
+\item
+  Using random initial values. Here, I started with empirical priors and
+  used them to extract rando distribution around those empirical priors.
+  Thus, we got a unique set of random initial values for each chain.
+\item
+  Using bootstrapped initial values. Here, I randomly selected with
+  replacement a set of subjects equal to the size of the actual dataset
+  (in this case, 10 subjects). I then calculated group-level statistics
+  based on the single-subject models using \emph{these} groups and these
+  starting values values were used. This method produces a quite
+  tightly-bound set of initial values. Because the method for
+  group-level statistics based on single-subject models often involved
+  the use of medians (see Section \ref{sec:CalculatingEmpiricalPriors}),
+  some initial priors are actually identical in some cases. Because this
+  method is almost entirely deterministic (random noise from an
+  empirical distribution is used to allocate starting values to
+  subject-level and run-level priors), we know it will replicate for any
+  given seed value. However, if our initial values are too narrow, we
+  may not end up properly exploring the parameter space. It might be
+  sensible to apply this method, but use smaller-size groups to generate
+  values.
+\end{itemize}
+
+Priors were the same informative priors used previously:
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule
+& Informative Priors\tabularnewline
+\midrule
+\endhead
+subject \(\alpha_{\mu\mu}\) & -3.24\tabularnewline
+subject \(\alpha_{\mu\sigma}\) & 1.89\tabularnewline
+subject \(\alpha_{\sigma}\) & 2.07\tabularnewline
+run \(\alpha_{\sigma_{\gamma}}\) & 2.07\tabularnewline
+subject \(k_{\mu\mu}\) & -0.31\tabularnewline
+subject \(k_{\mu\sigma}\) & 0.12\tabularnewline
+subject \(k_{\sigma}\) & 0.51\tabularnewline
+run \(k_{\sigma_{\gamma}}\) & 0.35\tabularnewline
+subject \(\tau_{\mu\mu}\) & -1.75\tabularnewline
+subject \(\tau_{\mu\sigma}\) & 0.18\tabularnewline
+subject \(\tau_{\sigma}\) & 1.23\tabularnewline
+run \(\tau_{\sigma_{\gamma}}\) & 0.97\tabularnewline
+\bottomrule
+\end{longtable}
+
+These priors were defined in the manner described in
+\ref{sec:CalculatingEmpiricalPriors}.
+
+\begin{verbatim}
+##  [1] 105 106 108 110 112 114 114 115 115 115
+##  [1] 105 106 106 106 106 107 108 108 108 112
+##  [1] 107 108 108 108 108 108 110 110 112 113
+##  [1] 107 107 108 108 110 110 113 115 115 115
+##  [1] 107 107 107 108 110 110 110 112 112 114
+##  [1] 105 105 105 107 110 112 113 113 114 115
+##  [1] 105 105 107 108 110 112 112 112 113 115
+##  [1] 105 106 107 107 107 108 108 110 113 115
+##  [1] 105 108 110 113 113 113 114 114 115 115
+##  [1] 105 106 108 110 110 112 113 113 114 114
+##  [1] 106 106 107 107 107 108 110 114 114 114
+##  [1] 105 107 107 110 110 112 113 113 114 114
+\end{verbatim}
+
+\includegraphics{hierarchical_noncentered_compare_starting_values_files/figure-latex/init_values_generate-1.pdf}
+
+And the randomly determind initial were defined as such:
+
+\begin{itemize}
+\tightlist
+\item
+  subj \(\alpha_{\mu} \sim \mathrm{norm}(-3.24,1.89)\)
+\item
+  subj \(k_{\mu} \sim \mathrm{norm}(-0.31,0.12)\)
+\item
+  subj \(tau_{\mu} \sim \mathrm{norm}(-1.75,0.18)\)
+\item
+  subj \(\alpha_{\sigma} \sim |\mathrm{norm}(0,2.07)|\)
+\item
+  subj \(k_{\sigma} \sim |\mathrm{norm}(0,0.51)|\)
+\item
+  subj \(tau_{\sigma} \sim |\mathrm{norm}(0,1.23)|\)
+\item
+  run \(\alpha_{\sigma\gamma} \sim |\mathrm{norm}(0,2.07)|\)
+\item
+  run \(k_{\sigma\gamma} \sim |\mathrm{norm}(0,0.35)|\)
+\item
+  run \(tau_{\sigma\gamma} \sim |\mathrm{norm}(0,0.97)|\)
+\end{itemize}
+
+\subsection{Effiency}\label{effiency}
+
+I wanted to measure efficiency for each parameter. At maximum
+efficiency, the effective sample size per chain-iteration is 1; lower
+efficiencies are degradations of this.
+
+\begin{longtable}[]{@{}lrrr@{}}
+\caption{Efficiency per chain-iteration by parameter (\(\rightarrow 1\)
+is better}\tabularnewline
+\toprule
+& Stan Automatic & Randomized & Bootstrapped\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+& Stan Automatic & Randomized & Bootstrapped\tabularnewline
+\midrule
+\endhead
+subject \(\alpha_{\mu}\) & 0.01 & 0.50 & 0.38\tabularnewline
+subject \(k_{\mu}\) & 0.01 & 0.83 & 0.67\tabularnewline
+subject \(\tau_{\mu}\) & 0.01 & 0.60 & 0.69\tabularnewline
+subject \(\alpha_{\sigma}\) & 0.04 & 0.55 & 0.45\tabularnewline
+subject \(k_{\sigma}\) & 0.01 & 0.80 & 0.87\tabularnewline
+subject \(\tau_{\sigma}\) & 0.02 & 0.35 & 0.40\tabularnewline
+run \(\alpha_{\sigma_{\gamma}}\) & 0.66 & 1.00 & 1.00\tabularnewline
+run \(k_{\sigma_{\gamma}}\) & 0.01 & 1.00 & 1.00\tabularnewline
+run \(\tau_{\sigma_{\gamma}}\) & 0.03 & 1.00 & 1.00\tabularnewline
+\bottomrule
+\end{longtable}
+
+Although the stan automatic values did not produce good results, both
+the random and bootstrapped initial values produced reasonable
+efficiency, although the bootstrapped initial values were not quite as
+good.
+
+\subsection{Representativeness}\label{representativeness}
+
+Representativeness is measured by the Gelman-Rubin \(\hat{R}\)
+statistic, and should ideally be lower than 1.05.
+
+\begin{longtable}[]{@{}lrrr@{}}
+\caption{Gelman-Rubin \(\hat{R}\) statistic by intialization method
+(\(\hat{R}<1.05\) is acceptable)}\tabularnewline
+\toprule
+& Stan Automatic & Randomized & Bootstrapped\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+& Stan Automatic & Randomized & Bootstrapped\tabularnewline
+\midrule
+\endhead
+subject \(\alpha_{\mu}\) & 2.10 & 1.03 & 1.05\tabularnewline
+subject \(k_{\mu}\) & 3.98 & 1.01 & 1.02\tabularnewline
+subject \(\tau_{\mu}\) & 2.81 & 1.01 & 1.02\tabularnewline
+subject \(\alpha_{\sigma}\) & 1.19 & 1.03 & 1.03\tabularnewline
+subject \(k_{\sigma}\) & 29.72 & 1.00 & 1.01\tabularnewline
+subject \(\tau_{\sigma}\) & 1.73 & 1.05 & 1.02\tabularnewline
+run \(\alpha_{\sigma_{\gamma}}\) & 1.02 & 0.99 & 1.02\tabularnewline
+run \(k_{\sigma_{\gamma}}\) & 5.94 & 0.99 & 1.00\tabularnewline
+run \(\tau_{\sigma_{\gamma}}\) & 1.28 & 1.00 & 1.00\tabularnewline
+\bottomrule
+\end{longtable}
+
+Both the randomized and bootstrapped initial values offered reasonable
+estimates, while the stan automatic values clearly could not converge
+properly on the target.
+
+
+\end{document}
