@@ -1,16 +1,17 @@
-#setwd("/expdata/bensmith/joint-modeling/code/msm/reversallearning")
+setwd("/expdata/bensmith/joint-modeling/code/msm/reversallearning")
 
-#rm(list = ls())
+rm(list = ls())
 ########################################## load the functions you will use
 source("../joint_msm_combined/bjs_misc_utils.R")
-version="h_m5k" 
-version.base<-"h_m5f"
+version="h_m5l" 
+version.base<-"h_m5l"
 folderappend="_15subs"
 
 source('de_mcmc/functions.R')
 source('de_mcmc/main_m1_setup.R')
 source('de_mcmc/functions_joint_v2.R')
 source(paste0('de_mcmc/functions_',version,'.R'))
+
 ########################################## generate data
 source(paste0('de_mcmc/main_',version,'_setup.R'))
 
@@ -71,24 +72,54 @@ prior.big$n0=length(prior.big$mu) + 2
 
 #level 3 priors. 
 prior.l3=NULL
-prior.l3$alpha=list("mu"=-3,"sigma"=1,alpha=4,beta=10)
-prior.l3$thresh=list("mu"=log(2),"sigma"=sqrt(log(2)),alpha=4,beta=10)
+prior.l3$alpha=list("mu"=lba_group_sstats$alpha_pr_mean,"sigma"=lba_group_sstats$alpha_pr_var)
+prior.l3$thresh=list("mu"=lba_group_sstats$k_pr_mean,"sigma"=lba_group_sstats$k_pr_var)
 rt_s_mean<-unlist(lapply(data,FUN=function(s){mean(unlist(lapply(s$runs,function(r){min(r$rt,na.rm=TRUE)})))}))
 rt_s_mean_all_mean<-mean(rt_s_mean)
-prior.l3$tau=list("mu"=log(.6*(rt_s_mean_all_mean)),
-               "sigma"=sqrt(mean(abs(log(.6*(rt_s_mean_all_mean))))),
-               alpha=4,beta=10)
+prior.l3$tau=list("mu"=lba_group_sstats$tau_pr_mean,
+               "sigma"=lba_group_sstats$tau_pr_var)
 
 #level 2 priors or initial values????
 #for level 2, we have level 3 from which to draw mu, so we don't include that,
 #but we still need to estimate the other values.
 #We start with priors that are the same for each subject
 prior.l2=NULL
-prior.l2$alpha=list("mu"=-3,"sigma"=1,alpha=4,beta=10,sigma_gamma=10)
-prior.l2$thresh=list("mu"=log(2),"sigma"=sqrt(log(2)),alpha=4,beta=10,sigma_gamma=10)
-prior.l2$tau=list("mu"=log(.6*(rt_s_mean_all_mean)),
-  "sigma"=sqrt(abs(log(.6*(rt_s_mean_all_mean)))),
-                  alpha=4,beta=10,sigma_gamma=10)
+#alright.
+#a close approximation for this gamma is to
+#set alpha and beta to value such that
+#2/(alpha+beta)==SD
+#beta/alpha==mean
+#remember we're trying to set the *distribution* for sigma, so...
+#central prior for sigma is around
+#which one is *uncertainty* in mu and which one is distribution in subject values of mu????
+#sigma is the magnitude of distribution in subject values of mu
+#alpha and beta are the priors for estimating sigma
+#and...these are really poorly named, but we use alpha_pr_var to set the sigma prior, and 
+#alpha_sd_prior to set the alpha and beta values
+prior.l2$alpha=list("mu"=lba_group_sstats$alpha_pr_mean,
+                    "sigma"=lba_group_sstats$alpha_pr_var,
+                    alpha=lba_group_sstats$alpha_sd_prior^2/6+2,
+                    beta=lba_group_sstats$alpha_sd_prior^3/6+2*lba_group_sstats$alpha_sd_prior)
+
+#so if we're targeting a mean of lba_group_sstats$alpha_sd_prior and variance of... 2 that would be
+
+
+# The mean (for α > 2) is:
+#   E(X) = β / (α – 1).
+# 
+# The variance is:
+#   β2 / ((α – 1)2*(α – 2)).
+
+
+prior.l2$thresh=list("mu"= lba_group_sstats$k_pr_mean,"sigma"=lba_group_sstats$k_pr_var,
+                     alpha=lba_group_sstats$k_sd_prior^2/6+2,
+                     beta=lba_group_sstats$k_sd_prior^3/6+2*lba_group_sstats$k_sd_prior)#,sigma_gamma=10)
+prior.l2$tau=list("mu"= lba_group_sstats$tau_pr_mean,"sigma"=lba_group_sstats$tau_pr_var,
+                     alpha=lba_group_sstats$tau_sd_prior^2/6+2,
+                     beta=lba_group_sstats$tau_sd_prior^3/6+2*lba_group_sstats$tau_sd_prior)#,sigma_gamma=10)
+# prior.l2$tau=list("mu"=log(.6*(rt_s_mean_all_mean)),
+#   "sigma"=sqrt(abs(log(.6*(rt_s_mean_all_mean)))),
+#                   alpha=4,beta=10,sigma_gamma=10)
 
 #useful for updating sigma vectors. 
 #these are the set parameters for the priors
@@ -105,13 +136,13 @@ sfClusterSetupRNG()
 print("...cluster setup run.")
 
 source(paste("de_mcmc/de_",version,"_functions.R",sep=""))
-source(paste("de_mcmc/de_",version.base,"_start.R",sep=""))
+source(paste("de_mcmc/de_",version,"_start.R",sep=""))
 
 #sfStop();save.image(file=paste0(mainDataDir,"de_h_m5k_testing.RData"))
 #sfStop();load(file="/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/de_h_m5k_testing.RData")
 
 #debugSource(paste("/expdata/bensmith/joint-modeling/code/msm/reversallearning/de_mcmc/functions_h_m5j.R",sep=""))
-source(paste("de_mcmc/de_",version.base,"_run.R",sep=""))
+source(paste("de_mcmc/de_",version,"_run.R",sep=""))
 
 
 #debugSource(paste("de_mcmc/de_",version,".R",sep=""))

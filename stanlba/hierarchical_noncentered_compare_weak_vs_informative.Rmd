@@ -1,0 +1,123 @@
+---
+title: "Comparing weak and non-informative priors"
+author: "Ben Smith"
+date: "6/4/2018"
+output:
+  pdf_document: 
+    keep_tex: yes
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"),
+                      echo=FALSE)
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+source("data_summarize_lbarlmodel.R")
+library(data.table)
+library(ggplot2)
+```
+
+```{r priors, echo=FALSE}
+
+source("stanlba/lba_rl_setup.R")
+source("stanlba/lba_rl_allsingles_get_results_summary.R")
+
+#Get a minimal amount of data to test a three level model.
+multisubj_multirun_moresubs<-rawdata[subid %in% c(105:115) #& Motivation=="reward" 
+                                     & reaction_time>0,
+                                     .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
+                                       ConsecSubId=as.integer(as.factor(as.character(subid))),
+                                       UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
+unique(multisubj_multirun_moresubs$ConsecSubId)
+#hmmm, before we can speedtest, we need to ensure the damn thing actually works.
+bseed<-712363934#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+
+source("get_priors.R")
+weak_priors<-get_priors()
+informative_priors<-get_priors(TRUE)
+
+param_list_symbolic<-c("subject $\\alpha_{\\mu}$","subject $k_{\\mu}$","subject $\\tau_{\\mu}$",
+                       "subject $\\alpha_{\\sigma}$","subject $k_{\\sigma}$","subject $\\tau_{\\sigma}$",
+                       "run $\\alpha_{\\sigma_{\\gamma}}$","run $k_{\\sigma_{\\gamma}}$","run $\\tau_{\\sigma_{\\gamma}}$")
+
+prior_list_symbolic<-t(matrix(c("subject $\\alpha_{\\mu\\mu}$","subject $k_{\\mu\\mu}$","subject $\\tau_{\\mu\\mu}$",
+                       "subject $\\alpha_{\\mu\\sigma}$","subject $k_{\\mu\\sigma}$","subject $\\tau_{\\mu\\sigma}$",
+                       "subject $\\alpha_{\\sigma}$","subject $k_{\\sigma}$","subject $\\tau_{\\sigma}$",
+                       "run $\\alpha_{\\sigma_{\\gamma}}$","run $k_{\\sigma_{\\gamma}}$","run $\\tau_{\\sigma_{\\gamma}}$"),ncol=4))
+dim(prior_list_symbolic)<-NULL
+
+```
+
+
+```{r loadmodels}
+
+load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_weakpriors_repeat_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
+fit_weak_p<-rmfit
+
+load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_informativepriors_repeat_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
+fit_informative_p<-rmfit
+
+
+```
+
+I compared models with 500 iterations, sampled from 450 to 500, with a delta adaption of 0.9. Both models were identical, and used non-centered priors, except that one model used weak, uninformative priors and one model used informative priors.
+
+I compared the first 10 subjects in the dataset.
+
+Priors were:
+
+```{r tableofpriors}
+
+priors_table<-t(rbind(as.data.table(weak_priors),as.data.table(informative_priors)))
+colnames(priors_table)<-c("Weak Priors","Informative Priors")
+rownames(priors_table)<-prior_list_symbolic
+knitr::kable(round(priors_table,2))
+
+```
+
+These priors were defined in the manner described in ref{sec:CalculatingEmpiricalPriors}.
+
+How did they do?
+
+## Effiency
+
+I wanted to measure efficiency for each parameter. At maximum efficiency, the effective sample size per chain-iteration is 1; lower efficiencies are degraditions of this.
+
+```{r weakpriors}
+efficiency_table<-cbind(efficiency_score_by_param(fit_weak_p)[1:9],
+efficiency_score_by_param(fit_informative_p)[1:9])
+colnames(efficiency_table)<-c("Weak priors","Informative priors")
+
+rownames(efficiency_table)<-param_list_symbolic
+knitr::kable(round(efficiency_table,2),booktabs=TRUE,caption="Efficiency per chain-iteration by parameter", escape=FALSE)
+
+```
+
+For estimating group parameters, efficiency seemed better overall for the informative prior model, although there's no clear winner.
+
+## Representativeness
+
+Representativeness is measured by the Gelman-Rubin $\hat{R}$ statistic, and should ideally be lower than 1.05.
+
+```{r model1}
+rhat_df<-cbind(summary(fit_weak_p)$summary[1:9,"Rhat"],summary(fit_informative_p)$summary[1:9,"Rhat"])
+colnames(rhat_df)<-c("WeakPriors","InformativePriors")
+rownames(rhat_df)<-param_list_symbolic
+knitr::kable(round(rhat_df,2))
+
+```
+
+I did seem to find evidence that the informative priors allowed for a better fit; these conclusions should be held tentatively until we can run the test several times repeatedly with varying starting seeds. Still, while using weak priors, two of the three group mean values had $\hat{R}$ values above 1.05, whereas for informative priors, all values were below 1.05.
+
+
+

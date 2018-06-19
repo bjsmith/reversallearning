@@ -17,8 +17,9 @@ knitr::opts_knit$set(root.dir="../")
 ```
 
 ```{r setup2, include=FALSE}
-source("util/apply_local_settings.R")
+source("../util/apply_local_settings.R")
 library(ggplot2)
+library(scales)
 source("visualization/geom_hdi.R")
 apply_local_settings()
 knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
@@ -138,3 +139,20 @@ Within each session:
  * There is no current integration of ROI or other neural signals but I want to do this eventually. I'm working on getting surface-based ROIs which should be higher-fidelity than 3D-space ROIs.
  * No current modeling of confusion between stimuli. Brandon and I have discussed this. I am uncertain how much variance this would explain over treating discriminability as random error.
   
+  
+# Exclusion of abnormally short reaction times
+
+It was found that in the linear ballistic accumulator model, extremely short reaction times can result in an infinite likelihood if they are treated as a genuine response to the stimulus. Because according the model, these response times have zero likelihood, assuming that overall model parameters are approximately correct, they must be something other than an actual response, e.g., a simple accidental button press that coincides with the presentation of a stimulus.
+
+The distribution of response times is bimodal:
+
+```{r ResponseTimeDistribution}
+
+ggplot(rl.all.subjects.list.g1g2g3[response_key!=0 | response_key > 1], aes(reaction_time))+
+  geom_histogram(binwidth=0.05)+
+  scale_y_continuous(trans="log10")
+
+```
+In a simple reaction time task, \textcite{woods2015factors} found subjects' simple response time had a mean of 213 ms, including movement initiation. In their analysis, they coded responses less than 110~ms as a false alarm. Here, I followed their practice by marking trials with responses less than 110~ms as non-response trials. Of the 
+
+#Excluding subjects who were performing abnormally poorly

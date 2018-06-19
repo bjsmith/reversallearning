@@ -17,7 +17,8 @@ improperly.estimated.runs<-unique(results.summary.dt[which(results.summary.dt$Rh
 
 lba_group_sstats<-generate_lbarl_group_summary_stats(results.summary.dt[!(FullRunId %in% improperly.estimated.runs$FullRunId)])
 
-n_chains<-min(get_my_preferred_cores(),12)
+#n_chains<-min(get_my_preferred_cores(),6)
+n_chains=3
 cores_to_use <- n_chains
 options(mc.cores = cores_to_use)
 print(paste0("using ", cores_to_use, " cores."))
@@ -286,20 +287,20 @@ print("running...")
 
 print("------------------------")
 print("Running the informative priors model WITHOUT INITIAL VALUES SPECIFIED.")
-fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_10subjs_initvalsspecified",
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","G1_auto_init",
                                 filedir="incremental/",informative_priors = TRUE,
                                 init_vals="auto")
 
 print("------------------------")
 print("Running the informative priors model WITH RANDOM INITIAL VALUES SPECIFIED.")
-fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_10subjs_initvalsspecified",
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_G1_randomized_init",
                                        filedir="incremental/",informative_priors = TRUE,
                                        init_vals="randomized")
 
 
 print("------------------------")
 print("Running the informative priors model WITH BOOTSTRAPPED INITIAL VALUES SPECIFIED.")
-fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_10subjs_initvalsspecified",
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","informativepriors_G1_bootstrapped_init",
                                        filedir="incremental/",informative_priors = TRUE,
                                        init_vals="bootstrapped")
 

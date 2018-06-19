@@ -1,0 +1,192 @@
+---
+title: "Comparing starting values"
+author: "Ben Smith"
+date: "6/4/2018"
+output:
+  pdf_document: 
+    keep_tex: yes
+---
+
+I previously found that although my model could under some circumstances produce reasonable estimates using 3 chains, for a specific starting seed, further testing showed that this broke down for a 6-chain or 12-chain model, because not all chains starting in reasonable places.
+
+So, I tried two different methods of specifying starting values based on the empirical data. First, a randomized method, and second, a bootstrapped distribution method.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"),
+                      echo=FALSE)
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+source("data_summarize_lbarlmodel.R")
+source("generate_lbarl_group_summary_stats.R")
+source("bootstrap_smart_init_vals.R")
+source("init_vals_generate.R")
+library(data.table)
+library(ggplot2)
+library(latex2exp)
+library(scales)
+
+```
+
+```{r priors, echo=FALSE}
+
+source("stanlba/lba_rl_setup.R")
+source("stanlba/lba_rl_allsingles_get_results_summary.R")
+
+#Get a minimal amount of data to test a three level model.
+multisubj_multirun_moresubs<-rawdata[subid %in% c(105:115) #& Motivation=="reward" 
+                                     & reaction_time>0,
+                                     .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
+                                       ConsecSubId=as.integer(as.factor(as.character(subid))),
+                                       UniqueRunID=as.numeric(interaction(subid,runid,Motivation,drop = TRUE)))]
+
+#hmmm, before we can speedtest, we need to ensure the damn thing actually works.
+bseed<-712363934#set.seed(as.numeric(Sys.time())); sample.int(.Machine$integer.max-1000, 1)
+
+source("get_priors.R")
+
+
+informative_priors<-get_priors(TRUE)
+data_to_pass<-get_priors_and_data(TRUE)
+
+param_list_symbolic<-c("subject $\\alpha_{\\mu}$","subject $k_{\\mu}$","subject $\\tau_{\\mu}$",
+                       "subject $\\alpha_{\\sigma}$","subject $k_{\\sigma}$","subject $\\tau_{\\sigma}$",
+                       "run $\\alpha_{\\sigma_{\\gamma}}$","run $k_{\\sigma_{\\gamma}}$","run $\\tau_{\\sigma_{\\gamma}}$")
+
+prior_list_symbolic<-t(matrix(c("subject $\\alpha_{\\mu\\mu}$","subject $k_{\\mu\\mu}$","subject $\\tau_{\\mu\\mu}$",
+                       "subject $\\alpha_{\\mu\\sigma}$","subject $k_{\\mu\\sigma}$","subject $\\tau_{\\mu\\sigma}$",
+                       "subject $\\alpha_{\\sigma}$","subject $k_{\\sigma}$","subject $\\tau_{\\sigma}$",
+                       "run $\\alpha_{\\sigma_{\\gamma}}$","run $k_{\\sigma_{\\gamma}}$","run $\\tau_{\\sigma_{\\gamma}}$"),ncol=4))
+dim(prior_list_symbolic)<-NULL
+
+```
+
+
+```{r loadmodels}
+
+load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_auto_init_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
+auto_init_vals_fit<-rmfit
+
+load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_randomized_init_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
+randomized_init_vals_fit<-rmfit
+load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_bootstrapped_init_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
+bootstrapped_init_vals_fit<-rmfit
+
+
+```
+
+I compared models with 500 iterations, sampled from 450 to 500, with a delta adaption of 0.9. Both models were identical, and used non-centered priors, except that one model used weak, uninformative priors and one model used informative priors.
+
+I compared starting values generated three different ways for a 10-subject, 12-run model.
+
+ - Using the default initial priors that R uses. Unconstrained variables are set on a uniform distribution between -2 and 2; variables constrained to be non-negative are set on an exponential transform of a normal distribution between $exp(-2)$ and $exp(2)$.
+ - Using random initial values. Here, I started with empirical priors and used them to extract rando distribution around those empirical priors. Thus, we got a unique set of random initial values for each chain.
+ - Using bootstrapped initial values. Here, I randomly selected with replacement a set of subjects equal to the size of the actual dataset (in this case, 10 subjects). I then calculated group-level statistics based on the single-subject models using *these* groups and these starting values values were used. This method produces a quite tightly-bound set of initial values. Because the method for group-level statistics based on single-subject models often involved the use of medians (see Section \ref{sec:CalculatingEmpiricalPriors}), some initial priors are actually identical in some cases. Because this method is almost entirely deterministic (random noise from an empirical distribution is used to allocate starting values to subject-level and run-level priors), we know it will replicate for any given seed value. However, if our initial values are too narrow, we may not end up properly exploring the parameter space. It might be sensible to apply this method, but use smaller-size groups to generate values.
+ 
+
+
+Priors were the same informative priors used previously:
+
+```{r tableofpriors}
+
+priors_table<-t(as.data.table(informative_priors))
+colnames(priors_table)<-c("Informative Priors")
+rownames(priors_table)<-prior_list_symbolic
+knitr::kable(priors_table,digits = 2)
+
+
+```
+
+These priors were defined in the manner described in \ref{sec:CalculatingEmpiricalPriors}.
+
+
+```{r init_values_generate}
+
+n_chains=12
+smart_init_vals<-bootstrap_smart_init_vals(n_samples = n_chains,
+                                           subid_set = sort(unique(multisubj_multirun_moresubs$subid)),
+                                           bootstrap_seed = c(1973449269))
+
+boot_init_vals<-lapply(smart_init_vals,get_bootstrapped_init_vals)
+
+source("init_vals_generate.R")
+#random_init_vals<-get_init_vals()
+#I'm not sure how to display all this so I won't for now.
+#could graph it, I guess?
+#x axis is the chain, y is the value, color by value.
+init_vals_main<-as.data.table(do.call(rbind,lapply(boot_init_vals,function(bivi)unlist(bivi[1:3]))))
+init_vals_main$Chain<-1:length(boot_init_vals)
+#colnames(init_vals_main)<-c(param_list_symbolic,"Chain")
+init_vals_main.long<-tidyr::gather(as.data.table(init_vals_main),key = "Param",value = "Value",1:(dim(init_vals_main)[2]-1))
+init_vals_main.long$Param<-factor(init_vals_main.long$Param,levels=colnames(init_vals_main))
+ggplot(init_vals_main.long,aes(x=Chain,y=Value,color=Param))+
+  geom_line()+scale_color_discrete(labels=lapply(param_list_symbolic, TeX))+
+  scale_x_continuous(breaks=1:12,minor_breaks = 1:12)#+scale_y_continuous(trans="sqrt")
+
+```
+
+And the randomly determind initial were defined as such:
+
+ - subj $\alpha_{\mu} \sim \mathrm{norm}(`r round(informative_priors$priors_alpha,2)`,`r round(informative_priors$priors_alpha_spread,2)`)$
+ - subj $k_{\mu} \sim \mathrm{norm}(`r round(informative_priors$priors_lba_k,2)`,`r round(informative_priors$priors_lba_k_spread,2)`)$
+ - subj $tau_{\mu} \sim \mathrm{norm}(`r round(informative_priors$priors_lba_tau,2)`,`r round(informative_priors$priors_lba_tau_spread,2)`)$
+ - subj $\alpha_{\sigma} \sim |\mathrm{norm}(0,`r round(informative_priors$priors_alpha_sd_gamma,2)`)|$
+ - subj $k_{\sigma} \sim |\mathrm{norm}(0,`r round(informative_priors$priors_lba_k_sd_gamma,2)`)|$
+ - subj $tau_{\sigma} \sim |\mathrm{norm}(0,`r round(informative_priors$priors_lba_tau_sd_gamma,2)`)|$
+ - run $\alpha_{\sigma\gamma} \sim |\mathrm{norm}(0,`r round(informative_priors$priors_alpha_run_sigma_gamma,2)`)|$
+ - run $k_{\sigma\gamma} \sim |\mathrm{norm}(0,`r round(informative_priors$priors_lba_k_run_sigma_gamma,2)`)|$
+ - run $tau_{\sigma\gamma} \sim |\mathrm{norm}(0,`r round(informative_priors$priors_lba_tau_run_sigma_gamma,2)`)|$
+ 
+## Effiency
+
+I wanted to measure efficiency for each parameter. At maximum efficiency, the effective sample size per chain-iteration is 1; lower efficiencies are degradations of this.
+
+```{r weakpriors}
+
+efficiency_table<-cbind(efficiency_score_by_param(auto_init_vals_fit)[1:9],
+                        efficiency_score_by_param(randomized_init_vals_fit)[1:9],
+                        efficiency_score_by_param(bootstrapped_init_vals_fit)[1:9])
+
+colnames(efficiency_table)<-c("Stan Automatic","Randomized","Bootstrapped")
+
+rownames(efficiency_table)<-param_list_symbolic
+knitr::kable(round(efficiency_table,2),booktabs=TRUE,caption="Efficiency per chain-iteration by parameter ($\\rightarrow 1$ is better)", escape=FALSE)
+
+```
+
+Although the stan automatic values did not produce good results, both the random and bootstrapped initial values produced reasonable efficiency, although the bootstrapped initial values were not quite as good.
+
+## Representativeness
+
+Representativeness is measured by the Gelman-Rubin $\hat{R}$ statistic, and should ideally be lower than 1.05.
+
+```{r model1}
+
+rhat_df<-cbind(summary(auto_init_vals_fit)$summary[1:9,"Rhat"],
+               summary(randomized_init_vals_fit)$summary[1:9,"Rhat"],
+               summary(bootstrapped_init_vals_fit)$summary[1:9,"Rhat"])
+colnames(rhat_df)<-c("Stan Automatic","Randomized", "Bootstrapped")
+rownames(rhat_df)<-param_list_symbolic
+knitr::kable(rhat_df,digits=2,
+             caption = "Gelman-Rubin $\\hat{R}$ statistic by intialization method ($\\hat{R}<1.05$ is acceptable)")
+
+```
+
+Both the randomized and bootstrapped initial values offered reasonable estimates, while the stan automatic values clearly could not converge properly on the target.
+
+
+## Extending to a full group analysis
+
+When extending the model to a full 54-subject group analysis, I found that the initial values produced would not allow the model to run. This was because I was generating random starting values at the subject and run level generated based on random distribution would occasionally be so far out of high-probability space that likelihood was zero.
+
+In order to get around this problem, for both the randomized initial values and the bootstrapped initial values, I applied a psueudonormal sampling method. Instead of taking random samples from the distributions, I used R's |qnorm| function to define subject-level and run-level values as the set of equally-spaced quantiles between 2 standard deviations above and below the mean. This guaranteed both a normal distribution of values and avoided use of any extreme values which could potentially cause a zero likelihood initial proposal. The samples were scrambled so that within this constraint, the particular subject and run allocated to each quantile was entirely random.
+
+After this was applied, I was able to properly estimate intitial values.
