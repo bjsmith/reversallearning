@@ -5,7 +5,7 @@ subjs.without.group<-unlist(lapply(data,function(d){is.na(d$group)}))
 data<-data[!safe_meth_subjs & !subjs.without.group]
 
 #dim(rawdata.dt[rawdata.dt$SubjectGroup %in% c(1,2,3),])
-hist(rawdata.dt[(SubjectGroup %in% c(1,2,3)),reaction_time])
+
 #exclude subjects who seem to be just repeatedly pressing buttons.
 changeDetect<-function(vec){sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])}
 buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))

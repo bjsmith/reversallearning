@@ -1,4 +1,4 @@
-data_amendment_version<-2
+data_amendment_version<-1
 source("rl_behav_analysis_learning_setup.R")
 
 #this admended version of the dataset 
@@ -44,7 +44,4 @@ subs.to.reclassify<-rl.all.subjects.list[
 #remove subjects from their categories if their sexual behavior is ambiguous.
 rl.all.subjects.list[subid %in% subs.to.reclassify, 
                      c("RiskCat", "RiskLabel","SexRisk") := list(NA,NA,NA)]
-
-
-#clean up reaction times.
 

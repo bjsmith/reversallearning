@@ -1,0 +1,29 @@
+---
+title: "All about reaction times"
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+  
+# Exclusion of abnormally short reaction times
+
+It was found that in the linear ballistic accumulator model, extremely short reaction times can result in an infinite likelihood if they are treated as a genuine response to the stimulus. Because according the model, these response times have zero likelihood, assuming that overall model parameters are approximately correct, they must be something other than an actual response, e.g., a simple accidental button press that coincides with the presentation of a stimulus.
+
+The distribution of response times is bimodal:
+
+```{r ResponseTimeDistribution}
+
+ggplot(rl.all.subjects.list[response_key!=0],aes(reaction_time))+geom_histogram(binwidth=0.01)+
+   scale_y_continuous(trans="log")+
+   geom_vline(xintercept = 0.110)+labs(y="log(count)",title="response time distribution with cutoff point used by\nWoods, Wyma, Yund, Herron, & Reed (2015)\nand higher cutoff point used in this study")+
+   geom_vline(xintercept = 0.140)
+
+```
+Due to a technical error, there were 7 trials where reaction times between 1.1 and 1.5 were recorded. These were not excluded as they were likely due to a technical error in code or temporary latency problem rather than an erroneous response.
+
+
+In a simple reaction time task, \textcite{woods2015factors} found subjects' simple response time had a mean of 213 ms, including movement initiation. In their analysis, they coded responses less than 110~ms as a false alarm. However, considering the distribution observed in this study, along with the relatively high cost of including a false response compared to teh relatively negative cost of excluding at true response, I used a slightly higher threshold of 140~ms.
+
+#Excluding subjects who were performing abnormally poorly
