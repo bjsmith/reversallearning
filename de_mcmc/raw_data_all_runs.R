@@ -1,5 +1,5 @@
 
-source("raw_data_wrapper_for_brandon_amendment1.R")
+source("raw_data_wrapper_for_brandon_amendment2.R")
 
 #all runs.
 #rawdata<-rawdata[rawdata$Motivation=="reward" & rawdata$runid==1,]

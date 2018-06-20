@@ -7,8 +7,11 @@ source("rl_behav_analysis_learning_setup.R")
   # (1) had unprotected anal sex in the trial period, and
   # (2) had a primary partner, and
   # (3) who MAY not have had unprotected anal sex with anyone except their primary partner.
-# (II)
-## cleans up reaction times.
+# (II) cleans up reaction times.
+# (1) Reaction times less than 140 ms; new nonresponse_cleaned column that marks these as non-responses
+# (III) poorly performing subjects
+#       marks out subjects who do not meet the inclusion criteria of reasonably good performane.
+
 
 
 rl.all.subjects.list$HasPrimaryPartner<-factor(rl.all.subjects.list$Q32,levels=c("No","Yes"))
@@ -48,3 +51,34 @@ rl.all.subjects.list[subid %in% subs.to.reclassify,
 
 #clean up reaction times.
 
+# library(ggplot2)
+# library(scales)
+ 
+#The Woods et al. cuttoff point seems a little low. Based on the distribution in our data, a better cutoff point would be 
+#around 140 ms.
+rl.all.subjects.list$choice<-rl.all.subjects.list$response_key
+rl.all.subjects.list[reaction_time<.140 & response_key!=0,choice:=0]
+# table(rl.all.subjects.list$response_key,rl.all.subjects.list$choice)
+
+#poorly performing subjects.
+rl.all.subjects.list$outcome<-rl.all.subjects.list$score
+
+#exclude subjects who seem to be just repeatedly pressing buttons.
+changeDetect<-function(vec){sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])}
+#buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
+buttonChangesDt<-rl.all.subjects.list[,.(RunButtonChanges=changeDetect(response_key)),by=.(runid,subid,Motivation)]
+#a more sophisticated model might have a policy detection which probabilitistically detects which policy a subject
+#uses to press buttons but I'm not using that for now.
+#also accuracy data will be useful.
+#overallperformance<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){sum(r$outcome==1)/length(r$outcome)})))}))
+
+OverallPerformanceDt<-rl.all.subjects.list[,.(RunPerformance=sum(outcome==1)/.N),by=.(runid,subid,Motivation)]
+
+rl.all.subjects.list.uncleaned<-rl.all.subjects.list
+rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,buttonChangesDt,by=c("runid","subid","Motivation"))
+rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,OverallPerformanceDt,by=c("runid","subid","Motivation"))
+rl.all.subjects.list<-rl.all.subjects.list.uncleaned[RunButtonChanges>90 & RunPerformance>0.4]
+length(unique(rl.all.subjects.list$subid))
+
+
+#performance worse than 0.4 may suggest the subject has misunderstood the task.

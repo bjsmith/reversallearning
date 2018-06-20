@@ -1,9 +1,8 @@
-stop("This file is now obsolete. Don't use it.")
 source("../util/apply_local_settings.R")
 apply_local_settings()
 dd<-localsettings$data.dir
 #dd<-""#enter data directory where the raw data is saved here.
-rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment_amendment1.txt"), header=T)
+rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment_amendment2.txt"), header=T)
 #table(rawdata$runid==1,rawdata$Motivation=="reward")
 
 #some essential pre-processing.
@@ -13,10 +12,11 @@ rawdata <- read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment_am
 #rawdata.rewardrun1<-rawdata.rewardrun1[!rawdata.rewardrun1$subid %in% c(115,216,254,332),]
 rawdata<-rawdata[!rawdata$subid %in% c(115,216,254,332,153,154),]
 #have to re-code this column for reasons (it was counterbalanced across subjects; that has to be accounted for)
-rawdata$cor_res_aligned<-
-  ((rawdata$subid+1) %% 2)*(3-rawdata$cor_res)+
-  ((rawdata$subid) %% 2)*(rawdata$cor_res)
-
+# rawdata$cor_res_aligned<-
+#   ((rawdata$subid+1) %% 2)*(3-rawdata$cor_res)+
+#   ((rawdata$subid) %% 2)*(rawdata$cor_res)
+#this redo has now been built in to the pre-processing is avialalbe in the column "cor_res_Counterbalanced"
+#which contains more accurate processing.
 
 #####EXPLANATION OF THE DATA.
 #key columns are:
