@@ -17,9 +17,8 @@ cbind(buttonChanges,overallperformance)
 #plot(buttonChanges,overallperformance)
 data<-data[buttonChanges>90 & overallperformance>0.4] 
 table(unlist(lapply(data,function(d){d$group})))
-#performance worse than 0.4 may suggest the subject has misunderstood the task.
-
-#new in m5hl: consider responses less than 110 ms to be non-responses.
+#performance worse than 0.4 may suggest the subject has misunderstood th
+#rlier filter that was added to this in order to filter out badly performing subjects has now been written into the data cleaning code.
 
 # #
 # # # # #get a set of subjects who are in each of the three groups.
