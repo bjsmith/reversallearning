@@ -1,11 +1,24 @@
 
-source("de_mcmc/raw_data_all_runs.R")
+source("de_mcmc/raw_data_all_runs_v2.R")
 safe_meth_subjs<-unlist(lapply(data,function(d){d$group=="SafeMeth"}))
 subjs.without.group<-unlist(lapply(data,function(d){is.na(d$group)}))
 data<-data[!safe_meth_subjs & !subjs.without.group]
 
 #dim(rawdata.dt[rawdata.dt$SubjectGroup %in% c(1,2,3),])
-#earlier filter that was added to this in order to filter out badly performing subjects has now been written into the data cleaning code.
+
+#exclude subjects who seem to be just repeatedly pressing buttons.
+changeDetect<-function(vec){sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])}
+buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
+#a more sophisticated model might have a policy detection which probabilitistically detects which policy a subject
+#uses to press buttons but I'm not using that for now.
+#also accuracy data will be useful.
+overallperformance<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){sum(r$outcome==1)/length(r$outcome)})))}))
+cbind(buttonChanges,overallperformance)
+#plot(buttonChanges,overallperformance)
+data<-data[buttonChanges>90 & overallperformance>0.4] 
+table(unlist(lapply(data,function(d){d$group})))
+#performance worse than 0.4 may suggest the subject has misunderstood th
+#rlier filter that was added to this in order to filter out badly performing subjects has now been written into the data cleaning code.
 
 # #
 # # # # #get a set of subjects who are in each of the three groups.

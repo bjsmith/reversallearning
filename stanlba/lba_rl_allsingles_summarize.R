@@ -1,4 +1,4 @@
-source("stanlba/lba_rl_setup.R")
+source("stanlba/lba_rl_setup_v2.R")
 
 # sub105data<-rawdata[subid==105 & Motivation=="reward" & runid==1,.(reaction_time,outcome,cue,choice,cor_res_Counterbalanced)]
 
@@ -12,7 +12,7 @@ dir.create(single_run_dir, showWarnings = FALSE)
 dir.create(output_dir, showWarnings = FALSE)
 #file_folder<-"/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/lba_rl_single_estimates.RData"
 #load(file=file_folder)
-results_summary_list_filepath<-paste0(output_dir,"run_package_summary.RData")
+results_summary_list_filepath<-paste0(output_dir,"run_package_summary_v2.RData")
 if(file.exists(results_summary_list_filepath)){
   load(results_summary_list_filepath)
 }else{
@@ -26,7 +26,7 @@ for (sid in unique(rawdata$subid)){#sid<-106
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     for(m in unique(rawdata[subid==sid & runid==r,Motivation])){#m<-"punishment"
       
-      package_filepath<-paste0(output_dir,"run_package_",sid,"_",r,"_",m,".RData")
+      package_filepath<-paste0(output_dir,"run_package_",sid,"_",r,"_",m,"_v2.RData")
       srm.data<-rawdata[subid==sid & Motivation==m & runid==r,.(reaction_time,outcome,cue,choice,cor_res_Counterbalanced)]
       if(any(unlist(lapply(results.summary.list,function(rli){rli$sid==sid & rli$rid==r & rli$motivation==m})))==FALSE & 
          #we haven't already got an entry for this one.

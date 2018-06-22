@@ -1,3 +1,4 @@
+
 source("../util/apply_local_settings.R")
 apply_local_settings()
 source("../util/bjs_misc_utils.R")
@@ -5,7 +6,7 @@ run.ts<-get.datetimestamp()
 
 
 source("de_mcmc/functions.R")
-library(rlang)
+require(rlang)
 library("data.table")
 library("parallel")
 library("snowfall") # install.packages("snowfall")

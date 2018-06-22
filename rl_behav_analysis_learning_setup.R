@@ -113,10 +113,10 @@ for (condition in c("reward","punishment")){
     # table(sub.data.no0$cor_res,sub.data.no0$response_key,sub.data.no0$score)
     score_for_match<-(sub.data.no0$cor_res==sub.data.no0$response_key)==(sub.data.no0$score==1)
     if(all(score_for_match)){
-      print(paste0("for sub ",subid_from_filename,", cor_res MATCHES response_key for correct items"))
+      #print(paste0("for sub ",subid_from_filename,", cor_res MATCHES response_key for correct items"))
       sub.data$cor_res_Counterbalanced=sub.data$cor_res
     }else if (all(!score_for_match)){
-      print(paste0("for sub ",subid_from_filename,", cor_res MISMATCHES response_key for correct items. Remapping."))
+      #print(paste0("for sub ",subid_from_filename,", cor_res MISMATCHES response_key for correct items. Remapping."))
       sub.data$cor_res_Counterbalanced= 3 - sub.data$cor_res
     }else{
       stop(paste0("inconsistent cor_res, response_key, score alignment for sub",subid_from_filename))
@@ -199,7 +199,7 @@ for (condition in c("reward","punishment")){
   
   #iterate through each list.
   #in each list, if there exists duplicate rows, then test to see if the ENTIRE run is duplicated EXACTLY
-  View(rl.subjects.f2.list[rl.subjects.f2.list$subid==153,])
+  #View(rl.subjects.f2.list[rl.subjects.f2.list$subid==153,])
   unique(rl.subjects.f1.list$subid)
   length(unique(rl.subjects.f1.list$subid))
   length(unique(rl.subjects.f2.list$subid))

@@ -142,7 +142,7 @@ log.dens.like=function(x_s,use.data_s,method="full"){
                                  v=v_t[use.data_s$choice!=0,],
                                  theta=c(tau_s_tr,tau_s_tr)
     ))
-    print(dens.v)
+    #print(dens.v)
     dens.s<-sum(dens.v)
     
     dens=dens+dens.s#is this right?-BJS

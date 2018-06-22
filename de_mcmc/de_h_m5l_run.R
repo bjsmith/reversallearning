@@ -158,7 +158,7 @@ for(i in 2:nmc){#loop through iterations#i<-2
   last_time<-Sys.time()
   
   if(last_time-20>last_time_print_progress  || (i %%100)==0){
-    print(colMeans(as.data.frame(diagnostic_record)))
+    #print(colMeans(as.data.frame(diagnostic_record)))
     #let's do a visualization every 100 timesteps.
     if(i>vis_1){
       
