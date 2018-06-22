@@ -63,9 +63,24 @@ rl.all.subjects.list[reaction_time<.140 & response_key!=0,choice:=0]
 rl.all.subjects.list$outcome<-rl.all.subjects.list$score
 
 #exclude subjects who seem to be just repeatedly pressing buttons.
-changeDetect<-function(vec){sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])}
+#FUCK. OUR NEW VERSION OF BUTTONCHANGES IS UNDERCOUNTING BUTTON CHANGES. WHY IS THIS?
+changeDetect<-function(vec){
+  print(vec)
+  print("")
+  sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])
+  }
 #buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
-buttonChangesDt<-rl.all.subjects.list[,.(RunButtonChanges=changeDetect(response_key)),by=.(runid,subid,Motivation)]
+#gonna be assessed as a mean score across subjects.
+buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
+mean(unlist(lapply(data[[1]]$runs,function(r){changeDetect(r$choice)})))
+data
+data[[1]]$SubID
+length(data)
+buttonChangesDt<-rl.all.subjects.list[subid==105,.(RunButtonChanges=changeDetect(response_key)),by=.(runid,subid,Motivation)] %>%
+  .[,SubjMeanRunButtonChanges:=mean(RunButtonChanges),by=subid]
+##########################################WTF MATE NEED TO SORT THIS OUT #####################
+buttonChangesDt<-rl.all.subjects.list[subid==105,.(RunButtonChanges=.N),by=.(runid,subid,Motivation)] %>%
+  .[,SubjMeanRunButtonChanges:=mean(RunButtonChanges),by=subid]
 #a more sophisticated model might have a policy detection which probabilitistically detects which policy a subject
 #uses to press buttons but I'm not using that for now.
 #also accuracy data will be useful.
@@ -77,7 +92,7 @@ rl.all.subjects.list.uncleaned<-rl.all.subjects.list
 rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,buttonChangesDt,by=c("runid","subid","Motivation"))
 rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,OverallPerformanceDt,by=c("runid","subid","Motivation"))
 rl.all.subjects.list<-rl.all.subjects.list.uncleaned[RunButtonChanges>90 & RunPerformance>0.4]
-length(unique(rl.all.subjects.list$subid))
+
 
 
 #performance worse than 0.4 may suggest the subject has misunderstood the task.

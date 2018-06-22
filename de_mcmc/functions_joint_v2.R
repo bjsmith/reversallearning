@@ -232,6 +232,9 @@ update.Sigma=function(i,use.theta,prior){
 
 #this is used when updating the hyper mu values
 update.mu.vector=function(x,use.core,use.sigma,prior){
+  #x=1;use.core=as.matrix(theta[,unlink.pars[k],j,run_range],nrow=n.chains,ncol=run_range),
+  #use.sigma=shape.to.chains.by.runs(apply(shape.to.chains.by.runs(theta[,unlink.pars[k],j,run_range]),1,sd,na.rm=TRUE)),
+  #prior=prior.l2[[k]]
   X=use.core[x,]
   n=length(X)
   mu0=prior$mu

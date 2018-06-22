@@ -1,5 +1,5 @@
 
-source("de_mcmc/raw_data_all_runs.R")
+source("de_mcmc/raw_data_all_runs_v2.R")
 safe_meth_subjs<-unlist(lapply(data,function(d){d$group=="SafeMeth"}))
 subjs.without.group<-unlist(lapply(data,function(d){is.na(d$group)}))
 data<-data[!safe_meth_subjs & !subjs.without.group]

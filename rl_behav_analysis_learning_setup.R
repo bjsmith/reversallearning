@@ -199,7 +199,7 @@ for (condition in c("reward","punishment")){
   
   #iterate through each list.
   #in each list, if there exists duplicate rows, then test to see if the ENTIRE run is duplicated EXACTLY
-  View(rl.subjects.f2.list[rl.subjects.f2.list$subid==153,])
+  #View(rl.subjects.f2.list[rl.subjects.f2.list$subid==153,])
   unique(rl.subjects.f1.list$subid)
   length(unique(rl.subjects.f1.list$subid))
   length(unique(rl.subjects.f2.list$subid))

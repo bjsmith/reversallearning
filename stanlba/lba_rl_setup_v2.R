@@ -1,4 +1,3 @@
-stop("this version is deprecated, but is archived for records in case you want to see which version of the data was used to create the output.")
 library(rstan)
 library(parallel)
 library(dplyr)
@@ -22,6 +21,6 @@ source('stanlba/lba-math.R')
 
 
 
-rawdata <- data.table(read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment_amendment1.txt"), header=T))
+rawdata <- data.table(read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment_amendment2.txt"), header=T))
 
 stanfiledir<-"stanlba/stanfiles/"

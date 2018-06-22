@@ -61,7 +61,8 @@ for(j in 1:S){#j<-1
     
     #init.pars[j,r,]=new.x_s#colMeans(rbind(new.x_s,
                     #     optim(new.x_s,function(x_s,data)-log.dens.like(x_s,data),data=data[[j]]$runs[[r]])$par))#compromise
-    init.pars[j,r,]=(1-max(a,0))*new.x_s+(max(a,0))*optim(new.x_s,function(x_s,data)-log.dens.like(x_s,data),data=data[[j]]$runs[[r]])$par
+    init.pars[j,r,]=(1-max(a,0))*new.x_s+(max(a,0))*optim(new.x_s,function(x_s,data)-log.dens.like(x_s,data),
+                                                          data=data[[j]]$runs[[r]])$par
     
     if (attemptcount>500){
       stop(paste0("Couldn't optimize for subject ",j,", run ", r))
@@ -80,11 +81,13 @@ write(matrix(aperm(init.pars,c(2,1,3)),nrow=prod(dim(init.pars)[1:2])),
 #now we initialize.
 warned.dist2<-FALSE
 
+shape.to.chains.by.runs<-function(mat){as.matrix(mat,nrow=n.chains,ncol=run_range)}
 #controls distribution across chains.
 for(i in 1:n.chains){#i<-1
   for(j in 1:S){#j<-1
     for (r in 1:s_runs.N[j]){#r<-1
       run_range<-1:s_runs.N[j]
+      print(run_range)
       temp.weight=-Inf
       while(weight[i,j,r]==-Inf){
         theta[i,param.l1.ids$alpha,j,r]=rnorm(1,init.pars[j,r,param.l1.ids$alpha],sqrt(2))
@@ -100,13 +103,13 @@ for(i in 1:n.chains){#i<-1
         if(is.na(weight[i,j,r])) weight[i,j,r]=-Inf
       }
     }
-    
+  
     #level 2 initialization
     for(k in 1:param.l2.distributions.N) {#k<-1
       phi_s[i,k,j]=
         update.mu.vector(i,
-                         use.core=theta[,unlink.pars[k],j,run_range],
-                         use.sigma=apply(theta[,unlink.pars[k],j,run_range],1,sd,na.rm=TRUE),
+                         use.core=as.matrix(theta[,unlink.pars[k],j,run_range],nrow=n.chains,ncol=run_range),
+                         use.sigma=shape.to.chains.by.runs(apply(shape.to.chains.by.runs(theta[,unlink.pars[k],j,run_range]),1,sd,na.rm=TRUE)),
                          prior=prior.l2[[k]])
     }
     
@@ -114,8 +117,8 @@ for(i in 1:n.chains){#i<-1
       warning("Need to modify this. I think that because there are so few runs per subject, this is going to give us widely-varying initial mean values which is likely to be problematic.")
       phi_s[i,k,j]=
         update.sigma.vector(i,
-                            use.core=theta[,unlink.pars[k-param.l2.distributions.N],j,run_range],
-                            use.mu=apply(theta[,unlink.pars[k-param.l2.distributions.N],j,run_range],1,mean,na.rm=TRUE),
+                            use.core=shape.to.chains.by.runs(theta[,unlink.pars[k-param.l2.distributions.N],j,run_range]),
+                            use.mu=shape.to.chains.by.runs(apply(shape.to.chains.by.runs(theta[,unlink.pars[k-param.l2.distributions.N],j,run_range]),1,mean,na.rm=TRUE)),
                             prior=prior.l2[[k-param.l2.distributions.N]])
     }
     #likelihood
