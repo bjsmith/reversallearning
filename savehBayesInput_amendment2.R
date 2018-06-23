@@ -53,6 +53,9 @@ write.table(rl.all.subjects.list.punishment[,cols.to.export,with=FALSE],filename
 filename<-paste0(localsettings$data.dir,"all_subjs_datacomplete_reward_and_punishment_amendment2.txt")
 write.table(rl.all.subjects.list.complete[,cols.to.export,with=FALSE],filename,row.names = FALSE)
 
+filename<-paste0(localsettings$data.dir,"all_subjs_data_with_nonreversals_reward_and_punishment_amendment2.txt")
+write.table(rl.all.subjects.list.complete[,cols.to.export,with=FALSE],filename,row.names = FALSE)
+
 #matrix of posterior estimates
 
 #subject*trial*expected_value

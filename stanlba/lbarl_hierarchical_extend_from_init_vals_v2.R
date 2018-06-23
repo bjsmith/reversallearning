@@ -3,7 +3,7 @@ source("stanlba/lba_rl_setup_v2.R")
 # source("stanlba/lba_rl_allsingles_get_results_summary.R")
 
 #replace with 
-source("load_lba_rl_allsingles_resultsdata.R")
+source("load_lba_rl_allsingles_resultsdata_v2.R")
 source("generate_lbarl_group_summary_stats.R")
 #have to exclude improperly estimated runs.
 improperly.estimated.runs<-unique(results.summary.dt[which(results.summary.dt$Rhat>1.05),.(sid,rid,motivation,FullRunId)])

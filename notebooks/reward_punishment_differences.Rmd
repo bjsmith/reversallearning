@@ -1,0 +1,47 @@
+---
+title: "reward_punishment_differences"
+author: "Ben Smith"
+date: "6/22/2018"
+output: 
+  pdf_document: 
+    keep_tex: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"),
+                      echo=FALSE)
+library(data.table)
+library(ggplot2)
+```
+
+```{r setup3, include=FALSE}
+
+source("stanlba/lba_rl_setup_v2.R")
+# source("stanlba/lba_rl_allsingles_get_results_summary.R")
+
+#replace with 
+source("load_lba_rl_allsingles_resultsdata_v2.R")
+source("generate_lbarl_group_summary_stats.R")
+```
+## Reward and punishment differences in the single level model
+
+Having obtained accurate single-level models for each run, I was able to calculate the distribution of differences within subjects of reward and punishment runs.
+
+```{r rewardpundiffs}
+reward_punishment_differences<-results.summary.dt[param_name %in% c("alpha","k","tau"),.(RewardRuns=dim(.SD[motivation=="reward"])[1],PunishmentRuns=dim(.SD[motivation=="punishment"])[1],
+    RewardMinusPunishment_mean=mean(.SD[motivation=="reward",mean])[1]-mean(.SD[motivation=="punishment",mean])[1]),
+                     by=.(sid,param_name)]
+# View(reward_punishment_differences)
+ggplot(reward_punishment_differences,aes(reward_punishment_differences$RewardMinusPunishment_mean))+geom_histogram(binwidth=0.01)+facet_wrap(~param_name,nrow=1,scales = "free")+
+    scale_x_continuous(limits = c(-1,1))
+```
+
+
+

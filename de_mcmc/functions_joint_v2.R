@@ -258,11 +258,11 @@ update.mu.vector=function(x,use.core,use.sigma,prior){
 update.sigma.vector=function(x,use.core,use.mu,prior){
   require(MCMCpack)
   X=use.core[x,]
-  n=length(X)
+  N=length(X)
   alpha=prior$alpha
   beta=prior$beta
   mu=use.mu[x]
-  a=alpha+n/2
+  a=alpha+N/2
   b=beta+sum((X-mu)**2)/2
   sqrt(rinvgamma(1,a,b))
 }

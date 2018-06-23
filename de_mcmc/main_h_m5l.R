@@ -72,12 +72,19 @@ prior.big$n0=length(prior.big$mu) + 2
 
 #level 3 priors. 
 prior.l3=NULL
-prior.l3$alpha=list("mu"=lba_group_sstats$alpha_pr_mean,"sigma"=lba_group_sstats$alpha_pr_var)
-prior.l3$thresh=list("mu"=lba_group_sstats$k_pr_mean,"sigma"=lba_group_sstats$k_pr_var)
+#I don't know what good alpha and beta values are here.
+prior.l3$alpha=list("mu"=lba_group_sstats$alpha_pr_mean,"sigma"=lba_group_sstats$alpha_pr_var,alpha=4,beta=10)
+                    #"alpha"=lba_group_sstats$alpha_pr_var^2/6+2,
+                    #"beta"=lba_group_sstats$alpha_pr_var^3/6+2*lba_group_sstats$alpha_pr_var)
+prior.l3$thresh=list("mu"=lba_group_sstats$k_pr_mean,"sigma"=lba_group_sstats$k_pr_var,alpha=4,beta=10)
+                     #"alpha"=lba_group_sstats$k_pr_var^2/6+2,
+                     #"beta"=lba_group_sstats$k_pr_var^3/6+2*lba_group_sstats$k_pr_var)
 rt_s_mean<-unlist(lapply(data,FUN=function(s){mean(unlist(lapply(s$runs,function(r){min(r$rt,na.rm=TRUE)})))}))
 rt_s_mean_all_mean<-mean(rt_s_mean)
 prior.l3$tau=list("mu"=lba_group_sstats$tau_pr_mean,
-               "sigma"=lba_group_sstats$tau_pr_var)
+               "sigma"=lba_group_sstats$tau_pr_var,alpha=4,beta=10)
+#               "alpha"=lba_group_sstats$tau_pr_var^2/6+2,
+#               "beta"=lba_group_sstats$tau_pr_var^3/6+2*lba_group_sstats$tau_pr_var)
 
 #level 2 priors or initial values????
 #for level 2, we have level 3 from which to draw mu, so we don't include that,
@@ -98,8 +105,10 @@ prior.l2=NULL
 #alpha_sd_prior to set the alpha and beta values
 prior.l2$alpha=list("mu"=lba_group_sstats$alpha_pr_mean,
                     "sigma"=lba_group_sstats$alpha_pr_var,
-                    alpha=lba_group_sstats$alpha_sd_prior^2/6+2,
-                    beta=lba_group_sstats$alpha_sd_prior^3/6+2*lba_group_sstats$alpha_sd_prior)
+                    alpha=4,beta=10,
+                    #alpha=lba_group_sstats$alpha_sd_prior^2/6+2,
+                    beta=lba_group_sstats$alpha_sd_prior^3/6+2*lba_group_sstats$alpha_sd_prior,
+                    sigma_gamma=lba_group_sstats$alpha_run_sigma_gamma)
 
 #so if we're targeting a mean of lba_group_sstats$alpha_sd_prior and variance of... 2 that would be
 
@@ -112,11 +121,15 @@ prior.l2$alpha=list("mu"=lba_group_sstats$alpha_pr_mean,
 
 
 prior.l2$thresh=list("mu"= lba_group_sstats$k_pr_mean,"sigma"=lba_group_sstats$k_pr_var,
-                     alpha=lba_group_sstats$k_sd_prior^2/6+2,
-                     beta=lba_group_sstats$k_sd_prior^3/6+2*lba_group_sstats$k_sd_prior)#,sigma_gamma=10)
+                     alpha=4,beta=10,
+                     #alpha=lba_group_sstats$k_sd_prior^2/6+2,
+                     #beta=lba_group_sstats$k_sd_prior^3/6+2*lba_group_sstats$k_sd_prior,
+                     sigma_gamma=lba_group_sstats$k_run_sigma_gamma)
 prior.l2$tau=list("mu"= lba_group_sstats$tau_pr_mean,"sigma"=lba_group_sstats$tau_pr_var,
-                     alpha=lba_group_sstats$tau_sd_prior^2/6+2,
-                     beta=lba_group_sstats$tau_sd_prior^3/6+2*lba_group_sstats$tau_sd_prior)#,sigma_gamma=10)
+                  alpha=4,beta=10,
+                     #alpha=lba_group_sstats$tau_sd_prior^2/6+2,
+                     #beta=lba_group_sstats$tau_sd_prior^3/6+2*lba_group_sstats$tau_sd_prior,
+                  sigma_gamma=lba_group_sstats$tau_run_sigma_gamma)
 # prior.l2$tau=list("mu"=log(.6*(rt_s_mean_all_mean)),
 #   "sigma"=sqrt(abs(log(.6*(rt_s_mean_all_mean)))),
 #                   alpha=4,beta=10,sigma_gamma=10)
@@ -128,7 +141,7 @@ prior.l2$tau=list("mu"= lba_group_sstats$tau_pr_mean,"sigma"=lba_group_sstats$ta
 #one for the subject level and one for the group level :-)
 
 ########################################## run it
-cores=max(1,detectCores()-1)
+cores=min(max(1,detectCores()-1),12)
 print(paste0("Starting sfInit to run sfInit with ",cores," cores..."))
 sfInit(parallel=TRUE, cpus=cores, type="SOCK")
 print("...snowfall initialized; running clustercd setup...")
@@ -136,6 +149,7 @@ sfClusterSetupRNG()
 print("...cluster setup run.")
 
 source(paste("de_mcmc/de_",version,"_functions.R",sep=""))
+###############################################################
 source(paste("de_mcmc/de_",version,"_start.R",sep=""))
 
 #sfStop();save.image(file=paste0(mainDataDir,"de_h_m5k_testing.RData"))
