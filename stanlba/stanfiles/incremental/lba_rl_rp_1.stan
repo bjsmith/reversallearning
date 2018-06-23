@@ -210,6 +210,13 @@ functions{
     real priors_lba_k;
     real priors_lba_tau;
     
+    real priors_alpha_rpdiff;
+    real priors_alpha_rpdiff_spread;
+    real priors_lba_k_rpdiff;
+    real priors_lba_k_rpdiff_spread;
+    real priors_lba_tau_rpdiff;
+    real priors_lba_tau_rpdiff_spread;
+    
     real priors_alpha_spread;
     real priors_lba_k_spread;
     real priors_lba_tau_spread;
@@ -252,7 +259,10 @@ functions{
     }
     
     #this quick shift transform will mean that the regressor for the multiplier will be right in the middle.
-    run_ot_multiplier=run_ot-0.5;
+    for (r in 1:NUM_RUNS){
+      run_ot_multiplier[r]=run_ot[r]-0.5;
+    }
+    
 
     print("matrix of choice outcomes generated from required_choice and response input data:")
     // print(choice_outcomes);
@@ -272,7 +282,7 @@ functions{
     
     real<lower=0> run_sigma_gamma[NUM_PARAMS];
     
-    vector[NUM_PARAMS] rpdiff;
+    vector[NUM_PARAMS] subj_mu_rpdiff;
     //I'm going to assume no difference in variance between reward and punishment groups.
     
     
@@ -349,7 +359,7 @@ functions{
     #we should estimate empirical values for rpdiff
     subj_mu_rpdiff[PARID_alpha] ~ normal(priors_alpha_rpdiff,priors_alpha_rpdiff_spread);
     subj_mu_rpdiff[PARID_lba_k] ~ normal(priors_lba_k_rpdiff,priors_lba_k_rpdiff_spread);
-    subj_mu_rpdiff[PARID_lba_tau] ~ normal(priors_lba_rpdiff_tau,priors_lba_tau_rpdiff_spread);
+    subj_mu_rpdiff[PARID_lba_tau] ~ normal(priors_lba_tau_rpdiff,priors_lba_tau_rpdiff_spread);
     
     
     //priors for deviation of subject params from their mean.
