@@ -1,4 +1,4 @@
-data_amendment_version<-1
+data_amendment_version<-2
 source("rl_behav_analysis_learning_setup.R")
 
 #this admended version of the dataset 
@@ -11,8 +11,6 @@ source("rl_behav_analysis_learning_setup.R")
 # (1) Reaction times less than 140 ms; new nonresponse_cleaned column that marks these as non-responses
 # (III) poorly performing subjects
 #       marks out subjects who do not meet the inclusion criteria of reasonably good performane.
-
-
 
 rl.all.subjects.list$HasPrimaryPartner<-factor(rl.all.subjects.list$Q32,levels=c("No","Yes"))
 #rl.all.subjects.list$Q39
@@ -63,37 +61,56 @@ rl.all.subjects.list[reaction_time<.140 & response_key!=0,choice:=0]
 rl.all.subjects.list$outcome<-rl.all.subjects.list$score
 
 #exclude subjects who seem to be just repeatedly pressing buttons.
-#FUCK. OUR NEW VERSION OF BUTTONCHANGES IS UNDERCOUNTING BUTTON CHANGES. WHY IS THIS?
-changeDetect<-function(vec){
-  print(vec)
-  print("")
+changeDetect<-function(vec,onset_time=1:length(vec)){
+  #order vec
+  vec<-vec[order(onset_time)]
+  
+  # print(vec)
+  # print("")
   sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])
-  }
+}
 #buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
 #gonna be assessed as a mean score across subjects.
-buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
-mean(unlist(lapply(data[[1]]$runs,function(r){changeDetect(r$choice)})))
-data
-data[[1]]$SubID
-length(data)
-buttonChangesDt<-rl.all.subjects.list[subid==105,.(RunButtonChanges=changeDetect(response_key)),by=.(runid,subid,Motivation)] %>%
-  .[,SubjMeanRunButtonChanges:=mean(RunButtonChanges),by=subid]
-##########################################WTF MATE NEED TO SORT THIS OUT #####################
-buttonChangesDt<-rl.all.subjects.list[subid==105,.(RunButtonChanges=.N),by=.(runid,subid,Motivation)] %>%
-  .[,SubjMeanRunButtonChanges:=mean(RunButtonChanges),by=subid]
+# buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
+# mean(unlist(lapply(data[[1]]$runs,function(r){changeDetect(r$choice)})))
+# 
+
+buttonChangesDtByRun<-rl.all.subjects.list[,.(RunButtonChanges=changeDetect(response_key,onset_time_actual),
+                                         ButtonCount=.N
+                                         #,ButtonMashLikelihood=log.dens.like.buttonmash(dr = .SD)
+                                         ),by=.(runid,subid,Motivation)]
+  
+buttonChangesDt<-buttonChangesDtByRun[,SubjMeanRunButtonChanges:=mean(RunButtonChanges),by=subid]
+
+#this is a probability problem too. so if a probability of the event once is 0.1, 
+#then the expected number of runs with that event is
+#with two runs, if the probability of this number of switches is 0.9 then the expected number is
+#just multiply by 0.9, right? yes. That's the *expected* number.
+#So let's get empirical Ns and the probability distribution...
+
+#there were 218 trials in each run.
+N_trials_per_run=218
+N_runs<-dim(buttonChangesDtByRun)[1]
+#so let's find the counts of changes at each level
+RunsWithChanges=data.frame(ChangeNum=min(buttonChangesDtByRun$RunButtonChanges):max(buttonChangesDtByRun$RunButtonChanges),RunCount=sapply(min(buttonChangesDtByRun$RunButtonChanges):max(buttonChangesDtByRun$RunButtonChanges),function(x)sum(buttonChangesDtByRun$RunButtonChanges<=x)))
+
+RunsWithChanges$ExpectedRunCount<-round(pbinom(RunsWithChanges$ChangeNum,size=N_trials_per_run,0.5)*N_runs,3)
+buttonChangesThreshold<-max(RunsWithChanges$ChangeNum[RunsWithChanges$ExpectedRunCount<1])
+
+#I want to do this by run, not by subject.
+
 #a more sophisticated model might have a policy detection which probabilitistically detects which policy a subject
 #uses to press buttons but I'm not using that for now.
 #also accuracy data will be useful.
 #overallperformance<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){sum(r$outcome==1)/length(r$outcome)})))}))
 
 OverallPerformanceDt<-rl.all.subjects.list[,.(RunPerformance=sum(outcome==1)/.N),by=.(runid,subid,Motivation)]
+OverallPerformanceBySubjDt<-OverallPerformanceDt[,.(RunPerformanceBySubject=mean(RunPerformance)),by=subid]
 
 rl.all.subjects.list.uncleaned<-rl.all.subjects.list
-rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,buttonChangesDt,by=c("runid","subid","Motivation"))
-rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,OverallPerformanceDt,by=c("runid","subid","Motivation"))
-rl.all.subjects.list<-rl.all.subjects.list.uncleaned[RunButtonChanges>90 & RunPerformance>0.4]
-
-
-
+rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,buttonChangesDtByRun,by=c("runid","subid","Motivation"))
+rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,OverallPerformanceBySubjDt,by=c("subid"))
+rl.all.subjects.list<-rl.all.subjects.list.uncleaned[RunButtonChanges>buttonChangesThreshold & 
+                                                       RunPerformanceBySubject>0.4]
 #performance worse than 0.4 may suggest the subject has misunderstood the task.
 

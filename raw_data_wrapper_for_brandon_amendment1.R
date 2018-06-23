@@ -1,4 +1,5 @@
-stop("This file is now obsolete. Don't use it.")
+warning("This file is now obsolete. Don't use it.")
+print("This file is now obsolete. Don't use it.")
 source("../util/apply_local_settings.R")
 apply_local_settings()
 dd<-localsettings$data.dir

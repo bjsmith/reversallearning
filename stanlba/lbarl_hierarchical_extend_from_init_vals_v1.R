@@ -1,5 +1,5 @@
 
-source("stanlba/lba_rl_setup.R")
+source("stanlba/lba_rl_setup_v2.R")
 # source("stanlba/lba_rl_allsingles_get_results_summary.R")
 
 #replace with 

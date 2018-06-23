@@ -17,7 +17,8 @@ dir.create(output_dir, showWarnings = FALSE)
 
 results.list<-list()
 lba_rl_single<-stan_model('stanlba/stanfiles/lba_rl_single_exp_v3.stan')
-for (sid in unique(rawdata$subid)){#c(105,106,107)){#unique(rawdata$subid)[1:3]){#sid<-1053#
+for (sid in unique(rawdata$subid)[unique(rawdata$subid)>300 & unique(rawdata$subid)<=400]){#c(105,106,107)){#unique(rawdata$subid)[1:3]){#sid<-1053#
+  
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     for(m in unique(rawdata[subid==sid & runid==r,Motivation])){#m<-"punishment"
       

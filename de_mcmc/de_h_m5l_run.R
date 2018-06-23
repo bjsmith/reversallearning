@@ -70,7 +70,7 @@ for(i in 2:nmc){#loop through iterations#i<-2
   }
   
   #and we are also struggling HERE, in calculating phis at the subject level
-  #sfLapply(
+  
   temp.l2=#sfLapply(
     lapply(
     1:n.grid.l2,

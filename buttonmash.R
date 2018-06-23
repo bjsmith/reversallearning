@@ -2,7 +2,7 @@ log.dens.like.buttonmash<-function(dr){
   #x_s<-param.l1.init[35,1,]
   #dr<-data[[35]]$runs[[1]]
   #assuming a p simply equal to the proportion of changes in the series
-  p=sum(changeDetect(data[[35]]$runs[[1]]$choice))/(length(data[[35]]$runs[[1]]$choice)-1)
+  p=sum(changeDetect(dr$choice))/(length(dr$choice)-1)
   
   
   #likelihood that this subject is simply randomly bashing buttons given a probability p of switching buttons each time.
@@ -11,7 +11,12 @@ log.dens.like.buttonmash<-function(dr){
   #probability of swithcing keys is 1/3.
   #pretend that there are no zeros in the series as a simplifying assumption.
   choice_series<-dr$choice[dr$choice!=0]
-  changeDetect<-function(vec){vec[2:length(vec)]!=vec[1:(length(vec)-1)]}
+  changeDetect<-function(vec,onset_time=1:length(vec)){
+    #order vec
+    vec<-vec[order(onset_time)]
+    sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])
+  }
+  
   #switch_key<-rbinom(length(choice_series),1,p)
   #switch_key
   #so we have model where the subject randomly switches button mashing at each time point with probability p

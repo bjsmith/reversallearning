@@ -6,20 +6,6 @@ data<-data[!safe_meth_subjs & !subjs.without.group]
 
 #dim(rawdata.dt[rawdata.dt$SubjectGroup %in% c(1,2,3),])
 
-#exclude subjects who seem to be just repeatedly pressing buttons.
-changeDetect<-function(vec){sum(vec[2:length(vec)]!=vec[1:(length(vec)-1)])}
-buttonChanges<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){changeDetect(r$choice)})))}))
-#a more sophisticated model might have a policy detection which probabilitistically detects which policy a subject
-#uses to press buttons but I'm not using that for now.
-#also accuracy data will be useful.
-overallperformance<-unlist(lapply(data,function(d){mean(unlist(lapply(d$runs,function(r){sum(r$outcome==1)/length(r$outcome)})))}))
-cbind(buttonChanges,overallperformance)
-#plot(buttonChanges,overallperformance)
-data<-data[buttonChanges>90 & overallperformance>0.4] 
-table(unlist(lapply(data,function(d){d$group})))
-#performance worse than 0.4 may suggest the subject has misunderstood th
-#rlier filter that was added to this in order to filter out badly performing subjects has now been written into the data cleaning code.
-
 # #
 # # # # #get a set of subjects who are in each of the three groups.
 g1_subs<-which(unlist(lapply(data,function(d){d$group=="SafeNoMeth"})))
@@ -34,7 +20,7 @@ rm(rawdata,rawdata.dt) #save memory.
 n.chains=24
 
 ########################################## load priors from empirical data.
-source("load_lba_rl_allsingles_resultsdata.R")
+source("load_lba_rl_allsingles_resultsdata_v2.R")
 source("generate_lbarl_group_summary_stats.R")
 improperly.estimated.runs<-unique(results.summary.dt[which(results.summary.dt$Rhat>1.05),.(sid,rid,motivation,FullRunId)])
 
