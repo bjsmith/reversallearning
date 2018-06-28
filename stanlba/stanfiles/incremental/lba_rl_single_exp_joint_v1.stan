@@ -164,22 +164,35 @@ data{
      int<lower=1> LENGTH;
      int<lower=2> NUM_CHOICES;
      real<lower=0> A;
-     //matrix[LENGTH,2] RT;
      vector[LENGTH] response_time;
      int response[LENGTH];
      int required_choice[LENGTH];//the choice which would be reinforced on each round.
      int cue[LENGTH];
      
      real neural_data;
-     
+  ////////////\begin{joint model machinery}
+  
+  int<lower=1> N_DELTA;//number of neural parameters
+  int[N_DELTA] DELTA_LINK_TOGGLE;//record which delta variables to link.
+  int[N_THETA] THETA_LINK_TOGGLE;//record which theta variables to link.
+  ////////////\end{joint model machinery}   
 }
 transformed data{
-  real<lower=0> s = 1;
-  //from stan manual:
-  //Before generating any samples, data variables are read in, 
-  //then the transformed data variables are declared and the associated statements executed to define them. 
-  //This means the statements in the transformed data block are only ever evaluated once.
+  ////////////\begin{joint model machinery}
+  int<lower=1> N_DELTA_LINK=sum(DELTA_LINK_TOGGLE>0);
+  int<lower=1> N_THETA_LINK=sum(THETA_LINK_TOGGLE>0);
+  int<lower=1> K_VAR = N_DELTA+N_THETA_LINK;// neural parameters delta plus behavioral parameters theta
+  if(N_THETA!=3)
+    reject("N_THETA, the number of behavioral variables, must equal three in this version of the model.")
+  vector[K_VAR] zeros = rep_vector(0,K_VAR);
   
+  ////////////\end{joint model machinery}
+  P_THETA_alpha_pr=1;
+  P_THETA_k_pr=2;
+  P_THETA_tau_pr=3;
+  
+  real<lower=0> s = 1;
+
   matrix[LENGTH,NUM_CHOICES] choice_outcomes;
   for (i in 1:LENGTH){
     //if the required choice was chosen then assign the value of 1 to it and distribute the value of -1 across all alternatives.
@@ -200,24 +213,32 @@ transformed data{
 }
 
 parameters {
-  real alpha_pr;
-  real k_pr;
-  real tau_pr;
-  //vector<lower=0>[NUM_CHOICES] v;
+  // real alpha_pr;
+  // real k_pr;
+  // real tau_pr;
+  real[N_THETA] theta;
   
-  real[] theta;
-  
+  ////////////\begin{joint model machinery}
+  vector[K_VAR] y_mu;
+  cholesky_factor_corr[K_VAR] L_Omega;
+  vector<lower=0>[K_VAR] L_sigma;
+  ////////////\end{joint model machinery}
 }
 
 transformed parameters {
   real <lower=0,upper=1> alpha;
   real<lower=0> k;
   real<lower=0> tau;
-
   
-  alpha = inv_logit(alpha_pr);
-  k = exp(k_pr);
-  tau = exp(tau_pr);
+  
+  alpha = inv_logit(theta[P_THETA_alpha_pr]);
+  k = exp(theta[P_THETA_k_pr]);
+  tau = exp(theta[P_THETA_tau_pr]);
+  
+  ////////////\begin{joint model machinery}
+  matrix[K_VAR, K_VAR] L_Sigma = diag_pre_multiply(L_sigma, L_Omega);
+  matrix [K_VAR,K_VAR] Sigma = L_Sigma * L_Sigma';
+  ////////////\end{joint model machinery}
 }
 
 model {
@@ -241,19 +262,36 @@ model {
       v[j]=logit(exp_val[cue[i],j]/4+0.75);
       //if j was the reinforced choice and it was the response value,
       pred_err=choice_outcomes[i,j]-exp_val[cue[i],j]; 
-      //print("pred_err:",pred_err)
-      
+
       exp_val[cue[i],j] = exp_val[cue[i],j] + alpha*pred_err;
-      
       //for occam's razor, I'm going to avoid any transformation from expected value to drift rate. we'll treat expected value as drift rate exactly!
       
     }
     response_time[i] ~ lba(response[i],k,A,v,s,tau);
-    
-    
   }
-  ~multi_normal(joint_phi, joint_sigma)
+  
+  ////////////\begin{joint model machinery}
+  vector[K_VAR] y_var[LENGTH];
+  //vector[K_VAR] mu[N_SUB];
+  for (k in 1:K_VAR){
+    y_mu[k] ~normal(y_mu_prior[k],y_sd_prior[k]);
+  }
+  
+  //separate out calculation of means from calculation of variance.
+  for (t in 1:LENGTH){
+    y_var[s] = y[s] - y_mu;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
+  }
+  
+  L_Omega ~ lkj_corr_cholesky(4);
+  L_sigma ~ cauchy(0,2.5); #these yield standard deviations of each individual value.
+  y_var ~ multi_normal_cholesky(zeros,L_Sigma);
+  ////////////\end{joint model machinery}
   
     
 }
 
+////////////\begin{joint model machinery}
+generated quantities{
+  vector[K_VAR] SD = L_sigma;
+}
+////////////\end{joint model machinery}
