@@ -6,6 +6,16 @@
 
 source("stanlba/lbarl_hierarchical_extend_from_init_vals_v1.R")
 
+
+
+#reprise.
+print("------------------------")
+print("Running the informative priors model WITH BOOTSTRAPPED INITIAL VALUES SPECIFIED.")
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_bootstrapped_init_12c",
+                                       filedir="incremental/",informative_priors = TRUE,
+                                       init_vals="bootstrapped")
+
+
 print("------------------------")
 print("Running with BOOTSTRAPPED initial values, 10subs, full-group 1")
 fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","G1_bootstrapped_init",

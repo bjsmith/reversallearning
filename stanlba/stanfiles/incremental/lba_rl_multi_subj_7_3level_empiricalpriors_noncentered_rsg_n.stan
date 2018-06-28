@@ -1,9 +1,3 @@
-//modified from lba_rl_multi_subj_7_3level_empiricalpriors_noncentered.stan
-//includes a regressor to distinguish between reward and punishment values.
-//this version will assume:
-// - no difference in variance between reward and punishment runs
-// - difference between reward and punishment is constant for all subjects
-// - I'm not sure we have enough variance to estimate separate variance parameters for each subject AND also a r-p difference.
 functions{
   
   real lba_pdf(real t, real b, real A, real v, real s){
@@ -195,9 +189,6 @@ functions{
     int<lower=1> NUM_RUNS;
     //int<lower=1> trial_subjid[NUM_TRIALS];
     int<lower=1> run_subjid[NUM_RUNS];
-    int<lower=0,upper=1> run_ot[NUM_RUNS];//mark whether this run is reward or punishment.
-    int<lower=0,upper=1> run_ot_REWARD; //constants to mark the use of reward and punishment values
-    int<lower=0,upper=1> run_ot_PUNISHMENT;
     int<lower=1> trial_runid[NUM_TRIALS];
     
     //matrix[NUM_TRIALS,2] RT;
@@ -209,13 +200,6 @@ functions{
     real priors_alpha;
     real priors_lba_k;
     real priors_lba_tau;
-    
-    real priors_alpha_rpdiff;
-    real priors_alpha_rpdiff_spread;
-    real priors_lba_k_rpdiff;
-    real priors_lba_k_rpdiff_spread;
-    real priors_lba_tau_rpdiff;
-    real priors_lba_tau_rpdiff_spread;
     
     real priors_alpha_spread;
     real priors_lba_k_spread;
@@ -235,11 +219,8 @@ functions{
     int PARID_lba_k = 2;
     int PARID_lba_tau = 3;
     int NUM_PARAMS = 3;
-    
-    real run_ot_multiplier[NUM_RUNS];
-    
     //real priors_lba_k=log(0.5);
-    //real priors_lba_tau=log(.2*0.9); //a more realistic mean non-decision time.
+    //real priors_lba_tau=log(.2*0.9); #a more realistic mean non-decision time.
     //from stan manual:
       //Before generating any samples, data variables are read in, 
     //then the transformed data variables are declared and the associated statements executed to define them. 
@@ -258,12 +239,6 @@ functions{
       }
     }
     
-    //this quick shift transform will mean that the regressor for the multiplier will be right in the middle.
-    for (r in 1:NUM_RUNS){
-      run_ot_multiplier[r]=run_ot[r]-0.5;
-    }
-    
-
     print("matrix of choice outcomes generated from required_choice and response input data:")
     // print(choice_outcomes);
     print(NUM_SUBJECTS);
@@ -282,9 +257,6 @@ functions{
     
     real<lower=0> run_sigma_gamma[NUM_PARAMS];
     
-    vector[NUM_PARAMS] subj_mu_rpdiff;
-    //I'm going to assume no difference in variance between reward and punishment groups.
-    
     
     ////////////////////
       //SUBJECT LEVEL
@@ -300,7 +272,6 @@ functions{
     real alpha_pr_var[NUM_RUNS];
     real k_pr_var[NUM_RUNS];
     real tau_pr_var[NUM_RUNS];
-    
   }
   
   transformed parameters {
@@ -322,16 +293,9 @@ functions{
     // k = exp(k_pr);
     // tau = exp(tau_pr);
     for (r in 1:NUM_RUNS){
-      //no reward/punishment
-      //alpha[r] = inv_logit(run_mu[run_subjid[r],PARID_alpha] + run_sigma[run_subjid[r],PARID_alpha] * alpha_pr_var[r]);
-      //single parameter
-      alpha[r] = inv_logit(run_mu[run_subjid[r],PARID_alpha] + subj_mu_rpdiff[PARID_alpha]*run_ot_multiplier[r] + run_sigma[run_subjid[r],PARID_alpha] * alpha_pr_var[r]);
-      //or would we insert it into the variance?????
-      //this variance being modeled here is the run-level variance within subject. It wouldn't make sense to have the rpdiff modified by that.
-      //alpha[r] = inv_logit(run_mu[run_subjid[r],PARID_alpha] + rpdiff[PARID_alpha] + run_sigma[run_subjid[r],PARID_alpha] * alpha_pr_var[r]);
-      
-      k[r] = exp(run_mu[run_subjid[r],PARID_lba_k] + subj_mu_rpdiff[PARID_lba_k]*run_ot_multiplier[r] + run_sigma[run_subjid[r],PARID_lba_k] * k_pr_var[r]);
-      tau[r] = exp(run_mu[run_subjid[r],PARID_lba_tau] + subj_mu_rpdiff[PARID_lba_tau]*run_ot_multiplier[r] + run_sigma[run_subjid[r],PARID_lba_tau] * tau_pr_var[r]);
+      alpha[r] = inv_logit(run_mu[run_subjid[r],PARID_alpha] + run_sigma[run_subjid[r],PARID_alpha] * alpha_pr_var[r]);
+      k[r] = exp(run_mu[run_subjid[r],PARID_lba_k] + run_sigma[run_subjid[r],PARID_lba_k] * k_pr_var[r]);
+      tau[r] = exp(run_mu[run_subjid[r],PARID_lba_tau] + run_sigma[run_subjid[r],PARID_lba_tau] * tau_pr_var[r]);
     }
   }
   
@@ -343,7 +307,25 @@ functions{
     //int curRunId=0;//just for printout diagnostic
     exp_val = rep_array(0,NUM_RUNS,max(cue),NUM_CHOICES);
     
+    #we have to print every fucking initial value. with its name.
+    // print("subj_mu:");print(min(subj_mu),",",max(subj_mu));
+    // print("subj_sigma:");print(subj_sigma);print(subj_sigma);
+    // print("run_sigma_gamma:");print(run_sigma_gamma);print(run_sigma_gamma);
+    // print("run_mu_var:");print(run_mu_var);print(run_mu_var);
+    // print("run_sigma:");print(run_sigma);
+    // print("alpha_pr_var:");print(alpha_pr_var);
+    // print("k_pr_var:");print(k_pr_var);
+    // print("tau_pr_var:");print(tau_pr_var);
     // 
+    //   print("subj_mu:");print(min(subj_mu),",",max(subj_mu));
+    // print("subj_sigma:");print(min(subj_sigma),",",max(subj_sigma));
+    // print("run_sigma_gamma:");print(min(run_sigma_gamma),",",max(run_sigma_gamma));
+    // print("run_mu_var:");print(array2d_min(run_mu_var),",",array2d_max(run_mu_var));
+    // print("run_sigma:");print(array2d_min(run_sigma),",",array2d_max(run_sigma));
+    // print("alpha_pr_var:");print(min(alpha_pr_var),",",max(alpha_pr_var));
+    // print("k_pr_var:");print(min(k_pr_var),",",max(k_pr_var));
+    // print("tau_pr_var:");print(min(tau_pr_var),",",max(tau_pr_var));
+
     ////////////////////
       //GROUP LEVEL
     
@@ -356,12 +338,6 @@ functions{
     subj_mu[PARID_lba_k] ~ normal(priors_lba_k,priors_lba_k_spread);
     subj_mu[PARID_lba_tau] ~ normal(priors_lba_tau,priors_lba_tau_spread);
     
-    //we should estimate empirical values for rpdiff
-    subj_mu_rpdiff[PARID_alpha] ~ normal(priors_alpha_rpdiff,priors_alpha_rpdiff_spread);
-    subj_mu_rpdiff[PARID_lba_k] ~ normal(priors_lba_k_rpdiff,priors_lba_k_rpdiff_spread);
-    subj_mu_rpdiff[PARID_lba_tau] ~ normal(priors_lba_tau_rpdiff,priors_lba_tau_rpdiff_spread);
-    
-    
     //priors for deviation of subject params from their mean.
     subj_sigma[PARID_alpha] ~ cauchy(0,priors_alpha_sd_gamma); 
     //these have lower prior SDs because our priors for them originally, from Palmeri et al., were lower.
@@ -369,9 +345,9 @@ functions{
     subj_sigma[PARID_lba_tau] ~ cauchy(0,priors_lba_tau_sd_gamma);
     
     
-    run_sigma_gamma[PARID_alpha] ~ cauchy(0,priors_alpha_run_sigma_gamma);
-    run_sigma_gamma[PARID_lba_k] ~ cauchy(0,priors_lba_k_run_sigma_gamma);
-    run_sigma_gamma[PARID_lba_tau] ~ cauchy(0,priors_lba_tau_run_sigma_gamma);
+    run_sigma_gamma[PARID_alpha] ~ normal(0,priors_alpha_run_sigma_gamma)T[0,];
+    run_sigma_gamma[PARID_lba_k] ~ normal(0,priors_lba_k_run_sigma_gamma)T[0,];
+    run_sigma_gamma[PARID_lba_tau] ~ normal(0,priors_lba_tau_run_sigma_gamma)T[0,];
     
     ////////////////////
     //RUN LEVEL

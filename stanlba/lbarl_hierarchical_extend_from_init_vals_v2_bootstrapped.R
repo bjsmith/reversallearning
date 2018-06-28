@@ -14,6 +14,14 @@ source("stanlba/lbarl_hierarchical_extend_from_init_vals_v2.R")
 #                                        filedir="incremental/",informative_priors = TRUE,
 #                                        init_vals="bootstrapped",data_to_use=multisubj_multirun_Group1)
 
+
+
+print("------------------------")
+print("Running with BOOTSTRAPPED initial values, 10subs, full-length")
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_bootstrapped_init_v2",
+                                       filedir="incremental/",informative_priors = TRUE,
+                                       init_vals="bootstrapped",warmup_iter=5,iter=10)
+
 print("------------------------")
 print("Running with BOOTSTRAPPED initial values, 10subs, full-length")
 fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_bootstrapped_init_v2",

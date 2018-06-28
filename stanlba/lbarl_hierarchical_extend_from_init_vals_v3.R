@@ -1,4 +1,4 @@
-
+#WORK OUT WHY THE OLD VERSION WORKS AND THE NEW ONE DOESN'T.
 source("stanlba/lba_rl_setup_v2.R")
 # source("stanlba/lba_rl_allsingles_get_results_summary.R")
 
@@ -6,8 +6,11 @@ source("stanlba/lba_rl_setup_v2.R")
 source("load_lba_rl_allsingles_resultsdata_v2.R")
 source("generate_lbarl_group_summary_stats.R")
 source("init_vals_generate.R")
+
 #have to exclude improperly estimated runs.
+
 improperly.estimated.runs<-unique(results.summary.dt[which(results.summary.dt$Rhat>1.05),.(sid,rid,motivation,FullRunId)])
+
 
 lba_group_sstats<-generate_lbarl_group_summary_stats(results.summary.dt[!(FullRunId %in% improperly.estimated.runs$FullRunId)])
 
@@ -31,6 +34,9 @@ multisubj_multirun_allsubs<-rawdata[reaction_time>0,
                                       WithinSubjRunId=runid,Motivation=Motivation,
                                       UniqueRunID=as.numeric(interaction(runid,Motivation,subid,drop = TRUE)))]
 
+improperly.estimated.runstrings<-sapply(improperly.estimated.runs[ , .(paste(sid,rid,motivation))],trimws)
+
+multisubj_multirun_allsubs.exIER<-multisubj_multirun_allsubs[!(paste(subid,WithinSubjRunId,Motivation) %in% improperly.estimated.runstrings),]
 multisubj_multirun_Group1<-rawdata[SubjectGroup==1
                                    & reaction_time>0,
                                    .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
@@ -57,9 +63,10 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
   print(paste0("warmup_iter: ",warmup_iter))
   print(paste0("iter: ",iter))
   
-  #run_list_by_run<-data_to_use[,.(RunID=unique(UniqueRunID)),by=.(ConsecSubId,subid)] %>% .[order(RunID)]
-  run_list_by_run<-data_to_use[,.(StanRunID=unique(UniqueRunID)),by=.(ConsecSubId,subid,Motivation,WithinSubjRunId)] %>% .[order(StanRunID)]
-  run_list_by_run_all<-multisubj_multirun_allsubs[,.(StanRunID=unique(UniqueRunID)),by=.(ConsecSubId,subid,Motivation,WithinSubjRunId)] %>% .[order(StanRunID)]
+  run_list_by_run <- data_to_use[,.(StanRunID=unique(UniqueRunID)),by=.(ConsecSubId,subid,Motivation,WithinSubjRunId)] %>% .[order(StanRunID)]
+  run_list_by_run_all <- multisubj_multirun_allsubs.exIER[,.(StanRunID=unique(UniqueRunID)),
+                                                          by=.(ConsecSubId,subid,Motivation,WithinSubjRunId)] %>% .[order(StanRunID)]
+  
   if(informative_priors){
     data_to_pass<-get_informative_priors(data_to_use,lba_group_sstats,prior_blowup=prior_blowup,run_list_by_run)
   }else{
@@ -110,8 +117,9 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
   if(init_vals %in% c("bootstrapped","bootstrapped_allempirical")){
     source("bootstrap_smart_init_vals.R")
     smart_init_vals<-bootstrap_smart_init_vals(n_samples = n_chains,
-                                               subid_set = sort(unique(data_to_use$subid)),
+                                               subid_set = sort(unique(multisubj_multirun_allsubs.exIER$subid)),
                                                bootstrap_seed = c(1973449269))
+    #doing bootstrap from data gathered right across the dataset. this will better match our priors which are also collected from right across the dataset.
   }
   
   
@@ -119,15 +127,15 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
     init_method="random"
   }else if (init_vals=="randomized"){
     init_method=rep(list(get_init_vals(data_to_pass)),times=12)
-  }else if (init_vals=="bootstrapped_over_all"){
+    warning("in this method, exaggerating prior distributions will also exaggerate prior init values.")
+  }else if (init_vals=="bootstrapped"){
     init_method=lapply(smart_init_vals,get_bootstrapped_init_vals,1761614456,data_to_pass)
   }else if (init_vals=="bootstrapped_allempirical"){
     init_method=lapply(smart_init_vals,get_bootstrapped_init_vals_with_bottomlevel_inits,
                        1761614456,data_to_pass,data_to_use,results.summary.dt,run_list_by_run)
   }else if (init_vals=="empirical_distribution"){
-    init_method=get_empirical_distribution_allchains(n_chains = n_chains,run_list_by_run)
-  }else if (init_vals=="empirical_dist_over_all"){
-    init_method_toplevel=get_empirical_distribution_allchains(n_chains = n_chains, run_list_by_run, run_list_by_run_all)
+    init_method=get_empirical_distribution_allchains(
+      n_chains = n_chains, run_list_by_run, run_list_by_run_all)
   }else{stop("invalid value for init_vals argument.")}
   #print(init_method)
   #print(paste0("running stan; data_to_pass$NUM_SUBJECTS=",data_to_pass$NUM_SUBJECTS))
@@ -160,6 +168,7 @@ run_model<-function(model_filename,model_description,filedir="",informative_prio
   }
   
   print(rmfit)
+  print(paste0("saved as ", file_save_name))
   
   
   return(rmfit)

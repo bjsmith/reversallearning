@@ -1,4 +1,4 @@
-generate_lbarl_group_summary_stats <- function(ds_useablesubs){#ds_useablesubs<-ds_boot
+generate_lbarl_group_summary_stats <- function(ds_useablesubs){#ds_useablesubs<-ds_boot#ds_useablesubs<-results.summary.dt[!(FullRunId %in% improperly.estimated.runs$FullRunId)]
   #OK great, so about 5% got over the 105 threshold. That's about right.
   useable_length<-length(sort(ds_useablesubs[param_name=="alpha_pr",mean]))
   #alpha
@@ -10,7 +10,8 @@ generate_lbarl_group_summary_stats <- function(ds_useablesubs){#ds_useablesubs<-
         abs(alpha_pr_mean-sort(ds_useablesubs[param_name=="alpha_pr",X97.5.])[round(useable_length*.5)]))
   #2.5 percentile. #this figure is relevant to the empirical SD, the gamma value.
   #how widely do we expect SUBJECTS to be spread?
-  alpha_sd_prior<-sd(ds_useablesubs[param_name=="alpha_pr",mean])
+  #alpha_sd_prior<-sd(ds_useablesubs[param_name=="alpha_pr",mean])
+  alpha_sd_prior<-sd(ds_useablesubs[param_name=="alpha_pr",.(SubjMean=mean(mean)),by=.(sid)]$SubjMean)
   
   #so, what's the expected standard deviation WITHIN SUBJECTS across runs?
   subject_sd<-ds_useablesubs[,.(Subject_SD=sd(mean)),by=.(sid,param_name)] %>% tidyr::spread(key = param_name,value=Subject_SD,sep = "_")
@@ -28,7 +29,9 @@ generate_lbarl_group_summary_stats <- function(ds_useablesubs){#ds_useablesubs<-
         abs(k_pr_mean-sort(ds_useablesubs[param_name=="k_pr",X97.5.])[round(useable_length*.5)]))
   #2.5 percentile. #this figure is relevant to the empirical SD, the gamma value.
   #how widely do we expect SUBJECTS to be spread?
-  k_sd_prior<-sd(ds_useablesubs[param_name=="k_pr",mean])
+  #k_sd_prior<-sd(ds_useablesubs[param_name=="k_pr",mean])
+  k_sd_prior<-sd(ds_useablesubs[param_name=="k_pr",.(SubjMean=mean(mean)),by=.(sid)]$SubjMean)
+  #this value might be more accurate but it would be LOWER which isn't helping solve the problem I've got right now that this seems too high.
   ubound_sd<-sort(subject_sd[,param_name_k_pr])[round(dim(subject_sd)[1]*0.975)]
   k_run_sigma_gamma<-ubound_sd
   #tau
@@ -40,7 +43,8 @@ generate_lbarl_group_summary_stats <- function(ds_useablesubs){#ds_useablesubs<-
         abs(tau_pr_mean-sort(ds_useablesubs[param_name=="tau_pr",X97.5.])[round(useable_length*.5)]))
   #2.5 percentile. #this figure is relevant to the empirical SD, the gamma value.
   #how widely do we expect SUBJECTS to be spread?
-  tau_sd_prior<-sd(ds_useablesubs[param_name=="tau_pr",mean])
+  #tau_sd_prior<-sd(ds_useablesubs[param_name=="tau_pr",mean])
+  tau_sd_prior<-sd(ds_useablesubs[param_name=="tau_pr",.(SubjMean=mean(mean)),by=.(sid)]$SubjMean)
   ubound_sd<-sort(subject_sd[,param_name_tau_pr])[round(dim(subject_sd)[1]*0.975)]
   tau_run_sigma_gamma<-ubound_sd
   

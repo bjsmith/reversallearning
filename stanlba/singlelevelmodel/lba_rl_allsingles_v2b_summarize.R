@@ -4,7 +4,7 @@ source("stanlba/lba_rl_setup_v2.R")
 
 #we have problems running all subjects in a single run.
 #so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
-lba_rl_version<-"20180618_1"
+lba_rl_version<-"20180624_1"
 
 single_run_dir<-paste0(localsettings$data.dir,"lba_rl")
 output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")
@@ -25,7 +25,6 @@ if(file.exists(results_summary_list_filepath)){
 for (sid in unique(rawdata$subid)){#sid<-105
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     for(m in unique(rawdata[subid==sid & runid==r,Motivation])){#m<-"reward"
-      
       package_filepath<-paste0(output_dir,"run_package_",sid,"_",r,"_",m,"_v2.RData")
       srm.data<-rawdata[subid==sid & Motivation==m & runid==r,.(reaction_time,outcome,cue,choice,cor_res_Counterbalanced)]
       if(any(unlist(lapply(results.summary.list,function(rli){rli$sid==sid & rli$rid==r & rli$motivation==m})))==FALSE & 
@@ -39,13 +38,9 @@ for (sid in unique(rawdata$subid)){#sid<-105
         
         results.summary.list<-c(results.summary.list,list(run_summary_package))
         save(results.summary.list,file=results_summary_list_filepath)
-      }
-      
-      
-    }
-    
+      } 
+    } 
   }
-  
 }
 
 
@@ -81,24 +76,6 @@ results.summary.dt<-data.table(results.summary.df)
 improperly.estimated.runs<-unique(results.summary.dt[which(results.summary.dt$Rhat>1.05),.(sid,rid,motivation,FullRunId)])
 #OK great, so about 5% got over the 105 threshold. That's about right.
 
-# #and what sort of alpha values are we seeing?
-# table(results.summary.dt$param_name)
-# ggplot(results.summary.dt[param_name=="alpha" & !(FullRunId %in% improperly.estimated.runs$FullRunId)],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# ggplot(results.summary.dt[param_name=="k" & !(FullRunId %in% improperly.estimated.runs$FullRunId)],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# ggplot(results.summary.dt[param_name=="tau" & !(FullRunId %in% improperly.estimated.runs$FullRunId)],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# 
-# #alpha values are actually very low, in other words, learning doesn't happen very quickly here according to the model.
-# 
-# #In fact these learning values are much lower than anything else we've seen.
-# #looks like we were substantially over-estimating tau, but we got k about right.
-# 
-# ggplot(results.summary.dt[param_name=="alpha_pr" & !(FullRunId %in% improperly.estimated.runs$FullRunId)],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# ggplot(results.summary.dt[param_name=="k_pr" & !(FullRunId %in% improperly.estimated.runs$FullRunId)],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# ggplot(results.summary.dt[param_name=="tau_pr" & !(FullRunId %in% improperly.estimated.runs$FullRunId)],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# 
-# ggplot(results.summary.dt[param_name=="alpha_pr"],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# ggplot(results.summary.dt[param_name=="k_pr"],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
-# ggplot(results.summary.dt[param_name=="tau_pr"],aes(mean))+geom_density()+facet_grid(motivation~. ,margins=TRUE)
 
 useable_length<-length(sort(results.summary.dt[param_name=="alpha_pr" & !(FullRunId %in% improperly.estimated.runs$FullRunId),mean]))
 #alpha

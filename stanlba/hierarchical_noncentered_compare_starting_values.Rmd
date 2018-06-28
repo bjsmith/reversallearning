@@ -77,9 +77,11 @@ auto_init_vals_fit<-rmfit
 
 load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_randomized_init_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
 randomized_init_vals_fit<-rmfit
+mean(summary(randomized_init_vals_fit)$summary[,"n_eff"])
 load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_bootstrapped_init_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
 bootstrapped_init_vals_fit<-rmfit
 
+load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_empirical_distribution_init_v1_rep_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
 
 ```
 
@@ -89,7 +91,8 @@ I compared starting values generated three different ways for a 10-subject, 12-r
 
  - Using the default initial priors that R uses. Unconstrained variables are set on a uniform distribution between -2 and 2; variables constrained to be non-negative are set on an exponential transform of a normal distribution between $exp(-2)$ and $exp(2)$.
  - Using random initial values. Here, I started with empirical priors and used them to extract rando distribution around those empirical priors. Thus, we got a unique set of random initial values for each chain.
- - Using bootstrapped initial values. Here, I randomly selected with replacement a set of subjects equal to the size of the actual dataset (in this case, 10 subjects). I then calculated group-level statistics based on the single-subject models using *these* groups and these starting values values were used. This method produces a quite tightly-bound set of initial values. Because the method for group-level statistics based on single-subject models often involved the use of medians (see Section \ref{sec:CalculatingEmpiricalPriors}), some initial priors are actually identical in some cases. Because this method is almost entirely deterministic (random noise from an empirical distribution is used to allocate starting values to subject-level and run-level priors), we know it will replicate for any given seed value. However, if our initial values are too narrow, we may not end up properly exploring the parameter space. It might be sensible to apply this method, but use smaller-size groups to generate values.
+ - Using bootstrapped initial values. Here, I randomly selected with replacement a set of subjects equal to the size of the actual dataset (in this case, 10 subjects). I then calculated group-level statistics based on the single-subject models using *these* groups and these starting values values were used. This method produces a quite tightly-bound set of initial values. Because the method for group-level statistics based on single-subject models often involved the use of medians (see Section~\ref{sec:CalculatingEmpiricalPriors}), some initial priors are actually identical in some cases. Because this method is almost entirely deterministic (random noise from an empirical distribution is used to allocate starting values to subject-level and run-level priors), we know it will replicate for any given seed value. However, if our initial values are too narrow, we may not end up properly exploring the parameter space. It might be sensible to apply this method, but use smaller-size groups to generate values.
+ - Using initial values from the raw empirical distributions. One plausible error with the method described above is that it may be that a correlation among parameters exists, and for instance, a very high $\alpha$ parameter is only viable when combined with a very low $\tau$ parameter. In that case, using means of the posterior distributions to define initial values may yield initial values with an negative infinite log likelihood (i.e., an impossible set of parameters). Rather than taking bootstraps of the summary statistics from each first-level model, I sampled directly from the posterior distribution of the single-level models. This would ensure that every set used to define a starting parameter is, at least at the run-level, a value set with a finite log likelihood. If initial values for hyperparameter distribution are set high enough then this should ensure that our model is able to initialize. To select samples from the posterior, posterior samples were ranked from most to least likely. For each chain in the three-level model, I took one sample from each run and used that sample to define the initial values for the three-level model chain. The posterior sample with the median likelihood, the posterior sample with the maximum likelihood, and samples from evenly-spaced points within the distribution were taken. This is *not* in proportion of the most likely values, but it does ensure a wider variation of samples. Initial values for higher level parameters were set using summary statistics of the lower level values. This model is essentially a `hierarchical model' with an assumption of no pooling. This represents an initial starting point from which MCMC chains can adapt to a higher likelihood posterior.
  
 
 
@@ -115,9 +118,10 @@ smart_init_vals<-bootstrap_smart_init_vals(n_samples = n_chains,
                                            subid_set = sort(unique(multisubj_multirun_moresubs$subid)),
                                            bootstrap_seed = c(1973449269))
 
-boot_init_vals<-lapply(smart_init_vals,get_bootstrapped_init_vals)
+
 
 source("init_vals_generate.R")
+boot_init_vals<-lapply(smart_init_vals,get_bootstrapped_init_vals,data_to_pass,bootseed=1761614456)
 #random_init_vals<-get_init_vals()
 #I'm not sure how to display all this so I won't for now.
 #could graph it, I guess?
@@ -189,4 +193,49 @@ When extending the model to a full 54-subject group analysis, I found that the i
 
 In order to get around this problem, for both the randomized initial values and the bootstrapped initial values, I applied a pseudo-normal sampling method. Instead of taking random samples from the distributions, I used R's |qnorm| function to define subject-level and run-level values as the set of equally-spaced quantiles between 2 standard deviations above and below the mean. This guaranteed both a normal distribution of values and avoided use of any extreme values which could potentially cause a zero likelihood initial proposal. The samples were scrambled so that within this constraint, the particular subject and run allocated to each quantile was entirely random.
 
-After this was applied, I was able to properly estimate intitial values.
+This method does not apply to the raw empirical posterior sampling, because using this method, I obtained direct estimates of the data.
+
+<!--
+
+Where is the record of this?
+
+The following seemed to initialize, but not produce useful estimates:
+- lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_informativepriors_G1_bootstrapped_init_run12_model_distinct_runs_itercount20_wup19_MCMC.RData
+- lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_informativepriors_G1_randomized_init_run12_model_distinct_runs_itercount20_wup19_MCMC.RData with only 2 chains worked.
+- lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_G1_auto_init_run12_model_distinct_runs_itercount20_wup19_MCMC.RData
+
+
+-->
+
+
+
+After this was applied, I was able to properly estimate initial values. However, these models appeared to have poor efficiency and calculations also took a long time. Thus I looked into ways to speed up calculation.
+
+### Chains initiailizing
+
+Furthermore, for the bootstrap and randomized distribution method, some chains regularly failed to initialize even though other chains correctly initialized. For a reliable estimation, I believe that we would need to ensure that all chains can initialize.
+
+
+## Empirical distribution.
+
+Currently I'm having problems with the empirical distribution. I did get it to correctly initialize for the 10 subjects, and notably, the empirical distribution initial values are able to reliably initialize all 12 chains for a 10-subject model. However, it doesn't seem to be able to produce chains with any level of efficiency. I still need to look into this.
+
+It also doesn't initialize for the whole Group analysis. I suspect that may be because we were still using some badly-estimated run-level priors, and I am currently working on producing better run-level priors.
+
+## Running single-level models
+
+I modified my single-level modeling algorithm several times, in particular, to get good values for empirical distirbution startign values. To calculate averages for group-level priors, it was enough to just calculate a basic 3-chain model for each run and exclude any that would not converge. For calculating empirical samples to be used directly as initial values for the hierarchical model, I had to get a stable and accurate posterior distribution for every run. To achieve this, I:
+
+ - Initially tried a sample of 1000 warmup iterations, and 1000 further sampling iterations, across 6 chains.
+ - Where my computer could not complete calculation in 20 minutes, I aborted estimation and tried again (the median time was around 1-2 minutes). Usually this would result in a completed estimation on the second go.
+ - Where a posterior could be found, but $\\hat{R}$ values for one or more parameters were over 1.05, I would discard the entire estimation for that run and try again.
+ - For repeats either due to the 20-minute time-out, or due to poor $\\hat{R}$ values, I would repeat estimation for each run up to 9 times (10 times in total) until a stable posterior could be estimated within the timeout time. 
+
+
+## The evidence
+
+I subsequently ran models using a revised inclusion definition (excluding trials with abnormally short reaction times; only including runs with accurately estimated run-level parameters). When applying this, counterintuitively, it was harder to get the model to run. 
+We have some evidence from lbarl_hierarchical_extend_from_init_vals_v2_initialization_comparison.R about *initialization* - note that this doesn't tell us anything about which models will complete accurate samples, just about which will initialize, i.e., the model can begin estimation because the initial values don't yield an infinite gradient.
+
+What seems clear so far is that:
+ - 

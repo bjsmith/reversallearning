@@ -1,4 +1,5 @@
-stop("this version is deprecated, but is archived for records in case you want to see which version of the data was used to create the output.")
+warning("this version is deprecated, but is archived for records in case you want to see which version of the data was used to create the output.")
+print("this version is deprecated, but is archived for records in case you want to see which version of the data was used to create the output.")
 library(rstan)
 library(parallel)
 library(dplyr)

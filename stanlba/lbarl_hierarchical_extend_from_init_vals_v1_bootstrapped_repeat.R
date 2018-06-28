@@ -1,0 +1,17 @@
+#1. Go to analyze a full group (say, Group 1) using both randomized and bootstrapped
+#2. Go to analyze 10 subjects at w=500,i=1000 using both randomized and bootstrapped
+#3. Go to analyze 10 subjects using adapt_delta=0.8. Our efficiency is still not what I’d like, and I’d like to see how I can improve on it.
+#4. Apply the innovations I’ve worked out to the de_mcmc moel.
+
+
+source("stanlba/lbarl_hierarchical_extend_from_init_vals_v1.R")
+
+
+
+#reprise.
+print("------------------------")
+print("Running the informative priors model WITH BOOTSTRAPPED INITIAL VALUES SPECIFIED.")
+fit_with_manual_init_vals <- run_model("lba_rl_multi_subj_7_3level_empiricalpriors_noncentered","10subs_bootstrapped_init_12c",
+                                       filedir="incremental/",informative_priors = TRUE,
+                                       init_vals="bootstrapped")
+
