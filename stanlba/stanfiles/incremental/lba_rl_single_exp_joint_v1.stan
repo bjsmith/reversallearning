@@ -161,36 +161,57 @@ functions{
 }
 
 data{
-     int<lower=1> LENGTH;
-     int<lower=2> NUM_CHOICES;
-     real<lower=0> A;
-     vector[LENGTH] response_time;
-     int response[LENGTH];
-     int required_choice[LENGTH];//the choice which would be reinforced on each round.
-     int cue[LENGTH];
+   int<lower=1> LENGTH;
+   int<lower=2> NUM_CHOICES;
+   real<lower=0> A;
+   vector[LENGTH] response_time;
+   int response[LENGTH];
+   int required_choice[LENGTH];//the choice which would be reinforced on each round.
+   int cue[LENGTH];
      
-     real neural_data;
+     
   ////////////\begin{joint model machinery}
+  // 
+  // int<lower=1> N_DELTA;//number of neural parameters
+  // int[N_DELTA] DELTA_LINK_TOGGLE;//record which delta variables to link.
+  // int[N_THETA] THETA_LINK_TOGGLE;//record which theta variables to link.
+  // 
+  vector[6] td_mu_prior;
+  vector[6] td_sd_prior;
   
-  int<lower=1> N_DELTA;//number of neural parameters
-  int[N_DELTA] DELTA_LINK_TOGGLE;//record which delta variables to link.
-  int[N_THETA] THETA_LINK_TOGGLE;//record which theta variables to link.
   ////////////\end{joint model machinery}   
+  //////neural model
+  vector[4] neural_data[LENGTH];
+  int DELTA_accumbens_lh;// = 3;
+  int DELTA_accumbens_rh;// = 4;
+  int DELTA_ofc_lh;// = 5;
+  int DELTA_ofc_rh;// = 6;
 }
 transformed data{
   ////////////\begin{joint model machinery}
-  int<lower=1> N_DELTA_LINK=sum(DELTA_LINK_TOGGLE>0);
-  int<lower=1> N_THETA_LINK=sum(THETA_LINK_TOGGLE>0);
-  int<lower=1> K_VAR = N_DELTA+N_THETA_LINK;// neural parameters delta plus behavioral parameters theta
-  if(N_THETA!=3)
-    reject("N_THETA, the number of behavioral variables, must equal three in this version of the model.")
-  vector[K_VAR] zeros = rep_vector(0,K_VAR);
-  
+  // int<lower=1> N_DELTA_LINK=sum(DELTA_LINK_TOGGLE>0);
+  // int<lower=1> N_THETA_LINK=sum(THETA_LINK_TOGGLE>0);
+  // int<lower=1> TD_N = N_DELTA+N_THETA_LINK;// neural parameters delta plus behavioral parameters theta
+  // if(N_THETA!=3)
+  //   reject("N_THETA, the number of behavioral variables, must equal three in this version of the model.")
+  // 
   ////////////\end{joint model machinery}
-  P_THETA_alpha_pr=1;
-  P_THETA_k_pr=2;
-  P_THETA_tau_pr=3;
+  int THETA_rpe=1;
+  int THETA_ev=2;
+  int TD_rpe=THETA_rpe;
+  int TD_ev=THETA_ev;
+  int TD_accumbens_lh = DELTA_accumbens_lh+2;
+  int TD_accumbens_rh = DELTA_accumbens_rh+2;
+  int TD_ofc_lh = DELTA_ofc_lh+2;
+  int TD_ofc_rh = DELTA_ofc_rh+2;
+  int TD_N=6;
   
+  vector[TD_N] zeros = rep_vector(0,TD_N);
+  
+  // P_BEHAV_alpha_pr=1;
+  // P_BEHAV_k_pr=2;
+  // P_BEHAV_tau_pr=3;
+  // 
   real<lower=0> s = 1;
 
   matrix[LENGTH,NUM_CHOICES] choice_outcomes;
@@ -213,15 +234,15 @@ transformed data{
 }
 
 parameters {
-  // real alpha_pr;
-  // real k_pr;
-  // real tau_pr;
-  real[N_THETA] theta;
+  real alpha_pr;
+  real k_pr;
+  real tau_pr;
+  //real[N_THETA] theta;
   
   ////////////\begin{joint model machinery}
-  vector[K_VAR] y_mu;
-  cholesky_factor_corr[K_VAR] L_Omega;
-  vector<lower=0>[K_VAR] L_sigma;
+  vector[TD_N] td_mu;
+  cholesky_factor_corr[TD_N] L_Omega;
+  vector<lower=0>[TD_N] L_sigma;
   ////////////\end{joint model machinery}
 }
 
@@ -231,21 +252,34 @@ transformed parameters {
   real<lower=0> tau;
   
   
-  alpha = inv_logit(theta[P_THETA_alpha_pr]);
-  k = exp(theta[P_THETA_k_pr]);
-  tau = exp(theta[P_THETA_tau_pr]);
-  
   ////////////\begin{joint model machinery}
-  matrix[K_VAR, K_VAR] L_Sigma = diag_pre_multiply(L_sigma, L_Omega);
-  matrix [K_VAR,K_VAR] Sigma = L_Sigma * L_Sigma';
+  matrix[TD_N, TD_N] L_Sigma = diag_pre_multiply(L_sigma, L_Omega);
+  matrix [TD_N,TD_N] Sigma = L_Sigma * L_Sigma';
+  
   ////////////\end{joint model machinery}
+  
+  alpha = inv_logit(alpha_pr);
+  k = exp(k_pr);
+  tau = exp(tau_pr);
+  // alpha = inv_logit(theta[P_BEHAV_alpha_pr]);
+  // k = exp(theta[P_BEHAV_k_pr]);
+  // tau = exp(theta[P_BEHAV_tau_pr]);
+  
 }
 
 model {
   matrix[max(cue),NUM_CHOICES] exp_val = rep_matrix(0,max(cue),NUM_CHOICES);
   real pred_err;
+  vector[LENGTH] run_pred_err_c2;
+  vector[LENGTH] trial_expected_val;
   real outcome;
   vector[NUM_CHOICES] v;
+  
+  ////////////\begin{joint model machinery}
+  vector[TD_N] td_var[LENGTH];
+  vector[TD_N] theta_delta[LENGTH];
+  ////////////\end{joint model machinery}
+  
   //these use VERY weak priors because we are going to use this data to set priors for future analyses
   //so it's important that we don't unduly bias analysis at this level.
   alpha_pr ~ normal(-1,4);//weak prior, agnostic about learning rate, but still biased to low learning rates.
@@ -258,33 +292,52 @@ model {
   
   for (i in 1:LENGTH){//loop through timesteps.
     
+    #the EXPECTED value for this choice, which *should* always be positive(?) but will difer in degree of how positive you'd expect.
+    trial_expected_val[i]=exp_val[cue[i],response[i]];
+    
     for(j in 1:NUM_CHOICES){
       v[j]=logit(exp_val[cue[i],j]/4+0.75);
       //if j was the reinforced choice and it was the response value,
       pred_err=choice_outcomes[i,j]-exp_val[cue[i],j]; 
-
+      
       exp_val[cue[i],j] = exp_val[cue[i],j] + alpha*pred_err;
       //for occam's razor, I'm going to avoid any transformation from expected value to drift rate. we'll treat expected value as drift rate exactly!
       
     }
+    #we're going to do prediciton error just for the last choice
+    run_pred_err_c2[i] = pred_err;
+    
+    
+    
+    #i don't know how we get non-resposne time...but let's work that out later.
     response_time[i] ~ lba(response[i],k,A,v,s,tau);
   }
   
   ////////////\begin{joint model machinery}
-  vector[K_VAR] y_var[LENGTH];
-  //vector[K_VAR] mu[N_SUB];
-  for (k in 1:K_VAR){
-    y_mu[k] ~normal(y_mu_prior[k],y_sd_prior[k]);
+  
+  theta_delta[THETA_rpe]=run_pred_err_c2;
+  theta_delta[THETA_ev]=trial_expected_val;
+  theta_delta[TD_accumbens_lh]=neural_data[DELTA_accumbens_lh];
+  theta_delta[TD_accumbens_rh]=neural_data[DELTA_accumbens_rh];
+  theta_delta[TD_ofc_lh]=neural_data[DELTA_ofc_lh];
+  theta_delta[TD_ofc_rh]=neural_data[DELTA_ofc_rh];
+  
+  
+  //vector[TD_N] mu[N_SUB];
+  //estimate the means for each of our parameters
+  //These should be zero already but just to make sure.
+  for (tdi in 1:TD_N){
+    td_mu[tdi] ~ normal(td_mu_prior[tdi],td_sd_prior[tdi]);
   }
   
-  //separate out calculation of means from calculation of variance.
-  for (t in 1:LENGTH){
-    y_var[s] = y[s] - y_mu;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
+  //Subtract the means, leaving the variance.
+  for (i in 1:LENGTH){
+    td_var[i] = theta_delta[i] - td_mu;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
   }
-  
+  //predict the variance from the remaining information.
   L_Omega ~ lkj_corr_cholesky(4);
   L_sigma ~ cauchy(0,2.5); #these yield standard deviations of each individual value.
-  y_var ~ multi_normal_cholesky(zeros,L_Sigma);
+  td_var ~ multi_normal_cholesky(zeros,L_Sigma);
   ////////////\end{joint model machinery}
   
     
@@ -292,6 +345,6 @@ model {
 
 ////////////\begin{joint model machinery}
 generated quantities{
-  vector[K_VAR] SD = L_sigma;
+  vector[TD_N] SD = L_sigma;
 }
 ////////////\end{joint model machinery}

@@ -185,10 +185,24 @@ covarying_distribution_3$K_VAR<-dim(covarying_distribution_3$y)[2]
 covarying_distribution_3$y_mu_prior<-c(100,100,165)
 covarying_distribution_3$y_sd_prior<-c(50,50,50)
 
+
+standard.seed<-9769847
 fit.dependent.m10d9a <- stan(file='iq_eq_model_multivar10d9a.stan', 
                              data = covarying_distribution_3,
                              warmup = 200, 
-                             iter = 300,
+                             iter = 300,seed = standard.seed,
                              init = list(list(y_mu=covarying_distribution_3$y_mu_prior)),
                              chains = 1)
 fit.dependent.m10d9a
+#cat(fit.dependent.m10d9a@stanmodel@model_code)
+
+#this one standardizes the linked parameters separately from the covariance estimate.
+fit.dependent.m11d9a <- stan(file='iq_eq_model_multivar11d9a.stan', 
+                             data = covarying_distribution_3,
+                             warmup = 200, 
+                             iter = 300,seed = standard.seed,
+                             init = list(list(y_mu=covarying_distribution_3$y_mu_prior)),
+                             chains = 1)
+fit.dependent.m11d9a
+#cat(fit.dependent.m11d9a@stanmodel@model_code)
+#this doesn't seem to work, so we'll proceed without doing the standardization, I think.

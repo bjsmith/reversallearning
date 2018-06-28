@@ -4,6 +4,7 @@
 //we want to estimate the distribution of IQ and EQ in this population
 //and also the covariance of IQ and EQ in this population.
 
+//v11d9a: standardize the joint variables rather than merely mean-center them.
 //v10d9a: allow an arbitrary number of variables.
 //v9a: allow for calculation of the main value in a simple non-centered parameterization
 //v8: Simplify down, remove the regression component since we don't need it for the joint model.
@@ -34,6 +35,7 @@ transformed data{
 
 parameters{
   vector[K_VAR] y_mu;
+  vector[K_VAR] y_sd;
   cholesky_factor_corr[K_VAR] L_Omega;
   vector<lower=0>[K_VAR] L_sigma;
   
@@ -50,11 +52,12 @@ model{
   //vector[K_VAR] mu[N_SUB];
   for (k in 1:K_VAR){
     y_mu[k] ~ normal(y_mu_prior[k],y_sd_prior[k]);
+    y_sd[k] ~ cauchy(0,5);
   }
   
   //separate out calculation of means from calculation of variance.
   for (s in 1:N_SUB){
-    y_var[s] = y[s] - y_mu;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
+    y_var[s] = (y[s] - y_mu)./y_sd;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
   }
   
   L_Omega ~ lkj_corr_cholesky(4);
