@@ -206,3 +206,17 @@ fit.dependent.m11d9a <- stan(file='iq_eq_model_multivar11d9a.stan',
 fit.dependent.m11d9a
 #cat(fit.dependent.m11d9a@stanmodel@model_code)
 #this doesn't seem to work, so we'll proceed without doing the standardization, I think.
+
+
+covarying_distribution_4<-covarying_distribution_3
+covarying_distribution_4$y<-t(covarying_distribution_3$y)
+
+
+fit.dependent.m11ad9a <- stan(file='iq_eq_model_multivar11ad9a.stan', 
+                             data = covarying_distribution_4,
+                             warmup = 200, 
+                             iter = 300,seed = standard.seed,
+                             init = list(list(y_mu=covarying_distribution_4$y_mu_prior)),
+                             chains = 1)
+fit.dependent.m11ad9a
+#also dooesn't work!

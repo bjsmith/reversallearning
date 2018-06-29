@@ -1,0 +1,116 @@
+---
+title: "Single-subject joint model first pass"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, echo = FALSE)
+knitr::opts_knit$set(root.dir="../")
+library(dplyr)
+library(ggplot2)
+library(data.table)
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+
+
+```
+
+
+
+```{r setup3, include=FALSE,cache=TRUE}
+source("stanlba/singlelevelmodel/lba_rl_joint_v2_evaluate_functions.R")
+source("visualization/geom_hdi.R")
+```
+
+
+```{r setup4, cache=TRUE}
+
+load(paste0(localsettings$data_dir,"/lba_rl/joint_20180628_1/posteriors_joint_v2_joint_20180628_1.RData"))
+
+#source("stanlba/singlelevelmodel/lba_rl_joint_v2_summarize.R")
+
+grand_posterior_estimate_neural_dt<-data.table(grand_posterior_estimate)
+
+load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/lba_rl/20180624_1/posteriors_summary_v2_20180624_1.RData")
+grand_posterior_estimate_dt_behavioral<-data.table(grand_posterior_estimate)
+
+
+
+
+```
+
+I ran a single-level joint model using stan on subjects.
+
+# Distribution of behavioral model parameters
+
+Learning rates in this model are very low - I am investigating why this model has learning rates so much lower than other models we've run.
+
+For the behavioral model:
+
+
+```{r behav_model1}
+
+
+
+print(do_akt_distribution(grand_posterior_estimate_dt_behavioral,title="Posterior distribution of alpha,k, and tau values across subjects (behavioral-only model)"))
+
+
+```
+
+and for the neural model
+
+```{r neural_model2}
+
+print(do_akt_distribution(grand_posterior_estimate_neural_dt,title="Posterior distribution of alpha,k, and tau values across subjects (Neural-behavioral model)"))
+
+
+```
+
+
+```{r neural_model3, echo=FALSE}
+
+
+
+# - take point estimate of RPE covariance within subject, and then plot the average across subjects.
+# - add posterior across all runs and subjects and present that. I *think* this is valid; it should 'control itself'.
+
+do_alpha_k_tau_graph(grand_posterior_estimate_neural_dt,title="Posterior distribution of alpha,k, and tau values across subjects (Neural-behavioral model)")
+
+```
+
+```{r behav_model3}
+do_alpha_k_tau_graph(grand_posterior_estimate_dt_behavioral,title="Posterior distribution of alpha,k, and tau values across subjects (behavioral-only model)")
+
+```
+
+
+# Neural model
+
+```{r rpe4}
+
+DeltaThetaLabels=c("RewardPredictionError","AccubmensL","AccubmensR","IFGOrbitalL","IFGOrbitalR")
+
+
+Sigma_dims=5
+rpe_correlations_post<-paste0("Sigma.",1:Sigma_dims,".",1,".")
+rpe_posteriors_dt<-grand_posterior_estimate_neural_dt[,rpe_correlations_post,with=FALSE]
+colnames(rpe_posteriors_dt)<-DeltaThetaLabels
+group_posterior_rpe.long<- rpe_posteriors_dt %>% tidyr::gather("Parameter","Value",1:5)
+ggplot(group_posterior_rpe.long,aes(Value))+
+  geom_histogram(bins = 200)+
+  geom_hdi(color="#aaaaff",size=2,lineend="round")+
+  facet_wrap(~Parameter,nrow = 2,scales = "free")+
+  labs(title="Posterior distribution of RewardPredictionError covariance across subjects")
+
+
+
+```
+
+

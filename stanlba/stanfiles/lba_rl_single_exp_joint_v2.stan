@@ -1,3 +1,4 @@
+//v2: this incorporates reward prediction error as the only behavioral model parameter for which covariance is calculated.
 functions{
      
      real lba_pdf(real t, real b, real A, real v, real s){
@@ -171,13 +172,8 @@ data{
      
      
   ////////////\begin{joint model machinery}
-  // 
-  // int<lower=1> N_DELTA;//number of neural parameters
-  // int[N_DELTA] DELTA_LINK_TOGGLE;//record which delta variables to link.
-  // int[N_THETA] THETA_LINK_TOGGLE;//record which theta variables to link.
-  // 
-  vector[6] td_mu_prior;
-  vector[6] td_sd_prior;
+  vector[5] td_mu_prior;
+  vector[5] td_sd_prior;
   
   ////////////\end{joint model machinery}   
   //////neural model
@@ -189,29 +185,19 @@ data{
 }
 transformed data{
   ////////////\begin{joint model machinery}
-  // int<lower=1> N_DELTA_LINK=sum(DELTA_LINK_TOGGLE>0);
-  // int<lower=1> N_THETA_LINK=sum(THETA_LINK_TOGGLE>0);
-  // int<lower=1> TD_N = N_DELTA+N_THETA_LINK;// neural parameters delta plus behavioral parameters theta
-  // if(N_THETA!=3)
-  //   reject("N_THETA, the number of behavioral variables, must equal three in this version of the model.")
-  // 
   ////////////\end{joint model machinery}
   int THETA_rpe=1;
-  int THETA_ev=2;
+  //int THETA_ev=0;
   int TD_rpe=THETA_rpe;
-  int TD_ev=THETA_ev;
-  int TD_accumbens_lh = DELTA_accumbens_lh+2;
-  int TD_accumbens_rh = DELTA_accumbens_rh+2;
-  int TD_ofc_lh = DELTA_ofc_lh+2;
-  int TD_ofc_rh = DELTA_ofc_rh+2;
-  int TD_N=6;
+  //int TD_ev=THETA_ev;
+  int TD_accumbens_lh = DELTA_accumbens_lh+THETA_rpe;
+  int TD_accumbens_rh = DELTA_accumbens_rh+THETA_rpe;
+  int TD_ofc_lh = DELTA_ofc_lh+THETA_rpe;
+  int TD_ofc_rh = DELTA_ofc_rh+THETA_rpe;
+  int TD_N=TD_ofc_rh;
   
   vector[TD_N] zeros = rep_vector(0,TD_N);
   
-  // P_BEHAV_alpha_pr=1;
-  // P_BEHAV_k_pr=2;
-  // P_BEHAV_tau_pr=3;
-  // 
   real<lower=0> s = 1;
 
   matrix[LENGTH,NUM_CHOICES] choice_outcomes;
@@ -227,9 +213,9 @@ transformed data{
     }
   }
   
-  print("matrix of choice outcomes generated from required_choice and response input data:")
-  print(choice_outcomes)
-  
+  // print("matrix of choice outcomes generated from required_choice and response input data:")
+  // print(choice_outcomes)
+  // 
   
 }
 
@@ -237,13 +223,12 @@ parameters {
   real alpha_pr;
   real k_pr;
   real tau_pr;
-  //real[N_THETA] theta;
-  
-  ////////////\begin{joint model machinery}
+  // 
+  // ////////////\begin{joint model machinery}
   vector[TD_N] td_mu;
   cholesky_factor_corr[TD_N] L_Omega;
   vector<lower=0>[TD_N] L_sigma;
-  ////////////\end{joint model machinery}
+  // ////////////\end{joint model machinery}
 }
 
 transformed parameters {
@@ -251,20 +236,15 @@ transformed parameters {
   real<lower=0> k;
   real<lower=0> tau;
   
-  
-  ////////////\begin{joint model machinery}
+  // ////////////\begin{joint model machinery}
   matrix[TD_N, TD_N] L_Sigma = diag_pre_multiply(L_sigma, L_Omega);
   matrix [TD_N,TD_N] Sigma = L_Sigma * L_Sigma';
-  
-  ////////////\end{joint model machinery}
+  // 
+  // ////////////\end{joint model machinery}
   
   alpha = inv_logit(alpha_pr);
   k = exp(k_pr);
   tau = exp(tau_pr);
-  // alpha = inv_logit(theta[P_BEHAV_alpha_pr]);
-  // k = exp(theta[P_BEHAV_k_pr]);
-  // tau = exp(theta[P_BEHAV_tau_pr]);
-  
 }
 
 model {
@@ -275,10 +255,10 @@ model {
   real outcome;
   vector[NUM_CHOICES] v;
   
-  ////////////\begin{joint model machinery}
+  // ////////////\begin{joint model machinery}
   vector[TD_N] td_var[LENGTH];
   matrix[LENGTH, TD_N] theta_delta;
-  ////////////\end{joint model machinery}
+  // ////////////\end{joint model machinery}
   
   //these use VERY weak priors because we are going to use this data to set priors for future analyses
   //so it's important that we don't unduly bias analysis at this level.
@@ -321,40 +301,35 @@ model {
   // print(trial_expected_val);
   
   ////////////\begin{joint model machinery}
-  
+  // 
   theta_delta[:,THETA_rpe]=logit(run_pred_err_c2/4+0.5);
-  theta_delta[:,THETA_ev]=logit(trial_expected_val/2+0.5);
+  // theta_delta[:,THETA_ev]=logit(trial_expected_val/2+0.5);
   theta_delta[:,TD_accumbens_lh]=neural_data[:, DELTA_accumbens_lh];
   theta_delta[:,TD_accumbens_rh]=neural_data[:, DELTA_accumbens_rh];
   theta_delta[:,TD_ofc_lh]=neural_data[:, DELTA_ofc_lh];
   theta_delta[:,TD_ofc_rh]=neural_data[:, DELTA_ofc_rh];
-  
-  // print("theta_delta:")
-  // print(theta_delta)
-  //vector[TD_N] mu[N_SUB];
-  //estimate the means for each of our parameters
-  //These should be zero already but just to make sure.
+  // 
+  // //estimate the means for each of our parameters
+  // //These should be zero already but just to make sure.
   for (tdi in 1:TD_N){
     td_mu[tdi] ~ normal(td_mu_prior[tdi],td_sd_prior[tdi]);
   }
-  
-  //Subtract the means, leaving the variance.
+  // 
+  // //Subtract the means, leaving the variance.
   for (i in 1:LENGTH){
     td_var[i] = theta_delta[i,:]' - td_mu;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
   }
-  //print(td_mu);
   //predict the variance from the remaining information.
   L_Omega ~ lkj_corr_cholesky(4);
   //print(L_Omega)
   L_sigma ~ cauchy(0,2.5); //these yield standard deviations of each individual value.
   td_var ~ multi_normal_cholesky(zeros,L_Sigma);
   ////////////\end{joint model machinery}
-  
+
     
 }
-
-////////////\begin{joint model machinery}
-generated quantities{
-  vector[TD_N] SD = L_sigma;
-}
-////////////\end{joint model machinery}
+// ////////////\begin{joint model machinery}
+// generated quantities{
+//   vector[TD_N] SD = L_sigma;
+// }
+// ////////////\end{joint model machinery}
