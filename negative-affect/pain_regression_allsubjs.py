@@ -40,6 +40,7 @@ class RLPain:
 
         self.nps_map_dir=''
         self.onset_file_version='20170819T170218'
+        self.data_fmri_space="nltoolstandard"
 
     def get_wager_nps_map(self,nps_map_filepath=None):
         using_custom_filepath=False
@@ -90,7 +91,8 @@ class RLPain:
         self.stats = stats
         self.decoder = stats['weight_map']
 
-    def process_detailed_regressors(self,subid_range=range(1,500),custom_pain_map_lambda=None,motivations_all=False):
+    def process_detailed_regressors(self,subid_range=range(1,500),custom_pain_map_lambda=None,motivations_all=False,
+                                    custom_data_mask_lambda=None):
 
 
         if motivations_all is None or motivations_all==False:
@@ -121,7 +123,10 @@ class RLPain:
                                 custom_pain_map_filepath = custom_pain_map_lambda(sid,rid,m[0:6])
                                 self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath)
 
-                            msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file)
+                            data_mask_path=None
+                            if custom_data_mask_lambda is not None:
+                                data_mask_path=custom_data_mask_lambda(sid,rid,m[0:6])
+                            msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file,data_mask=data_mask_path)
                             msm_predicted_pain_dict['subid'] = sid
                             msm_predicted_pain_dict['runid'] = rid
                             with open(self.regressor_output_filepathprefix + str(sid) + '_' + m.lower() + '_r' + str(rid) + '.csv',
@@ -159,17 +164,17 @@ class RLPain:
                         #attach the subject and run ID to the output and concatenate.
 
     #the standard paine regressor from nlTools
-    def get_trialtype_pain_regressors(self,nifti_data,onset_file):
+    def get_trialtype_pain_regressors(self,nifti_data,onset_file,data_mask=None):
         print("importing nifti")
         #import the nifti
         #load the nltools prepped file if it's available.
-        if (os.path.isfile(nifti_data + "nltoolstandard.nii.gz")):
+        if (os.path.isfile(nifti_data + self.data_fmri_space + ".nii.gz")):
             msmrl1 = Brain_Data(
-                nifti_data + "nltoolstandard.nii.gz")
+                nifti_data + self.data_fmri_space + ".nii.gz",mask=data_mask)
         else:#but if it's not; no worries; just load the original one.
             msmrl1 = Brain_Data(
-                nifti_data + ".nii.gz")
-            msmrl1.write(nifti_data + "nltoolstandard.nii.gz")
+                nifti_data + ".nii.gz",mask=data_mask)
+            msmrl1.write(nifti_data + self.data_fmri_space + ".nii.gz")
 
         #I want to standardize globally; this will preserve the relative strengths of each time point
         #and preserve the relative activity at each voxel.
