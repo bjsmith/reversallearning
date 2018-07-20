@@ -1,0 +1,209 @@
+---
+title: "Report for Brandon 12 July 2018"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+Wanting to go over three items today:
+
+ 1. Take a look at the model code itself. Is anything wrong here?
+ 2. Look into the correlation size issue. Why are they so small, and in light of that, are they reliable?
+ 3. Broader assessment: is this just crappy data?
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"),
+                      echo=FALSE)
+library(data.table)
+library(ggplot2)
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+source("data_summarize_lbarlmodel.R")
+
+```
+
+
+
+# Model code
+
+Representative model at this stage is lba_rl_single_exp_joint_v11.stan.
+
+(full path is /expdata/bensmith/joint-modeling/code/msm/reversallearning/stanlba/stanfiles/incremental/lba_rl_single_exp_joint_v11.stan but outside access is down, may have to screen-share or share file over chat)
+
+# Correlation size
+
+Remember that because I standardized the ThetaDelta paramters for joint model calculation, our covariances *should* work out to be simple correlations.
+
+They aren't exactly, though -- there is some variation.
+
+### Correlations for main model
+
+Note how correlations for EV and RPE are generally fairly low.
+
+```{r heatmap_display, echo=FALSE, fig.height=15, fig.width=15, message=FALSE, warning=FALSE}
+
+source("stanlba/singlelevelmodel/single_level_model_summarize_fast.R")
+source("stanlba/singlelevelmodel/lba_rl_joint_v2_evaluate_functions.R")
+source("stanlba/singlelevelmodel/lba_rl_joint_v1_functions.R")
+source("stanlba/singlelevelmodel/lba_rl_joint_v7_functions.R")
+source("stanlba/singlelevelmodel/lba_rl_joint_v10_functions.R")
+
+regions<-get_dmn_regions()
+#what we really wanna do is extract the sigmas
+Sigma_dims<-25
+rpe_covarvec<-paste0("Sigma[",1:Sigma_dims[1],",",1,"]")
+rpe_covarvec_df<-paste0("Sigma.",1:Sigma_dims[1],".",1,".")
+library(rstan)
+
+
+lba_rl_version<-"joint_20180709_1"
+
+DeltaThetaLabels=c("RewardPredictionError","ExpectedValue",gsub("ctx_","",gsub("ROI_","",regions)))
+load('/expdata/bensmith/joint-modeling/data/msm/reversallearning/lba_rl/joint_20180709_1/run_package_140_1_punishment_lba_rl_single_exp_joint_v11f.RData')
+
+load(paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11f.RData"))
+print(heatmap(Sigma_matrix_mean,show_labels=FALSE))
+
+```
+
+
+## Reward prediction error
+
+We can see how activity in 37 regions representing parts of the striatum and ventromedial prefrontal cortex correlate with reward prediction error:
+
+```{r RPECorrelations, echo=FALSE}
+
+region_correlation_strength<-read.csv(paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11f_provisional.csv"))
+
+knitr::kable(region_correlation_strength[,c("Region","RPECI95Pct","RPE_FDRadjustedPValue")])
+```
+
+Most of the regions tested were significant.
+
+Unfortunately, this did include a 'control region', the occipital anterior sulcus.
+
+
+## Expected value
+
+We also can see how activity in 37 regions representing parts of the striatum and ventromedial prefrontal cortex expected value:
+
+```{r EVCorrelations, echo=FALSE}
+
+region_correlation_strength<-read.csv(paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11f_provisional.csv"))
+
+
+knitr::kable(region_correlation_strength[order(region_correlation_strength$EV_FDRadjustedPValue)
+                                         ,c("Region","EVCI95Pct","EV_FDRadjustedPValue")])
+```
+
+
+## Correlation size and number of parameters
+
+These tiny correlation estimates don't seem to be related to the number of parameters. When I run a model with just a Delta parameters, the sizes are no larger.
+
+```{r JustDeltaParams1, echo=FALSE}
+region_correlation_strength_11g<-read.csv("/expdata/bensmith/joint-modeling/data/msm/reversallearning/lba_rl/joint_20180709_1/lba_rl_single_exp_joint_v11g_provisional.csv")
+
+
+knitr::kable(region_correlation_strength_11g[order(region_correlation_strength_11g$EV_FDRadjustedPValue)
+                                         ,c("Region","EVCI95Pct","EV_FDRadjustedPValue")])
+
+```
+
+
+```{r JustDeltaParams2, echo=FALSE, cache=FALSE}
+
+
+knitr::kable(region_correlation_strength_11g[,c("Region","RPECI95Pct","RPE_FDRadjustedPValue")])
+
+```
+
+## Method
+
+Is it valid to use the method I've used to get the covariances? This is done by:
+
+1) Calculate posterior mean for each run:
+
+$\Sigma_{run}=\textbf{M}(\Sigma_{posterior})$
+
+2) For each subject, calculate the mean $\Sigma$ across that subject 
+
+$\Sigma_{subject}=\textbf{M}([\Sigma_{run1},\Sigma_{run2}...\Sigma_{runN}])$
+
+and for every subject, to give an list of Sigma matrices like:
+
+$[\Sigma_{1},\Sigma_{2}...\Sigma_{N}]$
+
+3) Use a t-test to determine whether the distribution of these mean sigma posteriors across subjects differs significantly from zero.
+
+Question: is it possible the model could be introducing positive or negative bias? 
+
+Answer: Seems unlikely because we do get negative covariances reported too.
+
+But perhaps it underestimates the variance of the variance by ignoring the posterior-level variance and just taking the mean?
+
+### Strange to see that a major change in the model results in very little change in model fit
+
+When I replaced the line 
+
+```{stan OriginalCode, echo=TRUE, eval=FALSE, output.var="Mymodel1"}
+
+exp_val[cue[i],j] = exp_val[cue[i],j] + alpha*pred_err;
+
+```
+
+with 
+
+```{stan RevisedCode, echo=TRUE, eval=FALSE, output.var="Mymodel"}
+
+exp_val[cue[i],j] = 0 + alpha*pred_err;
+
+```
+
+
+I'm experimenting with some variants on the model.
+
+
+log probability seemed to _improve_ when I changed the expected value parameter to reflect only the prediction error in the last turn; not every time, but in the majority of rounds.
+
+
+
+```{r LogProbChange}
+
+load(file=paste0(localsettings$data.dir,"lba_rl/rl_joint_20180711_1/comparison.RData"))
+ggplot(compare_lp[,4:9] %>% tidyr::gather("Model","LogProbabilility"),aes(LogProbabilility,color=Model,group=Model))+geom_density()
+
+```
+
+
+So
+
+ - Am I measuring something wrong here?
+ - Is log probability not a great measure of model performance?
+ - Is the data that bad? perhaps the subjects really do have such a strong recency bias that a model where expected value is a function only of the previous iteration performs better than other models?
+
+
+# Are we constrained by the data or the procedure
+
+Key problems that have come up through multiple ways of trying to work this out are:
+
+ - Model takes far too long to even start
+ - I can't generate a set of initial values that will work consistently
+
+We also know that:
+
+ - Model performance is poor
+ - Data is relatively poor - after 5 trials subjects reach around 65% performance; this actually isn't bad but it isn't many trials to calculate performance over (but keep in mind we have 198 trials per run because multiple images to calculate performance over)
+ - I have excluded trials where subjects did not give a response, as well as excluded runs where subjects have very poor performance.
+

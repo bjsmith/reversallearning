@@ -1,8 +1,20 @@
 ---
 title: "Negative affect behavioral data"
-output: html_notebook
+output:
+  pdf_document:
+    keep_tex: yes
+  html_notebook: default
+  html_document: default
 ---
 Verifying pain signal
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,cache = TRUE)
+knitr::opts_knit$set(root.dir="../")
+library(data.table)
+
+```
 
 If the NPS similarity reliably measures pain, then we should see that the NPS score is higher in trials where subjects receive an electric shock compared to trials where they do not. Thus, sign that the NPS is measuring pain is to ensure that:
 
@@ -15,7 +27,7 @@ After the NPS scores were obtained, I tested these two postulates with a series 
 library(lme4)
 library(ggplot2)
 library(data.table)
-setwd("../")
+
 source("negative-affect/negative_affect_trials_setup.R")
 
 fixedef.se<-function(fit){
@@ -41,7 +53,7 @@ The first set of models tests our ability distinguish between punished trials (i
 We first build a base level model, for comparison, that attempts to predict the NPS signal on a given trial without reference to whether or not that trial was correct.
 
 
-```{r, echo=TRUE}
+```{r }
 m.0<-lmer(ValueScaled~
                      presentation_n_in_segment + 
                      (1+presentation_n_in_segment | subid/runmotiveid) + 
@@ -57,7 +69,7 @@ We represent subject as $S$, run as $S$, and image as $\iota$; then
 
 $V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon$
 
-```{r, echo=TRUE}
+```{r }
 #m.sronly<-lmer(ValueScaled~presentation_n_in_segment+ (1 | subid/runid),rawdata.ordered.complete[Motivation=="punishment"])
 #summary(m.sronly)
 ```
@@ -67,7 +79,7 @@ Then we can repeat the model, this time with the correct response included:
 
 $V=\mathit{RESPONSE}_k*\mathit{PRESENTATION}_{i} + S_{s(i, k )} + R_{r(s,i , k )} + \iota_{j(i, k)} + \epsilon$
 
-```{r, echo=TRUE}
+```{r }
 
 #m.withReponseCorrect<-lmer(ValueScaled~ResponseCorrect + presentation_n_in_segment + (1+ResponseCorrect | subid/runid),pain_data)
 m.withResponseCorrect<-lmer(ValueScaled~
@@ -89,12 +101,10 @@ summary(m.withResponseCorrectInteract)
 Over all pain datasets, the model with correct response has much lower AIC and BIC values, incdicating correct response explains variance within the data.
 
 
-```{r, echo=TRUE}
-<<<<<<< HEAD
-anova(m.0,m.withResponseCorrect)
-=======
+```{r }
+
 anova(m.0,m.withResponseCorrect,m.withResponseCorrectInteract)
->>>>>>> 6f7f50affd0a45d303d41dfec1bb7d98769c6f55
+
 ```
 
 This suggests that responses are predictive of the NPS value detected. The beta value estimate representing the response fixed effect suggests that NPS is lower for correct responses (no electric shock) than incorrect responses (electric shock), which is consistent with the purpose of the NPS to measure pain.
@@ -111,7 +121,7 @@ We first build a base model that does NOT include information about motives but 
 
 $V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon$
 
-```{r, echo=TRUE}
+```{r }
 m.rp.0<-lmer(ValueScaled~
                      (ResponseCorrect==FALSE) + 
                      presentation_n_in_segment + 
@@ -123,7 +133,9 @@ m.rp<-lmer(ValueScaled~
                      (1+presentation_n_in_segment | subid/runmotiveid) + 
                      (1 | image),rawdata.ordered.complete,
            )
+```
 
+```{r moremodels}
 
 m.rp.2<-lmer(ValueScaled~
                      (ResponseCorrect==FALSE)*(Motivation=="punishment") + 
@@ -134,7 +146,7 @@ m.rp.2<-lmer(ValueScaled~
 m.rp.contrast<-lmer(ValueScaled~
                      (ResponseCorrect==FALSE)*(Motivation=="punishment") + 
                      presentation_n_in_segment + 
-                     (1+ | runmotiveid) + 
+                     (1 | runmotiveid) + 
                       (1+presentation_n_in_segment+(ResponseCorrect==FALSE):(Motivation=="punishment")  | subid) + 
                      (1 | image),rawdata.ordered.complete)
 
@@ -150,7 +162,7 @@ m.rp.3<-lmer(ValueScaled~
 
 We can also run an ANOVA and using the result, conduct AIC and BIC tests to see whether overall, model fit was improved by including motivation in the model:
 
-```{r, echo=TRUE, cache=TRUE}
+```{r, cache=TRUE}
 anova(m.rp.0,m.rp)
 ```
 
@@ -158,7 +170,7 @@ BIC indicates that the model including punishment is strongly predictive.
 
 However the clearest indication of the result here, since we are interested in the direction of an effect, will come from examining the significance and magnitude of the effect sizes of the regressors themselves:
 
-```{r, echo=TRUE}
+```{r }
 summary(m.rp.0)
 summary(m.rp)
 lm.beta.lmer(m.rp)
@@ -171,17 +183,19 @@ The result:
 
 
 
-```{r, echo=TRUE}
+```{r finalgraphs}
+
 ggplot(rawdata.ordered.complete,aes(y=ValueScaled,x=interaction(ResponseCorrect,Motivation)))+geom_violin()+coord_cartesian(ylim=c(-5,5))
 
 #average valuescaled by subject
 rawdata.ordered.complete.dt<-data.table(rawdata.ordered.complete)
 data.to.graph<-rawdata.ordered.complete.dt[
   !is.na(ResponseCorrect) & !is.na(Motivation),
-  .(ValueScaledBySub=mean(ValueScaled,na.rm=TRUE),ResponseCorrect,Motivation),.(subid,ResponseCorrect,Motivation)]
+  .(ValueScaledBySub=mean(ValueScaled,na.rm=TRUE)),.(subid,ResponseCorrect,Motivation)]
 
 data.to.graph[,Response:=sapply(ResponseCorrect,function(x){ifelse(x,"Correct","Wrong")})]
 data.to.graph$Motivation<-factor(data.to.graph$Motivation,levels=c("reward","punishment"))
+
 ggplot(data.to.graph,
        aes(y=ValueScaledBySub,x=interaction(Response,Motivation),color=interaction(Response,Motivation)))+
   scale_colour_manual(values=c("#888888", "#888888","#888888","#ff0000"),guide=FALSE)+
@@ -222,15 +236,31 @@ ggplot(data.to.graph.3,
   #                 name="SUBJECT RESPONSE")+
   scale_y_continuous(name="Neurologic Pain Signature Value Punishment Minus Reward\n(Subject Mean)")+
   labs(title="Neurologic Pain Signature Value in Reversal learning\nBy Subject Response and Condition")
+
+
 ```
 
-```{r, echo=TRUE}
+```{r}
+
 lm.beta.lmer(m.rp.0)
 
 ```
 
 
+# Pain signal section discussion
 
-```{r, echo=TRUE}
+<!-- 
 
-```
+See negative-affect/stan_task.R 
+
+-->
+
+There are problems with the model used as it doesn't fully account for all the levels of variance. To do that we need to use a Bayesian model.
+
+I ran a Bayesian model using rstanarm. In this design, I included random effects of correct response and presentation oder, as well as intercept and presentation order within segment for each subject and each run within each subject. This was more variance than I could account for in a straight linear model.
+
+The 95% HDI for the beta value for ResponseCorrect was [-0.11, -0.04], indicating with high probability that an incorrect response would, overall, lead to a pain signal.
+
+
+<!-- $ValueScaled_{i j}= \beta_{0 j} ResponseCorrect + \beta_{1 j}\text{presentation}_{i j} + e_{i j} + (1+presentation_n_in_segment | subid/runmotiveid) +  -->
+<!--                           (1 | image) -->

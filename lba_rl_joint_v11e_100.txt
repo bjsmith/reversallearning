@@ -1,0 +1,9 @@
+Loading datasets...datasets loaded.
+Merging neural and behavioral datasets......datasets merged.
+[1] "189 ROIs are missing from 39 runs."
+[1] "1 ROIs are missing from 41 runs."
+[1] "1 ROIs are missing from 43 runs."
+[1] "1 ROIs are missing from 340 runs."
+[1] "1 ROIs are missing from 492 runs."
+[1] "1 ROIs are missing from 614 runs."
+Compiling model...

@@ -1,0 +1,315 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Report-2018-07-10},
+            pdfauthor={Ben Smith},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Report-2018-07-10}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Ben Smith}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{7/10/2018}
+
+
+\begin{document}
+\maketitle
+
+\section{Reward learning EV model}\label{reward-learning-ev-model}
+
+I tested a set of regions defined by freesurfer for their covariance
+with expected value and reward prediction error.
+
+In this analysis, about 3/4 of the runs were included, but some runs
+were excluded because stan was unable to converge on their results. I'm
+working on a re-analysis now that should include more runs.
+
+\subsection{Reward prediction error}\label{reward-prediction-error}
+
+We can see how activity in 37 regions representing parts of the striatum
+and ventromedial prefrontal cortex correlate with reward prediction
+error:
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+Region & RPECI95Pct & RPE\_FDRadjustedPValue\tabularnewline
+\midrule
+\endhead
+Putamen (Left) & {[}0.04, 0.055{]} & \textless{} 2e-16\tabularnewline
+Putamen (Right) & {[}0.039, 0.054{]} & \textless{} 2e-16\tabularnewline
+Accumbens area (Left) & {[}0.027, 0.041{]} & \textless{}
+2e-16\tabularnewline
+Accumbens area (Right) & {[}0.025, 0.038{]} & 9.6e-16\tabularnewline
+cingul Ant gyrus and sulcus (Left) & {[}0.02, 0.032{]} &
+1.4e-14\tabularnewline
+circular insula sup sulcus (Left) & {[}-0.037, -0.023{]} &
+1.1e-13\tabularnewline
+suborbital sulcus (Left) & {[}0.018, 0.032{]} & 3.6e-10\tabularnewline
+cingul Ant gyrus and sulcus (Right) & {[}0.016, 0.029{]} &
+1.3e-09\tabularnewline
+cingul Post dorsal gyrus (Right) & {[}0.02, 0.036{]} &
+1.6e-09\tabularnewline
+subcallosal gyrus (Left) & {[}0.013, 0.025{]} & 4.6e-09\tabularnewline
+circular insula sup sulcus (Right) & {[}-0.03, -0.016{]} &
+9.4e-09\tabularnewline
+front middle sulcus (Left) & {[}-0.026, -0.014{]} &
+4.0e-08\tabularnewline
+Caudate (Left) & {[}0.013, 0.025{]} & 5.5e-08\tabularnewline
+suborbital sulcus (Right) & {[}0.011, 0.024{]} & 4.4e-07\tabularnewline
+cingul Mid Ant gyrus and sulcus (Left) & {[}-0.025, -0.011{]} &
+1.5e-06\tabularnewline
+Caudate (Right) & {[}0.009, 0.021{]} & 1.3e-05\tabularnewline
+insular short gyrus (Right) & {[}-0.021, -0.0085{]} &
+4.0e-05\tabularnewline
+Pallidum (Left) & {[}0.0077, 0.02{]} & 7.3e-05\tabularnewline
+Thalamus Proper (Right) & {[}-0.02, -0.0065{]} & 0.00042\tabularnewline
+cingul Mid Ant gyrus and sulcus (Right) & {[}-0.02, -0.0064{]} &
+0.00067\tabularnewline
+front sup sulcus (Left) & {[}0.0059, 0.019{]} & 0.00073\tabularnewline
+subcallosal gyrus (Right) & {[}0.0055, 0.018{]} & 0.00085\tabularnewline
+front middle sulcus (Right) & {[}-0.019, -0.0053{]} &
+0.00158\tabularnewline
+circular insula ant sulcus (Left) & {[}-0.02, -0.0053{]} &
+0.00166\tabularnewline
+Amygdala (Left) & {[}0.004, 0.016{]} & 0.00302\tabularnewline
+insular short gyrus (Left) & {[}-0.017, -0.0041{]} &
+0.00344\tabularnewline
+occipital ant sulcus (Right) & {[}0.0029, 0.017{]} &
+0.01282\tabularnewline
+circular insula ant sulcus (Right) & {[}-0.017, -0.0024{]} &
+0.01841\tabularnewline
+front sup sulcus (Right) & {[}0.002, 0.015{]} & 0.02070\tabularnewline
+front sup gyrus (Right) & {[}-0.015, -0.0013{]} & 0.03338\tabularnewline
+Pallidum (Right) & {[}-0.00044, 0.014{]} & 0.09955\tabularnewline
+rectus gyrus (Left) & {[}-0.0007, 0.01{]} & 0.12900\tabularnewline
+temporal sup sulcus (Left) & {[}-0.00096, 0.012{]} &
+0.13471\tabularnewline
+Thalamus Proper (Left) & {[}-0.011, 0.0013{]} & 0.16310\tabularnewline
+Amygdala (Right) & {[}-0.0015, 0.01{]} & 0.18537\tabularnewline
+rectus gyrus (Right) & {[}-0.0031, 0.01{]} & 0.36709\tabularnewline
+front sup gyrus (Left) & {[}-0.0052, 0.0073{]} & 0.78287\tabularnewline
+\bottomrule
+\end{longtable}
+
+Most of the regions tested were significant.
+
+Unfortunately, this did include a `control region', the occipital
+anterior sulcus.
+
+\subsection{Expected value}\label{expected-value}
+
+We also can see how activity in 37 regions representing parts of the
+striatum and ventromedial prefrontal cortex expected value:
+
+\begin{longtable}[]{@{}lllr@{}}
+\toprule
+& Region & EVCI95Pct & EV\_FDRadjustedPValue\tabularnewline
+\midrule
+\endhead
+29 & front sup sulcus (Right) & {[}0.0063, 0.016{]} &
+0.000059\tabularnewline
+9 & cingul Post dorsal gyrus (Right) & {[}0.0075, 0.02{]} &
+0.000073\tabularnewline
+20 & cingul Mid Ant gyrus and sulcus (Right) & {[}-0.016, -0.0056{]} &
+0.000220\tabularnewline
+11 & circular insula sup sulcus (Right) & {[}-0.016, -0.0052{]} &
+0.000670\tabularnewline
+6 & circular insula sup sulcus (Left) & {[}-0.016, -0.005{]} &
+0.000850\tabularnewline
+24 & circular insula ant sulcus (Left) & {[}-0.015, -0.0043{]} &
+0.001280\tabularnewline
+15 & cingul Mid Ant gyrus and sulcus (Left) & {[}-0.014, -0.004{]} &
+0.001430\tabularnewline
+28 & circular insula ant sulcus (Right) & {[}-0.016, -0.0043{]} &
+0.001640\tabularnewline
+12 & front middle sulcus (Left) & {[}-0.015, -0.0033{]} &
+0.005140\tabularnewline
+26 & insular short gyrus (Left) & {[}-0.016, -0.0035{]} &
+0.005850\tabularnewline
+1 & Putamen (Left) & {[}0.0018, 0.014{]} & 0.022320\tabularnewline
+17 & insular short gyrus (Right) & {[}-0.013, -0.0016{]} &
+0.022610\tabularnewline
+8 & cingul Ant gyrus and sulcus (Right) & {[}0.0012, 0.01{]} &
+0.023280\tabularnewline
+14 & suborbital sulcus (Right) & {[}0.0017, 0.014{]} &
+0.023280\tabularnewline
+27 & occipital ant sulcus (Right) & {[}-0.014, -0.0013{]} &
+0.031920\tabularnewline
+7 & suborbital sulcus (Left) & {[}0.00038, 0.011{]} &
+0.057550\tabularnewline
+30 & front sup gyrus (Right) & {[}-0.00017, 0.0091{]} &
+0.092930\tabularnewline
+2 & Putamen (Right) & {[}-0.00035, 0.011{]} & 0.099550\tabularnewline
+32 & rectus gyrus (Left) & {[}-0.01, 0.00072{]} &
+0.129000\tabularnewline
+4 & Accumbens area (Right) & {[}-0.011, 0.001{]} &
+0.143350\tabularnewline
+5 & cingul Ant gyrus and sulcus (Left) & {[}-0.0093, 0.001{]} &
+0.160270\tabularnewline
+36 & rectus gyrus (Right) & {[}-0.0019, 0.0095{]} &
+0.244940\tabularnewline
+18 & Pallidum (Left) & {[}-0.0024, 0.0096{]} & 0.298040\tabularnewline
+22 & subcallosal gyrus (Right) & {[}-0.0028, 0.0095{]} &
+0.354550\tabularnewline
+25 & Amygdala (Left) & {[}-0.0095, 0.0031{]} & 0.385890\tabularnewline
+21 & front sup sulcus (Left) & {[}-0.0031, 0.0088{]} &
+0.409920\tabularnewline
+16 & Caudate (Right) & {[}-0.0066, 0.0028{]} & 0.501480\tabularnewline
+37 & front sup gyrus (Left) & {[}-0.007, 0.003{]} &
+0.506220\tabularnewline
+3 & Accumbens area (Left) & {[}-0.0037, 0.0081{]} &
+0.522770\tabularnewline
+10 & subcallosal gyrus (Left) & {[}-0.0067, 0.0034{]} &
+0.575500\tabularnewline
+19 & Thalamus Proper (Right) & {[}-0.0072, 0.0038{]} &
+0.595590\tabularnewline
+31 & Pallidum (Right) & {[}-0.0052, 0.008{]} & 0.735760\tabularnewline
+13 & Caudate (Left) & {[}-0.0047, 0.0068{]} & 0.766600\tabularnewline
+34 & Thalamus Proper (Left) & {[}-0.0067, 0.0049{]} &
+0.784550\tabularnewline
+35 & Amygdala (Right) & {[}-0.0069, 0.0051{]} & 0.786480\tabularnewline
+33 & temporal sup sulcus (Left) & {[}-0.0054, 0.0066{]} &
+0.852940\tabularnewline
+23 & front middle sulcus (Right) & {[}-0.0053, 0.0062{]} &
+0.872330\tabularnewline
+\bottomrule
+\end{longtable}
+
+Several regions showed significant \emph{negative} correlations.
+
+Regions that showed significant positive correlations were:
+
+\begin{itemize}
+\tightlist
+\item
+  In the dorsal prefrontal cortex, the following areas:
+\item
+  Right Superior frontal sulcus (between the SFG and MFG)
+\item
+  Right frontal ACC
+\item
+  In the striatum, the following areas:
+\item
+  Left Putamen
+\item
+  Posterior cingulate gyrus (dorsal)
+\end{itemize}
+
+Additionally there, were a number of regions with significant
+\emph{negative} correlatoins with expected value:
+
+\begin{itemize}
+\tightlist
+\item
+  In the dorsal prefrontal cortex,
+\item
+  Left and right middle ACC
+\item
+  Left middle frontal sulcus
+\item
+  The control region Occipital anterior sulcus
+\item
+  left and right Anterior and Superior-posterior insula
+\end{itemize}
+
+Notably, we \emph{did not} see postiive correlations between expected
+value and the ventromedial prefrontal cortex. This does undermine the
+results somewhat.
+
+Factors that may lead to a failure to detect valuation in the vmPFC
+could include:
+
+\begin{itemize}
+\tightlist
+\item
+  `Expected value' means the expected value of the presented cue given
+  the subject's history with the presented cue. However, in this task,
+  subjects often confuse the identity of various cues, and this is
+  likely the largest source of error. Yet this is not modeled.
+\item
+  We are only able to get a very blunt measure of correlations in this
+  method because the model is not hierarchical.
+\item
+  vmPFC tracks value, but it's unclear whether this means that higher
+  value should mean more activity in ROIs within the ventromedial
+  prefrontal cortex.
+\end{itemize}
+
+\section{Next steps}\label{next-steps}
+
+
+\end{document}

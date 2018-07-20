@@ -1,4 +1,4 @@
-hierarchical_summarize<-function(){
+hierarchical_summarize<-function(gnames=list(SafeNoMeth="Safe No Meth",RiskyNoMeth="Risky No Meth",RiskyMeth="Risky Meth")){
   
   start=2
   start.weights=2
@@ -14,13 +14,13 @@ hierarchical_summarize<-function(){
   
   dim(res)
   par(mfrow=c(3,3),ask=FALSE)
-  sr_diff<-res[,,,"Risky No Meth"]-res[,,,"Safe No Meth"]
+  sr_diff<-res[,,,gnames$RiskyNoMeth]-res[,,,gnames$SafeNoMeth]
   hist(sr_diff[,,"alpha_mu"],breaks=100,main="Risky-Safe No Meth alpha_mu")
   hist(sr_diff[,,"thresh_mu"],breaks=100,main="Risky-Safe No Meth thresh_mu")
   hist(sr_diff[,,"tau_mu"],breaks=100,main="Risky-Safe No Meth tau_mu")
   HDIofMCMC(sr_diff[,,"tau_mu"])
   
-  meth_diff<-res[,,,"Risky Meth"]-res[,,,"Risky No Meth"]
+  meth_diff<-res[,,,gnames$RiskyMeth]-res[,,,gnames$RiskyNoMeth]
   table(meth_diff[,,"alpha_mu"]<0)/prod(dim(meth_diff[,,"alpha_mu"]))
   hist(meth_diff[,,"alpha_mu"],breaks=100,main="Meth-NoMeth (sexually risky) alpha_mu")
   HDIofMCMC(meth_diff[,,"alpha_mu"])
@@ -29,18 +29,18 @@ hierarchical_summarize<-function(){
   hist(meth_diff[,,"tau_mu"],breaks=100,main="Meth-NoMeth (sexually risky) tau_mu")
   HDIofMCMC(meth_diff[,,"tau_mu"])
   
-  sr_meth_diff<-res[,,,"Risky Meth"]-res[,,,"Safe No Meth"]
+  sr_meth_diff<-res[,,,gnames$RiskyMeth]-res[,,,gnames$SafeNoMeth]
   hist(sr_meth_diff[,,"alpha_mu"],breaks=100,main="Risky Meth - Safe NoMeth alpha_mu")
   HDIofMCMC(sr_meth_diff[,,"alpha_mu"])
   hist(sr_meth_diff[,,"thresh_mu"],breaks=100,main="Risky Meth - Safe NoMeth thresh_mu")
   hist(sr_meth_diff[,,"tau_mu"],breaks=100,main="Risky Meth - Safe NoMeth tau_mu")
-  dim(res[,,,"Risky No Meth"])
+  dim(res[,,,gnames$RiskyNoMeth])
   
   res3<-array(res,dim=c(prod(dim(res)[1:2]),dim(res)[3],dim(res)[4]),
               dimnames=dimnames(res)[2:4])
   
-  res3[2,,"Risky Meth"]
-  res[2,1,,"Risky Meth"]
+  res3[2,,gnames$RiskyMeth]
+  res[2,1,,gnames$RiskyMeth]
   res3[2,"alpha_mu",]
   res[2,1,"alpha_mu",]
   alpha_mu<-data.table(res3[,"alpha_mu",])

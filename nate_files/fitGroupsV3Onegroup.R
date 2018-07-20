@@ -48,7 +48,9 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
                        sample_from_prior=NA,
                        subj_level_params=NA,
                        include_run_ot=NA,
-                       pass_rt=NA
+                       pass_rt=NA,
+                       stan_data_style = NA,
+                       subjectLimit = NA
                        ){
   fit_desc<-""
   dd<-localsettings$data.dir
@@ -116,6 +118,13 @@ get_fit_desc<-function(use_model,descr,run,rp=c(2),
     fit_desc<-paste0(fit_desc,"_noTrialData")
   }
   
+  if (!is.na(stan_data_style)){
+    fit_desc<-paste0(fit_desc,"_sds",stan_data_style)
+  }
+  if (!is.na(subjectLimit)){
+    fit_desc<-paste0(fit_desc,"_sl",subjectLimit)
+  }
+  
   
   fit_desc<-paste0(fit_desc,fileSuffix)
   fit_desc<-paste0(fit_desc,".RData")
@@ -127,6 +136,7 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          include_pain=FALSE,fastDebug=FALSE,fileSuffix="",
                          estimation_method=ESTIMATION_METHOD.VariationalBayes,
                          bseed=bseed,
+                         stan_data_style=1,
                          iterations=NA,
                          collateTrialData=TRUE,
                          chainNum=NA,
@@ -137,7 +147,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                          subj_level_params=NA,
                          include_run_ot=NA,
                          pass_rt=NA,
-                         lookupOnly=FALSE){
+                         lookupOnly=FALSE,
+                         subjectLimit=NA){
   #looks up a fit. if it has been run before, just reload it from the hard drive.
   #if it hasn't, then run it.
   group.description<-get_group_description(groups_to_fit)
@@ -152,6 +163,7 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            fileSuffix = fileSuffix,
                            estimation_method=estimation_method,
                            bseed=bseed,
+                           stan_data_style=stan_data_style,
                            iterations=iterations,
                            collateTrialData=collateTrialData,
                            chainNum=chainNum,
@@ -161,7 +173,8 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                            sample_from_prior=sample_from_prior,
                            subj_level_params=subj_level_params,
                            include_run_ot=include_run_ot,
-                           pass_rt=pass_rt)
+                           pass_rt=pass_rt,
+                           subjectLimit=subjectLimit)
   if (file.exists(fit.fileid)){
     print(paste0("file ", fit.fileid, " has already been fit! Loading..."))
     load(fit.fileid)
@@ -180,7 +193,9 @@ lookupOrRunFit<-function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
                              sample_from_prior=sample_from_prior,
                              subj_level_params=subj_level_params,
                              include_run_ot=include_run_ot,
-                             pass_rt=pass_rt)
+                             pass_rt=pass_rt,
+                             stan_data_style=stan_data_style,
+                             subjectLimit=subjectLimit)
     #the fit run command actually saves the fit so no need to save it here.
     return(fit)
   }
@@ -225,31 +240,98 @@ get_group_description<-function(groups_to_fit){
   # }
   # return(list(group=group,descr=descr))
 }
-fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
-                                    includeSubjGroup,rp,model_rp_separately,model_runs_separately,
-                                    include_pain,fastDebug=FALSE,fileSuffix=fileSuffix,
-                                estimation_method=ESTIMATION_METHOD.VariationalBayes,
-                                bseed=sample.int(.Machine$integer.max, 1),iterations.set=NA,collateTrialData=TRUE,chainNum.set=NA,
-                                warmup_iter.set=NA,
-                                rl_unique_runids=FALSE,
-                                variable_run_lengths=FALSE,
-                                sample_from_prior=FALSE,
-                                subj_level_params=FALSE,
-                                include_run_ot=FALSE,
-                                pass_rt=FALSE){
-  use_model<-model_to_use
-  #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
-  #setwd("nate_files")
-  source(paste0(modelcode_rl,"Misc/freq_replace.R"))
-  source(paste0(modelcode_rl,"Misc/plot_model.R"))
-  
-  # Use pain as outcome?
-  pain_outcome <- include_pain
-  
-  # Which model to use?
-  models <- c("simple_delta", "simple_delta_bias", "switch_lr", "simple_decay", 
-              "switch_model", "double_update", "switch_decay", "switch_lr_double_update")
+
+format_dataset_style2<-function(
+  rp,
+  groups_to_fit, 
+  run, 
+  include_pain,
+  includeSubjGroup,
+  model_rp_separately,
+  model_runs_separately,
+  variable_run_lengths,
+  sample_from_prior,
+  subj_level_params,
+  include_run_ot,
+  pass_rt,
+  subjectLimit=subjectLimit){
+  if(include_pain | isTRUE(pass_rt) | any(runs!=c(1,2)) | includeSubjGroup  | !model_runs_separately | !variable_run_lengths ) stop("option unsupported")
+  #groups_to_fit=3
   dd<-localsettings$data.dir
+  source("stanlba/rawdataset_load.R")
+    #must give some unique runIDs here.
+  warning("seems like too many runs. We're not trimming runs we trimmed in the alpha-k-tau model. why is this?")
+  #filter
+  data_to_include<-rawdata[SubjectGroup %in% groups_to_fit,]
+  
+  if (length(rp)==1){
+    if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
+      data_to_include <- data_to_include[Motivation=="punishment"]
+    }else if (rp==REVERSAL_LEARNING_REWARD & length(rp)==1){
+      data_to_include <- data_to_include[Motivation=="reward"]
+    }
+  }#otherwise assume include both types of runs.
+  
+  #refine
+  
+  data_to_include[,presentation_n_over_run:=rank(onset_time_actual),by=.(subid,runid,Motivation)]
+  
+  if(!is.na(subjectLimit)){
+    data_to_include <- data_to_include[subid %in% unique(data_to_include$subid)[1:subjectLimit],]
+  }
+  #within the data table we can do...
+  data_to_include<-data_to_include[order(subid,Motivation,runid,presentation_n_over_run)]
+  #data_to_include$UniqueRunID<-as.numeric(interaction(data_to_include$runid,data_to_include$Motivation,data_to_include$subid))
+  by_run_data<-data_to_include[,.N,by=.(subid,Motivation,runid)]
+  by_run_data<-by_run_data[order(subid,-Motivation,runid)] %>% .[,UniqueRunID:=1:.N]
+  by_run_data$ConsecutiveSubID<-as.integer(as.factor(by_run_data$subid)) #converts the subject IDs into consecutive IDs without disrupting their order.
+  data_to_include<-merge(data_to_include,by_run_data,by=c("subid","Motivation","runid"))
+  data_to_include<-data_to_include[order(UniqueRunID,presentation_n_over_run)]
+  #table(data_to_include$UniqueRunID[2:length(data_to_include$UniqueRunID)]-data_to_include$UniqueRunID[1:(length(data_to_include$UniqueRunID)-1)])
+  
+  dataList<-list()
+  dataList[["NUM_OPTIONS"]] = 2 #int<lower=2> NUM_OPTIONS;
+  dataList[["NUM_SUBJECTS"]] = length(unique(data_to_include[SubjectGroup %in% groups_to_fit,subid])) # int<lower=1> NUM_SUBJECTS;
+  dataList[["NUM_RUNS"]] = dim(data_to_include[,.N,by=UniqueRunID])[1] # int<lower=1> NUM_RUNS;
+  
+  dataList[["NUM_TRIALS"]] = dim(data_to_include)[1]# int<lower=1> NUM_TRIALS;
+  
+  dataList[["selected_option"]] =  data_to_include$choice # int<lower=0,upper=NUM_OPTIONS> selected_option[NUM_TRIALS];
+  
+  
+  dataList[["required_option"]] =  data_to_include$cor_res_Counterbalanced  # int<lower=0,upper=NUM_OPTIONS> required_option[NUM_TRIALS];//the choice which would be
+  dataList[["outcome"]] =  data_to_include$outcome # real outcome[NUM_TRIALS]; //The actual outcome (correct=1, incorrect=0, nonresponse=0) reinforced on each round.
+  dataList[["cue"]] =  data_to_include$cue # int cue[NUM_TRIALS];
+  
+  dataList[["trial_runid"]] = data_to_include$UniqueRunID # int<lower=1> trial_runid[NUM_TRIALS];
+  
+  
+  dataList[["run_subjid"]] =  by_run_data$ConsecutiveSubID #converts the subject IDs into consecutive IDs without disrupting their order.
+  dataList[["run_ot"]] = as.integer(by_run_data$Motivation=="punishment")+1 # int<lower=1> run_ot[NUM_RUNS];
+  
+  
+  dataList[["DELTA_N"]] = 4 # int DELTA_N;
+  
+  dataList[["neural_data"]] = data_to_include[,.(ROI_Left.Accumbens.area,ROI_Right.Accumbens.area,ROI_ctx_lh_S_suborbital,ROI_ctx_rh_S_suborbital)]
+  dataList[["sample_from_prior"]] = 0  # int sample_from_prior; 
+  
+  return(dataList)
+}
+
+
+format_dataset_style1<-function(
+  rp,
+  groups_to_fit, 
+  run, 
+  include_pain,
+  includeSubjGroup,
+  model_rp_separately,
+  model_runs_separately,
+  variable_run_lengths,
+  sample_from_prior,
+  subj_level_params,
+  include_run_ot,
+  pass_rt){
   # Read in raw data
   if (length(rp)==1){
     if(rp==REVERSAL_LEARNING_PUNISHMENT & length(rp)==1){
@@ -310,7 +392,7 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
   #View(rawdata.dt[subjID %in% unique(rawdata.dt[reaction_time==0& response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual),subjID])])
   
   first.aborted.trial.by.run<-rawdata.dt[(reaction_time==0 | is.na(reaction_time)) & response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual),
-                                          .(FirstOnsetTime=min(onset_time_designed)),by=.(subjID,runid,Motivation)]
+                                         .(FirstOnsetTime=min(onset_time_designed)),by=.(subjID,runid,Motivation)]
   if(dim(first.aborted.trial.by.run)[1]>0){
     warning(paste0("excluded trials from ", as.character(dim(first.aborted.trial.by.run)[1]), " runs that were designed but not presented."))
     rawdata.dt<-rawdata.dt[!((reaction_time==0 | is.na(reaction_time)) & response_key==0 & !is.na(onset_time_designed) & is.na(onset_time_actual))]
@@ -397,10 +479,10 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
     print(paste0("stdev nonzero pain_value data is: ",(sd(abs(pain_data$Value[pain_data$Value!=0])))))
     
     
-      #scale this to something that will work tractably in our model.
-      #absence of standardized pain scores will affect the interpretability of the pain parameter
-      #but it seems better than using SD because that would involve applying different SD corrections to each subject,
-      #Based on the variance of their 
+    #scale this to something that will work tractably in our model.
+    #absence of standardized pain scores will affect the interpretability of the pain parameter
+    #but it seems better than using SD because that would involve applying different SD corrections to each subject,
+    #Based on the variance of their 
     pain_data$Motivation<-"punishment"
     rawdata<-merge(
       rawdata,pain_data,
@@ -408,12 +490,10 @@ fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_p
       by.y=c("subid","presentation_n","image","runid","Motivation","first_reversal","presentation_n_in_segment"),all.x=TRUE,all.y=FALSE)
   }
   #subj_ids_have <- as.numeric(gsub(x = list.files("Data/Pain_Betas"), pattern = "_.*_*.csv", replacement = ""))
-
-  
-for (i in 1:numSubjs) {
+  for (i in 1:numSubjs) {
     curSubj      <- subjList[i]
     useTrials    <- Tsubj[i]
-
+    
     # if (curSubj %in% subj_ids_have) {
     #   stop("This seems wrong!")
     #   tmp_brain <- read.csv(paste0("Data/Pain_Betas/", curSubj, "_punishment_r1.csv"))
@@ -431,7 +511,7 @@ for (i in 1:numSubjs) {
     #2) After I've resolved that issue, just need to figure a neat way to pass in run_ot.
     
     #re-number the outcome types for the trials, 
-
+    
     
     rew_runcount <- length(unique(tmp$runid[tmp$Motivation=="reward"]))
     pun_runcount <- length(unique(tmp$runid[tmp$Motivation=="punishment"]))
@@ -457,7 +537,7 @@ for (i in 1:numSubjs) {
     }else if(pun_runcount==2){
       run_id_ot[i,min(which(run_id_ot[i,]==0)):(min(which(run_id_ot[i,]==0))+1)]<-2
     }
-
+    
     outcome_type[i, 1:useTrials] <- as.integer(tmp$Motivation=="punishment")+1
     #assign unique runids to the runs if necessary.
     if (rl_unique_runids){
@@ -468,7 +548,7 @@ for (i in 1:numSubjs) {
         stop("include_run_ot can only be used with rl_unique_runids")
       }
     }
-
+    
     #create the run length record per subject
     subj_runCounts[i] <- length(unique(run_id[i, 1:useTrials]))
     #print(unique(run_id[i, 1:useTrials]))
@@ -476,7 +556,7 @@ for (i in 1:numSubjs) {
     reversal[i, 1:useTrials] <- as.numeric(tmp$reversal_trial)
     cue_pos[i, 1:useTrials] <- tmp$presentation_n_after_reversal
     trial[i, 1:useTrials] <- as.numeric(as.factor(tmp$onset_time_actual))
-
+    
     if(any(is.na(as.factor(tmp$onset_time_actual)))){
       stop("whoops. gotta debug this.")
     }
@@ -558,9 +638,66 @@ for (i in 1:numSubjs) {
     }
   }
   
+  return(dataList)
+}
+fitGroupsV3Onegroup <- function(run=1,groups_to_fit,model_to_use="simple_decay_pain",
+                                    includeSubjGroup,rp,model_rp_separately,model_runs_separately,
+                                    include_pain,fastDebug=FALSE,fileSuffix=fileSuffix,
+                                estimation_method=ESTIMATION_METHOD.VariationalBayes,
+                                bseed=sample.int(.Machine$integer.max, 1),iterations.set=NA,collateTrialData=TRUE,chainNum.set=NA,
+                                warmup_iter.set=NA,
+                                rl_unique_runids=FALSE,
+                                variable_run_lengths=FALSE,
+                                sample_from_prior=FALSE,
+                                subj_level_params=FALSE,
+                                include_run_ot=FALSE,
+                                pass_rt=FALSE,
+                                stan_data_style=NA,
+                                subjectLimit=NA){
+  use_model<-model_to_use
+  #setwd("~/Box Sync/MIND_2017/Hackathon/Ben/reversallearning/nate_files")
+  #setwd("nate_files")
+  source(paste0(modelcode_rl,"Misc/freq_replace.R"))
+  source(paste0(modelcode_rl,"Misc/plot_model.R"))
   
+  # Use pain as outcome?
+  pain_outcome <- include_pain
   
+  # Which model to use?
+  models <- c("simple_delta", "simple_delta_bias", "switch_lr", "simple_decay", 
+              "switch_model", "double_update", "switch_decay", "switch_lr_double_update")
+  dd<-localsettings$data.dir
   
+  if(is.na(stan_data_style) || stan_data_style==1){
+    dataList <- format_dataset_style1(
+      rp=rp,
+      groups_to_fit=groups_to_fit, 
+      run=run, 
+      include_pain=include_pain,
+      includeSubjGroup=includeSubjGroup,
+      model_rp_separately=model_rp_separately,
+      model_runs_separately=model_runs_separately,
+      variable_run_lengths=variable_run_lengths,
+      sample_from_prior=sample_from_prior,
+      subj_level_params=subj_level_params,
+      include_run_ot=include_run_ot,
+      pass_rt=pass_rt)
+  }else if (stan_data_style==2){
+    dataList <- format_dataset_style2(
+      rp=rp,
+      groups_to_fit=groups_to_fit, 
+      run=run, 
+      include_pain=include_pain,
+      includeSubjGroup=includeSubjGroup,
+      model_rp_separately=model_rp_separately,
+      model_runs_separately=model_runs_separately,
+      variable_run_lengths=variable_run_lengths,
+      sample_from_prior=sample_from_prior,
+      subj_level_params=subj_level_params,
+      include_run_ot=include_run_ot,
+      pass_rt=pass_rt,
+      subjectLimit=subjectLimit)
+  }
   
   #need to add an option to number runs from 1 to 4, including both punishment and reward
   #
@@ -680,6 +817,7 @@ for (i in 1:numSubjs) {
   fit_data <- list(fit = fit, plot_object = for_plot,model_text=model_text,general_info=list(estimation_duration=estimation.duration))
   
   cat("\nSaving model...")
+  group.description<-get_group_description(groups_to_fit)
   save(fit_data, file = get_fit_desc(use_model=use_model,
                                      group.description$descr,
                                      run,
@@ -700,7 +838,9 @@ for (i in 1:numSubjs) {
                                      sample_from_prior=sample_from_prior,
                                      subj_level_params=subj_level_params,
                                      include_run_ot=include_run_ot,
-                                     pass_rt=pass_rt))
+                                     pass_rt=pass_rt,
+                                     subjectLimit=subjectLimit,
+                                     stan_data_style=stan_data_style))
 
   cat("...model saved.\n")
   

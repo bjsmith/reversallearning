@@ -1,6 +1,9 @@
 ---
 title: "Exploring Revision 5a MCMC and vb"
-output: html_notebook
+output:
+  pdf_document: 
+    keep_tex: yes
+  html_notebook: default
 ---
 
 Revision 5a has the following features:
@@ -17,12 +20,12 @@ The variational bayes estimates for Revision 5 looked good. So I ran Revision 5 
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE, cache = TRUE)
 knitr::opts_knit$set(root.dir="../")
 ```
 
 ```{r setup2, include=FALSE}
-source("util/apply_local_settings.R")
+source("../util/apply_local_settings.R")
 apply_local_settings()
 knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
 source("nate_files/fitGroupsV3Onegroup.R")

@@ -1,0 +1,96 @@
+---
+title: "Report-2018-07-10"
+author: "Ben Smith"
+date: "7/10/2018"
+output:
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, echo = FALSE)
+knitr::opts_knit$set(root.dir="../")
+library(dplyr)
+library(ggplot2)
+library(data.table)
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+
+
+```
+
+
+
+# Reward learning EV model
+
+I tested a set of regions defined by freesurfer for their covariance with expected value and reward prediction error.
+
+In this analysis, about 3/4 of the runs were included, but some runs were excluded because stan was unable to converge on their results. I'm working on a re-analysis now that should include more runs.
+
+## Reward prediction error
+
+We can see how activity in 37 regions representing parts of the striatum and ventromedial prefrontal cortex correlate with reward prediction error:
+
+```{r RPECorrelations, echo=FALSE}
+
+lba_rl_version<-"joint_20180708_1"
+
+region_correlation_strength<-read.csv(paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11e_provisional.csv"))
+
+knitr::kable(region_correlation_strength[,c("Region","RPECI95Pct","RPE_FDRadjustedPValue")])
+```
+
+Most of the regions tested were significant.
+
+Unfortunately, this did include a 'control region', the occipital anterior sulcus.
+
+
+## Expected value
+
+We also can see how activity in 37 regions representing parts of the striatum and ventromedial prefrontal cortex expected value:
+
+```{r EVCorrelations, echo=FALSE}
+
+lba_rl_version<-"joint_20180708_1"
+
+region_correlation_strength<-read.csv(paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11e_provisional.csv"))
+
+knitr::kable(region_correlation_strength[order(region_correlation_strength$EV_FDRadjustedPValue)
+                                         ,c("Region","EVCI95Pct","EV_FDRadjustedPValue")])
+```
+
+Several regions showed significant *negative* correlations. 
+
+Regions that showed significant positive correlations were:
+
+ - In the dorsal prefrontal cortex, the following areas:
+  - Right Superior frontal sulcus (between the SFG and MFG)
+  - Right frontal ACC
+ - In the striatum, the following areas:
+  - Left Putamen
+ - Posterior cingulate gyrus (dorsal)
+ 
+Additionally there, were a number of regions with significant *negative* correlatoins with expected value:
+
+ - In the dorsal prefrontal cortex, 
+  - Left and right middle ACC
+  - Left middle frontal sulcus
+ - The control region Occipital anterior sulcus
+ - left and right Anterior and Superior-posterior insula
+
+Notably, we *did not* see positive correlations between expected value and the ventromedial prefrontal cortex. This does undermine the results somewhat.
+
+Factors that may lead to a failure to detect valuation in the vmPFC could include:
+
+ - 'Expected value' means the expected value of the presented cue given the subject's history with the presented cue. However, in this task, subjects often confuse the identity of various cues, and this is likely the largest source of error. Yet this is not modeled.
+ - We are only able to get a very blunt measure of correlations in this method because the model is not hierarchical.
+ - vmPFC tracks value, but it's unclear whether this means that higher value should mean more activity in ROIs within the ventromedial prefrontal cortex.
+ 
+
+# Next steps
+
+

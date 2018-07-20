@@ -5,6 +5,7 @@
 //this was the case in the other stan model too, and I want to know why!
 //v2: better prior for alpha and beta
 //v3: less informative prior for the covariance matrix.
+//v4: I don't
 functions{
      
      real lba_pdf(real t, real b, real A, real v, real s){

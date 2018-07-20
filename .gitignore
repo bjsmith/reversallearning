@@ -27,5 +27,7 @@ core
 *.Rdata
 .nb.html
 *.nb.html
+*.rdb
+*.rdx
 fsl_sub_archive
 fsl_sub_archive/*

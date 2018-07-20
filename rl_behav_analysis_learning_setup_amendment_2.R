@@ -114,3 +114,12 @@ rl.all.subjects.list<-rl.all.subjects.list.uncleaned[RunButtonChanges>buttonChan
                                                        RunPerformanceBySubject>0.4]
 #performance worse than 0.4 may suggest the subject has misunderstood the task.
 
+
+rl.all.subjects.list[,runmotiveid:=runid]#start this; it'll be more fully defined below, see below.
+for (s in unique(rl.all.subjects.list$subid)){
+  #get the reward run count so that we can give each run, rew and pun, unique IDs
+  rew_runcount <- length(unique(rl.all.subjects.list[subid==s & Motivation=="reward",runid]))
+  pun_runcount <- length(unique(rl.all.subjects.list[subid==s & Motivation=="punishment",runid]))
+  
+  rl.all.subjects.list[subid==s & Motivation=="punishment",runmotiveid:=runmotiveid+rew_runcount]
+}

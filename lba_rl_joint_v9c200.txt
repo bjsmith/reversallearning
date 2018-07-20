@@ -1,0 +1,838 @@
+Loading datasets...datasets loaded.
+Merging neural and behavioral datasets......datasets merged.
+[1] "189 ROIs are missing from 39 runs."
+[1] "1 ROIs are missing from 41 runs."
+[1] "1 ROIs are missing from 43 runs."
+[1] "1 ROIs are missing from 340 runs."
+[1] "1 ROIs are missing from 492 runs."
+[1] "1 ROIs are missing from 614 runs."
+Compiling model...During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:1:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Core:531:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:2:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/LU:47:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:3:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Cholesky:12:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Jacobi:29:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:3:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Cholesky:43:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/QR:17:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Householder:27:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:5:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/SVD:48:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:6:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Geometry:58:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Dense:7:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Eigenvalues:58:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Sparse:26:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/SparseCore:66:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Sparse:27:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/OrderingMethods:71:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Sparse:29:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/SparseCholesky:43:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Sparse:32:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/SparseQR:35:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/Sparse:33:
+In file included from /usr/local/lib/R/site-library/RcppEigen/include/Eigen/IterativeLinearSolvers:46:
+/usr/local/lib/R/site-library/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file5aed5e91d723.cpp:1823:
+In file included from /usr/local/lib/R/site-library/rstan/include/rstan/rstaninc.hpp:3:
+/usr/local/lib/R/site-library/rstan/include/rstan/stan_fit.hpp:438:8: warning: 'auto_ptr<stan::io::var_context>' is deprecated [-Wdeprecated-declarations]
+  std::auto_ptr<stan::io::var_context> init_context_ptr;
+       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/c++/7.3.0/backward/auto_ptr.h:285:7: note: 'auto_ptr<stan::io::var_context>' has been explicitly marked deprecated here
+    } _GLIBCXX_DEPRECATED;
+      ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/x86_64-linux-gnu/c++/7.3.0/bits/c++config.h:85:46: note: expanded from macro '_GLIBCXX_DEPRECATED'
+# define _GLIBCXX_DEPRECATED __attribute__ ((__deprecated__))
+                                             ^
+In file included from file5aed5e91d723.cpp:1823:
+In file included from /usr/local/lib/R/site-library/rstan/include/rstan/rstaninc.hpp:3:
+/usr/local/lib/R/site-library/rstan/include/rstan/stan_fit.hpp:547:10: warning: 'auto_ptr<rstan::rstan_sample_writer>' is deprecated [-Wdeprecated-declarations]
+    std::auto_ptr<rstan_sample_writer> sample_writer_ptr;
+         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/c++/7.3.0/backward/auto_ptr.h:285:7: note: 'auto_ptr<rstan::rstan_sample_writer>' has been explicitly marked deprecated here
+    } _GLIBCXX_DEPRECATED;
+      ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/x86_64-linux-gnu/c++/7.3.0/bits/c++config.h:85:46: note: expanded from macro '_GLIBCXX_DEPRECATED'
+# define _GLIBCXX_DEPRECATED __attribute__ ((__deprecated__))
+                                             ^
+15 warnings generated.
+compiled.
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 1).
+
+Gradient evaluation took 0.003861 seconds
+1000 transitions using 10 leapfrog steps per transition would take 38.61 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 2).
+
+Gradient evaluation took 0.002418 seconds
+1000 transitions using 10 leapfrog steps per transition would take 24.18 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002419 seconds
+1000 transitions using 10 leapfrog steps per transition would take 24.19 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 4).
+
+Gradient evaluation took 0.00162 seconds
+1000 transitions using 10 leapfrog steps per transition would take 16.2 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002503 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.03 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 6).
+
+Gradient evaluation took 0.002503 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.03 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+ [1] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                             
+ [2] "Exception: Exception: Exception: normal_lpdf: Random variable is -nan, but must not be nan!  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 25)"
+ [3] "  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 77)"                                                                                           
+ [4] "  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 319)"                                                                                          
+ [5] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                     
+ [6] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                   
+ [7] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                             
+ [8] "Exception: multi_normal_cholesky_lpdf: Random variable[1] is -nan, but must not be nan!  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 356)"   
+ [9] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                     
+[10] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                   
+[11] "Error in sampler$call_sampler(args_list[[i]]) : "                                                                                                           
+[12] "  reached elapsed time limit"                                                                                                                               
+could not run calculation for sid202 rid1 mpunishment within 20 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. Trying again with new initial values and new seed; will try up to 3 times total."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 1).
+
+Gradient evaluation took 0.002152 seconds
+1000 transitions using 10 leapfrog steps per transition would take 21.52 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 2).
+
+Gradient evaluation took 0.002443 seconds
+1000 transitions using 10 leapfrog steps per transition would take 24.43 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002595 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.95 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001625 seconds
+1000 transitions using 10 leapfrog steps per transition would take 16.25 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002591 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.91 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 6).
+
+Gradient evaluation took 0.002495 seconds
+1000 transitions using 10 leapfrog steps per transition would take 24.95 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+could not run calculation for sid202 rid1 mpunishment within 20 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. Trying again with new initial values and new seed; will try up to 3 times total."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 1).
+
+Gradient evaluation took 0.002699 seconds
+1000 transitions using 10 leapfrog steps per transition would take 26.99 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 2).
+
+Gradient evaluation took 0.00267 seconds
+1000 transitions using 10 leapfrog steps per transition would take 26.7 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002597 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.97 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001746 seconds
+1000 transitions using 10 leapfrog steps per transition would take 17.46 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002529 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.29 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 6).
+
+Gradient evaluation took 0.002633 seconds
+1000 transitions using 10 leapfrog steps per transition would take 26.33 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+ [1] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                          
+ [2] "Exception: multi_normal_cholesky_lpdf: Random variable[1] is -nan, but must not be nan!  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 356)"
+ [3] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                  
+ [4] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                
+ [5] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                          
+ [6] "Exception: multi_normal_cholesky_lpdf: Random variable[1] is -nan, but must not be nan!  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 356)"
+ [7] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                  
+ [8] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                
+ [9] "Error in sampler$call_sampler(args_list[[i]]) : "                                                                                                        
+[10] "  reached elapsed time limit"                                                                                                                            
+[11] "In addition: Warning message:"                                                                                                                           
+[12] "In selectChildren(pids, 0.5) : error 'Bad file descriptor' in select"                                                                                    
+ [1] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                                                 
+ [2] "Exception: multi_normal_cholesky_lpdf: Random variable[1] is -nan, but must not be nan!  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 356)"                       
+ [3] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                                         
+ [4] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                                       
+ [5] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                                                 
+ [6] "Exception: Error in function log1p<double>(double): log1p(x) requires x > -1, but got x = -1.0000000000000002.  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 356)"
+ [7] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                                         
+ [8] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                                       
+ [9] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                                                 
+[10] "Exception: multiply: A[14] is -nan, but must not be nan!  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 257)"                                                      
+[11] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                                         
+[12] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                                       
+[13] "Error in sampler$call_sampler(args_list[[i]]) : "                                                                                                                               
+[14] "  reached elapsed time limit"                                                                                                                                                   
+[15] "In addition: Warning message:"                                                                                                                                                  
+[16] "In selectChildren(pids, 0.5) : error 'Bad file descriptor' in select"                                                                                                           
+could not run calculation for sid202 rid1 mpunishment within 20 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. Trying again with new initial values and new seed; will try up to 3 times total."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001902 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.02 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 2).
+
+Gradient evaluation took 0.004304 seconds
+1000 transitions using 10 leapfrog steps per transition would take 43.04 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 3).
+
+Gradient evaluation took 0.00289 seconds
+1000 transitions using 10 leapfrog steps per transition would take 28.9 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001948 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.48 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002734 seconds
+1000 transitions using 10 leapfrog steps per transition would take 27.34 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 6).
+
+Gradient evaluation took 0.00296 seconds
+1000 transitions using 10 leapfrog steps per transition would take 29.6 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+could not run calculation for sid202 rid1 mreward within 20 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. Trying again with new initial values and new seed; will try up to 3 times total."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 1).
+
+Gradient evaluation took 0.003522 seconds
+1000 transitions using 10 leapfrog steps per transition would take 35.22 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 2).
+
+Gradient evaluation took 0.0029 seconds
+1000 transitions using 10 leapfrog steps per transition would take 29 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 3).
+
+Gradient evaluation took 0.00286 seconds
+1000 transitions using 10 leapfrog steps per transition would take 28.6 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001953 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.53 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002859 seconds
+1000 transitions using 10 leapfrog steps per transition would take 28.59 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 6).
+
+Gradient evaluation took 0.002879 seconds
+1000 transitions using 10 leapfrog steps per transition would take 28.79 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+[1] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                        
+[2] "Exception: multiply: A[18] is -nan, but must not be nan!  (in 'model5aed520c4f42_lba_rl_single_exp_joint_v9' at line 257)"             
+[3] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"
+[4] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                              
+[5] "Error in sampler$call_sampler(args_list[[i]]) : "                                                                                      
+[6] "  reached elapsed time limit"                                                                                                          
+[7] "In addition: Warning messages:"                                                                                                        
+[8] "1: In selectChildren(pids, 0.5) : error 'Bad file descriptor' in select"                                                               
+[9] "2: In selectChildren(pids, 0.5) : error 'Bad file descriptor' in select"                                                               
+[1] "Error in sampler$call_sampler(args_list[[i]]) : "                       
+[2] "  reached elapsed time limit"                                           
+[3] "In addition: Warning messages:"                                         
+[4] "1: In selectChildren(pids, 0.5) : error 'Bad file descriptor' in select"
+[5] "2: In selectChildren(pids, 0.5) : error 'Bad file descriptor' in select"
+could not run calculation for sid202 rid1 mreward within 20 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. Trying again with new initial values and new seed; will try up to 3 times total."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 1).
+
+Gradient evaluation took 0.002052 seconds
+1000 transitions using 10 leapfrog steps per transition would take 20.52 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 2).
+
+Gradient evaluation took 0.003397 seconds
+1000 transitions using 10 leapfrog steps per transition would take 33.97 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 3).
+
+Gradient evaluation took 0.003308 seconds
+1000 transitions using 10 leapfrog steps per transition would take 33.08 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 4).
+
+Gradient evaluation took 0.002104 seconds
+1000 transitions using 10 leapfrog steps per transition would take 21.04 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 5).
+
+Gradient evaluation took 0.003021 seconds
+1000 transitions using 10 leapfrog steps per transition would take 30.21 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 6).
+
+Gradient evaluation took 0.003407 seconds
+1000 transitions using 10 leapfrog steps per transition would take 34.07 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+could not run calculation for sid202 rid1 mreward within 20 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. Trying again with new initial values and new seed; will try up to 3 times total."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 1).
+
+Gradient evaluation took 0.002525 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.25 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 2).
+
+Gradient evaluation took 0.002983 seconds
+1000 transitions using 10 leapfrog steps per transition would take 29.83 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 3).
+
+Gradient evaluation took 0.003191 seconds
+1000 transitions using 10 leapfrog steps per transition would take 31.91 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 4).
+
+Gradient evaluation took 0.002117 seconds
+1000 transitions using 10 leapfrog steps per transition would take 21.17 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 5).
+
+Gradient evaluation took 0.003275 seconds
+1000 transitions using 10 leapfrog steps per transition would take 32.75 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v9' NOW (CHAIN 6).
+
+Gradient evaluation took 0.00302 seconds
+1000 transitions using 10 leapfrog steps per transition would take 30.2 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)

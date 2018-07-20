@@ -104,7 +104,7 @@ do_alpha_k_tau_graph<-function(grand_posterior_estimate_dt,
 
 
 
-heatmap<-function(covar_matrix,label="Covariance"){#covar_matrix<-Sigma_mean
+heatmap<-function(covar_matrix,label="Covariance",show_labels=FALSE){#covar_matrix<-Sigma_mean
   # Get lower triangle of the correlation matrix
   get_lower_tri<-function(cormat){
     cormat[upper.tri(cormat)] <- NA
@@ -136,8 +136,11 @@ heatmap<-function(covar_matrix,label="Covariance"){#covar_matrix<-Sigma_mean
     theme(axis.text.x = element_text(angle = 45, vjust = 1, 
                                      size = 12, hjust = 1))+
     coord_fixed()
-  ggheatmap + 
-    geom_text(aes(Var2, Var1, label = format(covar_matrix_ordered_melted$value,digits=1)), color = "black", size = 4) +
+  
+  if(show_labels){
+    ggheatmap<-ggheatmap+geom_text(aes(Var2, Var1, label = format(covar_matrix_ordered_melted$value,digits=2)), color = "black", size = 2,fontface="bold")
+  }
+  return(ggheatmap + 
     theme(
       axis.title.x = element_blank(),
       axis.title.y = element_blank(),
@@ -149,7 +152,7 @@ heatmap<-function(covar_matrix,label="Covariance"){#covar_matrix<-Sigma_mean
       legend.position = c(0.6, 0.7),
       legend.direction = "horizontal")+
     guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
-                                 title.position = "top", title.hjust = 0.5))
+                                 title.position = "top", title.hjust = 0.5)))
 }
 
 #several summary statistics we could use here:

@@ -59,7 +59,8 @@ hist(mean_rt_range,breaks=50)
 mean(na.rt.count)
 cor.test(na.rt.count,mean_rt_range)
 
-ggplot(data.frame("NACount"=na.rt.count,"MeanRT"=mean_rt_range),aes(NACount,MeanRT,color=data.group))+geom_point()
+# ggplot(data.frame("NACount"=na.rt.count,"MeanRT"=mean_rt_range),aes(NACount,MeanRT,color=data.group))+
+#   geom_point()
 
 #so it's not obvious that we have people who have abnormally short reaction times - maybe a few that were really fast- but 
 #no obvious outliers.

@@ -1,0 +1,592 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Negative affect behavioral data},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{Negative affect behavioral data}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{}
+  \preauthor{}\postauthor{}
+  \date{}
+  \predate{}\postdate{}
+
+
+\begin{document}
+\maketitle
+
+Verifying pain signal
+
+If the NPS similarity reliably measures pain, then we should see that
+the NPS score is higher in trials where subjects receive an electric
+shock compared to trials where they do not. Thus, sign that the NPS is
+measuring pain is to ensure that:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  In the punishment runs, NPS scores should be higher in those trials
+  where subjects receive an electric shock than those where they did
+  not, i.e., where they made an incorrect response or made no response
+  compared to when they made a correct response.
+\item
+  The difference between incorrect or non-responses and correct
+  responses should be substantially stronger in the punishments than in
+  the reward runs, where subjects were being rewarded for correct
+  responses, but not punished for incorrect responses. If this is indeed
+  the case, then we have evidence the NPS is measuring the brain
+  response to physical pain. If there is no difference, then the NPS
+  might be detecting non-physical pain, or a negative signal which is
+  not physical pain.
+\end{enumerate}
+
+After the NPS scores were obtained, I tested these two postulates with a
+series of linear models.
+
+\subsection{NPS scores higher in trials where subjects receive an
+electric
+shock}\label{nps-scores-higher-in-trials-where-subjects-receive-an-electric-shock}
+
+The first set of models tests our ability distinguish between punished
+trials (incorrect or non-response) and non-punished trials (correct
+results) in the punishment runs.
+
+We first build a base level model, for comparison, that attempts to
+predict the NPS signal on a given trial without reference to whether or
+not that trial was correct.
+
+\begin{verbatim}
+## Warning: 'rBind' is deprecated.
+##  Since R version 3.2.0, base's rbind() should work fine with S4 objects
+\end{verbatim}
+
+\begin{verbatim}
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: 
+## ValueScaled ~ presentation_n_in_segment + (1 + presentation_n_in_segment |  
+##     subid/runmotiveid) + (1 | image)
+##    Data: rawdata.ordered.complete[Motivation == "punishment"]
+## 
+## REML criterion at convergence: 172612.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -34.053  -0.392   0.004   0.404  31.405 
+## 
+## Random effects:
+##  Groups            Name                      Variance  Std.Dev. Corr 
+##  runmotiveid:subid (Intercept)               2.332e-02 0.152725      
+##                    presentation_n_in_segment 2.758e-04 0.016606 -0.43
+##  subid             (Intercept)               4.395e-02 0.209635      
+##                    presentation_n_in_segment 1.387e-05 0.003724 1.00 
+##  image             (Intercept)               4.430e-04 0.021047      
+##  Residual                                    1.002e+00 1.000939      
+## Number of obs: 60500, groups:  
+## runmotiveid:subid, 306; subid, 155; image, 36
+## 
+## Fixed effects:
+##                            Estimate Std. Error t value
+## (Intercept)               -0.010040   0.021252  -0.472
+## presentation_n_in_segment  0.005095   0.002580   1.974
+## 
+## Correlation of Fixed Effects:
+##             (Intr)
+## prsnttn_n__ -0.316
+\end{verbatim}
+
+We represent subject as \(S\), run as \(S\), and image as \(\iota\);
+then
+
+\(V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon\)
+
+Then we can repeat the model, this time with the correct response
+included:
+
+\(V=\mathit{RESPONSE}_k*\mathit{PRESENTATION}_{i} + S_{s(i, k )} + R_{r(s,i , k )} + \iota_{j(i, k)} + \epsilon\)
+
+\begin{verbatim}
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: ValueScaled ~ ResponseCorrect + presentation_n_in_segment + (1 +  
+##     presentation_n_in_segment | subid/runmotiveid) + (1 | image)
+##    Data: rawdata.ordered.complete[Motivation == "punishment"]
+## 
+## REML criterion at convergence: 172453.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -34.048  -0.391   0.003   0.402  31.383 
+## 
+## Random effects:
+##  Groups            Name                      Variance  Std.Dev. Corr 
+##  runmotiveid:subid (Intercept)               2.358e-02 0.153560      
+##                    presentation_n_in_segment 3.154e-04 0.017760 -0.45
+##  subid             (Intercept)               4.386e-02 0.209420      
+##                    presentation_n_in_segment 1.057e-05 0.003252 1.00 
+##  image             (Intercept)               4.201e-04 0.020496      
+##  Residual                                    9.991e-01 0.999544      
+## Number of obs: 60500, groups:  
+## runmotiveid:subid, 306; subid, 155; image, 36
+## 
+## Fixed effects:
+##                            Estimate Std. Error t value
+## (Intercept)                0.029272   0.021455   1.364
+## ResponseCorrectTRUE       -0.110415   0.008552 -12.911
+## presentation_n_in_segment  0.011442   0.002644   4.328
+## 
+## Correlation of Fixed Effects:
+##             (Intr) RCTRUE
+## RspnsCrTRUE -0.142       
+## prsnttn_n__ -0.296 -0.186
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : Model failed to converge with max|grad| = 7.81688 (tol =
+## 0.002, component 1)
+\end{verbatim}
+
+\begin{verbatim}
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: ValueScaled ~ ResponseCorrect * presentation_n_in_segment + (1 +  
+##     presentation_n_in_segment | subid/runmotiveid) + (1 | image)
+##    Data: rawdata.ordered.complete[Motivation == "punishment"]
+## 
+## REML criterion at convergence: 172570
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -34.050  -0.392   0.004   0.404  31.361 
+## 
+## Random effects:
+##  Groups            Name                      Variance  Std.Dev. Corr 
+##  runmotiveid:subid (Intercept)               0.000e+00 0.000000      
+##                    presentation_n_in_segment 8.685e-04 0.029470  NaN 
+##  subid             (Intercept)               5.579e-02 0.236203      
+##                    presentation_n_in_segment 1.760e-06 0.001327 -1.00
+##  image             (Intercept)               4.438e-04 0.021066      
+##  Residual                                    1.002e+00 1.000769      
+## Number of obs: 60500, groups:  
+## runmotiveid:subid, 306; subid, 155; image, 36
+## 
+## Fixed effects:
+##                                                 Estimate Std. Error
+## (Intercept)                                    0.0279391  0.0229768
+## ResponseCorrectTRUE                           -0.1081976  0.0179688
+## presentation_n_in_segment                      0.0120264  0.0040865
+## ResponseCorrectTRUE:presentation_n_in_segment -0.0008945  0.0049422
+##                                               t value
+## (Intercept)                                     1.216
+## ResponseCorrectTRUE                            -6.021
+## presentation_n_in_segment                       2.943
+## ResponseCorrectTRUE:presentation_n_in_segment  -0.181
+## 
+## Correlation of Fixed Effects:
+##             (Intr) RsCTRUE prs___
+## RspnsCrTRUE -0.376               
+## prsnttn_n__ -0.451  0.549        
+## RsCTRUE:___  0.356 -0.879  -0.690
+## convergence code: 0
+## Model failed to converge with max|grad| = 7.81688 (tol = 0.002, component 1)
+\end{verbatim}
+
+Over all pain datasets, the model with correct response has much lower
+AIC and BIC values, incdicating correct response explains variance
+within the data.
+
+\begin{verbatim}
+## refitting model(s) with ML (instead of REML)
+\end{verbatim}
+
+\begin{verbatim}
+## Data: rawdata.ordered.complete[Motivation == "punishment"]
+## Models:
+## m.0: ValueScaled ~ presentation_n_in_segment + (1 + presentation_n_in_segment | 
+## m.0:     subid/runmotiveid) + (1 | image)
+## m.withResponseCorrect: ValueScaled ~ ResponseCorrect + presentation_n_in_segment + (1 + 
+## m.withResponseCorrect:     presentation_n_in_segment | subid/runmotiveid) + (1 | image)
+## m.withResponseCorrectInteract: ValueScaled ~ ResponseCorrect * presentation_n_in_segment + (1 + 
+## m.withResponseCorrectInteract:     presentation_n_in_segment | subid/runmotiveid) + (1 | image)
+##                               Df    AIC    BIC logLik deviance    Chisq
+## m.0                           10 172616 172707 -86298   172596         
+## m.withResponseCorrect         11 172452 172551 -86215   172430 166.3662
+## m.withResponseCorrectInteract 12 172454 172562 -86215   172430   0.0188
+##                               Chi Df Pr(>Chisq)    
+## m.0                                                
+## m.withResponseCorrect              1     <2e-16 ***
+## m.withResponseCorrectInteract      1     0.8908    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+This suggests that responses are predictive of the NPS value detected.
+The beta value estimate representing the response fixed effect suggests
+that NPS is lower for correct responses (no electric shock) than
+incorrect responses (electric shock), which is consistent with the
+purpose of the NPS to measure pain.
+
+This may be the first time that a generalized neurologic pain signal has
+been connected to an electric shock stimulus.
+
+\subsection{Comparison with Reward
+runs}\label{comparison-with-reward-runs}
+
+However, this by itself does not demonstrate that the NPS reponse is in
+fact directly related to physical pain from the electric shock. Although
+there are a large number of possible alternative explanations, one
+plausible explanation is that the NPS signal change is simply that
+getting an item wrong in the game is affectively unpleasant, even
+without a direct physical pain. We might posit an ego-driven response to
+performing well in the task; in effect, an incorrect response is its own
+punishment.
+
+In order to rule out this possibility, we need to compare the response
+we get during the punishment runs with a similar response in the reward
+runs. If we measure the NPS during the Reward task, and compare correct
+and incorrect responses, do we see the same or a different response? A
+significantly larger difference in NPS between incorrect and correct
+responses during hte Reward task seems very unlikely and would likely
+suggest some methodological error. A main effect difference in the
+magnitude of the incorrect and correct responses across the Reward and
+Punishment conditions would suggest the NPS is tracking some kind of
+punishment signal other than pain. We hope to see a significantly larger
+difference in NPS between incorrect and correct responses during the
+Punishment task, and would demonstrate that the signal we find is
+related to the physical pain of an electric shock. Note that these last
+two effects could be observed simultaneously, i.e., a main effect and an
+interaction effect.
+
+We first build a base model that does NOT include information about
+motives but only whether the trial is correct. Note that the runid used
+here will index Reward and Punishment runs uniquely, i.e., if the
+subject has 2 reward and 2 punishment runs, as most do, then runs are
+numbered from 1 to 4. Here we do include both reward and punishment
+data.
+
+\(V=\mathit{PRESENTATION}_{i} + S_{s(i)} + R_{r(s,i)} + \iota_{j(i)} + \epsilon\)
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : Model failed to converge: degenerate Hessian with 1 negative
+## eigenvalues
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: 'rBind' is deprecated.
+##  Since R version 3.2.0, base's rbind() should work fine with S4 objects
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : Model failed to converge: degenerate Hessian with 1 negative
+## eigenvalues
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in optwrap(optimizer, devfun, getStart(start, rho$lower, rho$pp), :
+## convergence code 1 from bobyqa: bobyqa -- maximum number of function
+## evaluations exceeded
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : Model failed to converge: degenerate Hessian with 4 negative
+## eigenvalues
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : unable to evaluate scaled gradient
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+## $checkConv, : Model failed to converge: degenerate Hessian with 1 negative
+## eigenvalues
+\end{verbatim}
+
+We can also run an ANOVA and using the result, conduct AIC and BIC tests
+to see whether overall, model fit was improved by including motivation
+in the model:
+
+\begin{verbatim}
+## refitting model(s) with ML (instead of REML)
+\end{verbatim}
+
+\begin{verbatim}
+## Data: rawdata.ordered.complete
+## Models:
+## m.rp.0: ValueScaled ~ (ResponseCorrect == FALSE) + presentation_n_in_segment + 
+## m.rp.0:     (1 + presentation_n_in_segment | subid/runmotiveid) + (1 | 
+## m.rp.0:     image)
+## m.rp: ValueScaled ~ (ResponseCorrect == FALSE) * (Motivation == "punishment") + 
+## m.rp:     presentation_n_in_segment + (1 + presentation_n_in_segment | 
+## m.rp:     subid/runmotiveid) + (1 | image)
+##        Df    AIC    BIC  logLik deviance Chisq Chi Df Pr(>Chisq)
+## m.rp.0 11 307516 307622 -153747   307494                        
+## m.rp   13 307885 308010 -153929   307859     0      2          1
+\end{verbatim}
+
+BIC indicates that the model including punishment is strongly
+predictive.
+
+However the clearest indication of the result here, since we are
+interested in the direction of an effect, will come from examining the
+significance and magnitude of the effect sizes of the regressors
+themselves:
+
+\begin{verbatim}
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: 
+## ValueScaled ~ (ResponseCorrect == FALSE) + presentation_n_in_segment +  
+##     (1 + presentation_n_in_segment | subid/runmotiveid) + (1 |      image)
+##    Data: rawdata.ordered.complete
+## 
+## REML criterion at convergence: 307519.2
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -35.194  -0.404   0.002   0.409  32.491 
+## 
+## Random effects:
+##  Groups            Name                      Variance  Std.Dev. Corr
+##  runmotiveid:subid (Intercept)               3.160e-02 0.177754     
+##                    presentation_n_in_segment 3.013e-04 0.017359 0.01
+##  subid             (Intercept)               3.461e-02 0.186035     
+##                    presentation_n_in_segment 2.607e-06 0.001615 1.00
+##  image             (Intercept)               1.228e-03 0.035040     
+##  Residual                                    9.369e-01 0.967923     
+## Number of obs: 110300, groups:  
+## runmotiveid:subid, 633; subid, 168; image, 65
+## 
+## Fixed effects:
+##                               Estimate Std. Error t value
+## (Intercept)                  -0.069648   0.018292  -3.808
+## ResponseCorrect == FALSETRUE  0.058781   0.006169   9.529
+## presentation_n_in_segment     0.012875   0.001894   6.799
+## 
+## Correlation of Fixed Effects:
+##             (Intr) RC==FA
+## RC==FALSETR -0.218       
+## prsnttn_n__ -0.271  0.193
+\end{verbatim}
+
+\begin{verbatim}
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: 
+## ValueScaled ~ (ResponseCorrect == FALSE) * (Motivation == "punishment") +  
+##     presentation_n_in_segment + (1 + presentation_n_in_segment |  
+##     subid/runmotiveid) + (1 | image)
+##    Data: rawdata.ordered.complete
+## 
+## REML criterion at convergence: 307897.1
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -35.184  -0.406   0.003   0.412  32.384 
+## 
+## Random effects:
+##  Groups            Name                      Variance  Std.Dev. Corr 
+##  runmotiveid:subid (Intercept)               0.000e+00 0.000000      
+##                    presentation_n_in_segment 1.857e-03 0.043094  NaN 
+##  subid             (Intercept)               4.341e-02 0.208356      
+##                    presentation_n_in_segment 2.027e-06 0.001424 -1.00
+##  image             (Intercept)               1.323e-03 0.036368      
+##  Residual                                    9.407e-01 0.969920      
+## Number of obs: 110300, groups:  
+## runmotiveid:subid, 633; subid, 168; image, 65
+## 
+## Fixed effects:
+##                                                              Estimate
+## (Intercept)                                                 -0.054409
+## ResponseCorrect == FALSETRUE                                -0.002375
+## Motivation == "punishment"TRUE                              -0.031136
+## presentation_n_in_segment                                    0.012996
+## ResponseCorrect == FALSETRUE:Motivation == "punishment"TRUE  0.114172
+##                                                             Std. Error
+## (Intercept)                                                   0.020138
+## ResponseCorrect == FALSETRUE                                  0.009207
+## Motivation == "punishment"TRUE                                0.015237
+## presentation_n_in_segment                                     0.002471
+## ResponseCorrect == FALSETRUE:Motivation == "punishment"TRUE   0.012310
+##                                                             t value
+## (Intercept)                                                  -2.702
+## ResponseCorrect == FALSETRUE                                 -0.258
+## Motivation == "punishment"TRUE                               -2.043
+## presentation_n_in_segment                                     5.259
+## ResponseCorrect == FALSETRUE:Motivation == "punishment"TRUE   9.275
+## 
+## Correlation of Fixed Effects:
+##             (Intr) RC==FA M==""T prs___
+## RC==FALSETR -0.268                     
+## M=="pn"TRUE -0.411  0.321              
+## prsnttn_n__ -0.276  0.110  0.035       
+## RC==FALSE="  0.184 -0.740 -0.438 -0.014
+## convergence code: 0
+## unable to evaluate scaled gradient
+## Model failed to converge: degenerate  Hessian with 1 negative eigenvalues
+\end{verbatim}
+
+\begin{verbatim}
+##                                ResponseCorrect == FALSETRUE 
+##                                                -0.001174287 
+##                              Motivation == "punishment"TRUE 
+##                                                -0.015413497 
+##                                   presentation_n_in_segment 
+##                                                 0.022349244 
+## ResponseCorrect == FALSETRUE:Motivation == "punishment"TRUE 
+##                                                 0.049074784
+\end{verbatim}
+
+The result:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  With an estimate of \(B=0.094\), \(t=9.6\), the interaction of
+  Incorrect Response and Motivation is strong and indicates that there
+  was a brain response to an incorrect outcome in the electric shock
+  punishment condition but not in the reward condition.
+\item
+  With an estimate of \(B=0.005\), \(t=0.66\), the main effect of
+  Incorrect response is not significantly different from zero, which
+  implies the NPS specifically responds to pain feedback and not to
+  negative feedback generally.
+\end{enumerate}
+
+\begin{verbatim}
+## Warning: Removed 1839 rows containing non-finite values (stat_ydensity).
+\end{verbatim}
+
+\includegraphics{hlm_negative_affect_files/figure-latex/finalgraphs-1.pdf}
+
+\begin{verbatim}
+##      subid ResponseCorrect Motivation ValueScaledBySub Response
+##   1:   105            TRUE punishment      -0.15905300  Correct
+##   2:   105           FALSE punishment       0.05836917    Wrong
+##   3:   105            TRUE     reward      -0.02398190  Correct
+##   4:   105           FALSE     reward      -0.08620008    Wrong
+##   5:   106           FALSE punishment       0.69526796    Wrong
+##  ---                                                           
+## 634:   392            TRUE     reward      -0.15847463  Correct
+## 635:   396           FALSE punishment      -0.23465656    Wrong
+## 636:   396            TRUE punishment      -0.36312833  Correct
+## 637:   396           FALSE     reward      -0.14452276    Wrong
+## 638:   396            TRUE     reward      -0.04723352  Correct
+\end{verbatim}
+
+\includegraphics{hlm_negative_affect_files/figure-latex/finalgraphs-2.pdf}
+
+\begin{verbatim}
+## Warning: Removed 34 rows containing non-finite values (stat_ydensity).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 34 rows containing non-finite values (stat_summary).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 34 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{hlm_negative_affect_files/figure-latex/finalgraphs-3.pdf}
+\includegraphics{hlm_negative_affect_files/figure-latex/finalgraphs-4.pdf}
+
+\begin{verbatim}
+## ResponseCorrect == FALSETRUE    presentation_n_in_segment 
+##                   0.02906438                   0.02214131
+\end{verbatim}
+
+\section{Pain signal section
+discussion}\label{pain-signal-section-discussion}
+
+There are problems with the model used as it doesn't fully account for
+all the levels of variance. To do that we need to use
+
+
+\end{document}

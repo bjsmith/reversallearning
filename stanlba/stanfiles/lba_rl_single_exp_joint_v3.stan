@@ -1,5 +1,6 @@
 //v2: this incorporates reward prediction error as the only behavioral model parameter for which covariance is calculated.
 //v3: this incorporates changes to priors that I have experimented with in the rl models.
+//HAS BEEN EDITED SINCE IT WAS RUN.
 functions{
      
      real lba_pdf(real t, real b, real A, real v, real s){
@@ -222,8 +223,8 @@ transformed data{
 
 parameters {
   real alpha_pr;
-  real k_pr;
-  real tau_pr;
+  real k_pr;#relative threshold
+  real tau_pr;#non-decision time
   // 
   // ////////////\begin{joint model machinery}
   vector[TD_N] td_mu;
@@ -263,11 +264,13 @@ model {
   
   //these use VERY weak priors because we are going to use this data to set priors for future analyses
   //so it's important that we don't unduly bias analysis at this level.
-  alpha_pr ~ normal(0,1.8138);//weak prior, agnostic about learning rate, but still biased to low learning rates.
+  //this priors works out to a uniform distribution between 0 and 1.
+  alpha_pr ~ normal(0,1.5);//weak prior, agnostic about learning rate, but still biased to low learning rates.
   //out of desparation I'm going to set the prior to a value I know makes sense from 
   //pure behavioral models.
     //as a compromise between an absolute 0 learning rate (-Inf) and a learning rate flat in the middle of the possible distribution (0).
   #k_pr ~ normal(log(.5),2);
+  
   k_pr ~ normal(log(.5),2); 
   //A ~ normal(.5,1)T[0,];
   #tau_pr ~ normal(log(.5),1);//normal(.5,.5)T[0,];
@@ -279,22 +282,29 @@ model {
     
     //the EXPECTED value for this choice, which *should* always be positive(?) but will difer in degree of how positive you'd expect.
     
-    trial_expected_val[i] = exp_val[cue[i],response[i]];
+    trial_expected_val[i] = exp_val[cue[i],];
     
     for(j in 1:NUM_CHOICES){
       v[j]=logit(exp_val[cue[i],j]/4+0.75);
       //if j was the reinforced choice and it was the response value,
       pred_err=choice_outcomes[i,j]-exp_val[cue[i],j]; 
+      if(j==response[i]){
+        run_pred_err_c2[i] = pred_err;
+      }
       
       exp_val[cue[i],j] = exp_val[cue[i],j] + alpha*pred_err;
       //for occam's razor, I'm going to avoid any transformation from expected value to drift rate. we'll treat expected value as drift rate exactly!
       
     }
+    pred_err_to_record=choice_outcomes[i,response[i]]-exp_val[cue[i],response[i]]; 
     //we're going to do prediction error just for the last choice
-    run_pred_err_c2[i] = pred_err;
+     = pred_err;
     
     //i don't know what to do with non-resposne time...but let's work that out later.
     response_time[i] ~ lba(response[i],k,A,v,s,tau);
+    SHOULD WE BE PASSING IN THE V LIKE THIS OR SHOULD IT BE SOMETHING LIKE
+    response_time[i] ~ lba(response[i],k,A,[v[1],-v[2]],s,tau);
+    
   }
   // print("run_pred_err_c2:");
   // print(run_pred_err_c2);
@@ -318,19 +328,23 @@ model {
   // 
   // //Subtract the means, leaving the variance.
   for (i in 1:LENGTH){
-    td_var[i] = theta_delta[i,:]' - td_mu;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
+    //td_var[i] = theta_delta[i,:]' - td_mu;//(should we also divide by each value's SD, so we get *standardized* covariance? I'm not sure)
+    td_var[i] = theta_delta[i,:]' - td_mu./sd(theta_delta[i,:]');
+    //td_var[i] = (theta_delta[i,:]' - td_mu)./sd(theta_delta[i,:]');//(should we also divide by each value's SD, so we get *standardized* covariance? I'm
   }
   //predict the variance from the remaining information.
   L_Omega ~ lkj_corr_cholesky(1);
   //print(L_Omega)
-  L_sigma ~ cauchy(0,2.5); //these yield standard deviations of each individual value.
+  L_sigma ~ cauchy(0,1); //these yield standard deviations of each individual value.
   td_var ~ multi_normal_cholesky(zeros,L_Sigma);
   ////////////\end{joint model machinery}
 
     
 }
-// ////////////\begin{joint model machinery}
-// generated quantities{
-//   vector[TD_N] SD = L_sigma;
-// }
-// ////////////\end{joint model machinery}
+generated quantities{
+  matrix[TD_N,TD_N] y_corr;
+  matrix[TD_N,TD_N] inv_mat_var;
+  
+  inv_mat_var = rep_matrix(((1) ./ sqrt(diagonal(Sigma))),TD_N);
+  td_corr = inv_mat_var' .* Sigma .* inv_mat_var;
+}

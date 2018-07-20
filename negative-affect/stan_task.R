@@ -8,3 +8,4 @@ m.rp.0.stan<-stan_glmer(ValueScaled~
                           (1+presentation_n_in_segment | subid/runmotiveid) + 
                           (1 | image),rawdata.ordered.complete,cores=detectCores())
 save(m.rp.0.stan,file="pain_stan_output.Rdata")
+summary(m.rp.0.stan)
