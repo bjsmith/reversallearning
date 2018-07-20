@@ -7,7 +7,7 @@ rlPain.fMRI_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/r
 rlPain.onset_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles'
 #rlPain.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
 rlPain.nps_map_filepath = '/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/weights_NSF_grouppred_cvpcr.img'
-rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/rlPainNPS_20180720/'
+rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/rlPainNPS/20180720_version/'
 rlPain.get_wager_nps_map()
 rlPain.onset_file_version='20180220T031755'
 rlPain.data_fmri_space='subjectspace_cropped'
