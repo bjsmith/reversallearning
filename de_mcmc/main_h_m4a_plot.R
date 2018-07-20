@@ -1,4 +1,13 @@
 library(ggplot2)
+
+source("../joint_msm_combined/bjs_misc_utils.R")
+version="h_m4"
+save.name=paste0("main_", version)
+source('de_mcmc/functions.R')
+source('de_mcmc/main_m1_setup.R')
+source('de_mcmc/functions_joint_v2.R')
+source(paste0('de_mcmc/functions_',version,'.R'))
+
 source("de_mcmc/functions_h_m3.R")
 source("visualization/geom_hdi.R")
 load(paste(save.dir,"output_h_m420180421T172527",".RData",sep=""))

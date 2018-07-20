@@ -31,7 +31,7 @@ v3_mu_c3 = 3
 s = 1
 
 #individual-level parameters
-A = rtnorm(NUM_SUBJ,A_mu,.5,0,Inf)
+A = 0.01
 k = rtnorm(NUM_SUBJ,k_mu,.5,0,Inf)
 t0 = rtnorm(NUM_SUBJ,t0_mu,.5,0,1)
 v1_c1 = rtnorm(NUM_SUBJ,v1_mu_c1,1,0,Inf)

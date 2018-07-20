@@ -11,13 +11,13 @@ functions{
           real term_4b;
           real pdf;
           
-          b_A_tv_ts <- (b - A - t*v_pdf)/(t*s);
-          b_tv_ts <- (b - t*v_pdf)/(t*s);
-          term_1b <- v_pdf*Phi(b_A_tv_ts);
-          term_2b <- s*exp(normal_log(fabs(b_A_tv_ts),0,1)); 
-          term_3b <- v_pdf*Phi(b_tv_ts);
-          term_4b <- s*exp(normal_log(fabs(b_tv_ts),0,1)); 
-          pdf <- (1/A)*(-term_1b + term_2b + term_3b - term_4b);
+          b_A_tv_ts = (b - A - t*v_pdf)/(t*s);
+          b_tv_ts = (b - t*v_pdf)/(t*s);
+          term_1b = v_pdf*Phi(b_A_tv_ts);
+          term_2b = s*exp(normal_lpdf(fabs(b_A_tv_ts)|0,1)); 
+          term_3b = v_pdf*Phi(b_tv_ts);
+          term_4b = s*exp(normal_lpdf(fabs(b_tv_ts)|0,1)); 
+          pdf = (1/A)*(-term_1b + term_2b + term_3b - term_4b);
           
           return pdf;
      }
@@ -34,14 +34,14 @@ functions{
           real term_4a;
           real cdf;	
           
-          b_A_tv <- b - A - t*v_cdf;
-          b_tv <- b - t*v_cdf;
-          ts <- t*s;
-          term_1a <- b_A_tv/A * Phi(b_A_tv/ts);	
-          term_2a <- b_tv/A   * Phi(b_tv/ts);
-          term_3a <- ts/A     * exp(normal_log(fabs(b_A_tv/ts),0,1)); 
-          term_4a <- ts/A     * exp(normal_log(fabs(b_tv/ts),0,1)); 
-          cdf <- 1 + term_1a - term_2a + term_3a - term_4a;
+          b_A_tv = b - A - t*v_cdf;
+          b_tv = b - t*v_cdf;
+          ts = t*s;
+          term_1a = b_A_tv/A * Phi(b_A_tv/ts);	
+          term_2a = b_tv/A   * Phi(b_tv/ts);
+          term_3a = ts/A     * exp(normal_lpdf(fabs(b_A_tv/ts)|0,1)); 
+          term_4a = ts/A     * exp(normal_lpdf(fabs(b_tv/ts)|0,1)); 
+          cdf = 1 + term_1a - term_2a + term_3a - term_4a;
           
           return cdf;
           
@@ -57,33 +57,33 @@ functions{
           real out;
           real prob_neg;
           
-          b <- A + k;
+          b = A + k;
           for (i in 1:cols(RT)){	
-               t <- RT[1,i] - psi;
+               t = RT[1,i] - psi;
                if(t > 0){			
-                    cdf <- 1;
+                    cdf = 1;
                     for(j in 1:num_elements(v)){
                          if(RT[2,i] == j){
-                              pdf <- lba_pdf(t, b, A, v[j], s);
+                              pdf = lba_pdf(t, b, A, v[j], s);
                          }else{	
-                              cdf <- lba_cdf(t, b, A, v[j], s) * cdf;
+                              cdf = lba_cdf(t, b, A, v[j], s) * cdf;
                          }
                     }
-                    prob_neg <- 1;
+                    prob_neg = 1;
                     for(j in 1:num_elements(v)){
-                         prob_neg <- Phi(-v[j]/s) * prob_neg;    
+                         prob_neg = Phi(-v[j]/s) * prob_neg;    
                     }
-                    prob[i] <- pdf*(1-cdf);		
-                    prob[i] <- prob[i]/(1-prob_neg);	
+                    prob[i] = pdf*(1-cdf);		
+                    prob[i] = prob[i]/(1-prob_neg);	
                     if(prob[i] < 1e-10){
-                         prob[i] <- 1e-10;				
+                         prob[i] = 1e-10;				
                     }
                     
                }else{
-                    prob[i] <- 1e-10;			
+                    prob[i] = 1e-10;			
                }		
           }
-          out <- sum(log(prob));
+          out = sum(log(prob));
           return out;		
      }
      
@@ -103,49 +103,49 @@ functions{
           real b;
           
           //try to get a positive drift rate
-          get_pos_drift <- 1;
-          no_pos_drift <- 0;
-          max_iter <- 1000;
-          iter <- 0;
+          get_pos_drift = 1;
+          no_pos_drift = 0;
+          max_iter = 1000;
+          iter = 0;
           while(get_pos_drift){
                for(j in 1:num_elements(v)){
-                    drift[j] <- normal_rng(v[j],s);
+                    drift[j] = normal_rng(v[j],s);
                     if(drift[j] > 0){
-                         get_pos_drift <- 0;
+                         get_pos_drift = 0;
                     }
                }
-               iter <- iter + 1;
+               iter = iter + 1;
                if(iter > max_iter){
-                    get_pos_drift <- 0;
-                    no_pos_drift <- 1;
+                    get_pos_drift = 0;
+                    no_pos_drift = 1;
                }	
           }
           //if both drift rates are <= 0
           //return an infinite response time
           if(no_pos_drift){
-               pred[1] <- -1;
-               pred[2] <- -1;
+               pred[1] = -1;
+               pred[2] = -1;
           }else{
-               b <- A + k;
+               b = A + k;
                for(i in 1:num_elements(v)){
                     //start time of each accumulator	
-                    start[i] <- uniform_rng(0,A);
+                    start[i] = uniform_rng(0,A);
                     //finish times
-                    ttf[i] <- (b-start[i])/drift[i];
+                    ttf[i] = (b-start[i])/drift[i];
                }
                //rt is the fastest accumulator finish time	
                //if one is negative get the positive drift
-               resp <- sort_indices_asc(ttf);
-               ttf <- sort_asc(ttf);
-               get_first_pos <- 1;
-               iter <- 1;
+               resp = sort_indices_asc(ttf);
+               ttf = sort_asc(ttf);
+               get_first_pos = 1;
+               iter = 1;
                while(get_first_pos){
                     if(ttf[iter] > 0){
-                         pred[1] <- ttf[iter];
-                         pred[2] <- resp[iter]; 
-                         get_first_pos <- 0;
+                         pred[1] = ttf[iter];
+                         pred[2] = resp[iter]; 
+                         get_first_pos = 0;
                     }
-                    iter <- iter + 1;
+                    iter = iter + 1;
                }
           }
           return pred;	
@@ -179,7 +179,7 @@ parameters {
 
 transformed parameters {
      real s;
-     s <- 1;
+     s = 1;
 }
 
 model {
@@ -218,7 +218,7 @@ generated quantities {
      
      for(i in 1:NUM_SUBJ){
           for(j in 1:NUM_COND){
-               pred[i,j] <- lba_rng(A[i],k[i],v[i,j],s,psi[i]);
+               pred[i,j] = lba_rng(A[i],k[i],v[i,j],s,psi[i]);
           }
      }
      

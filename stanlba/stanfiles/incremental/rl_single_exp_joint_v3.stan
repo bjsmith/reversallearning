@@ -4,6 +4,7 @@
 //the reason I did this is that the lba_rl model for some reason has very low alphas
 //this was the case in the other stan model too, and I want to know why!
 //v3: center-biased priors for alpha and beta.
+//v4: fix to beta prior.
 functions{
      
      real lba_pdf(real t, real b, real A, real v, real s){

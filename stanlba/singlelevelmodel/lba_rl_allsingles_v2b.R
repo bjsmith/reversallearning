@@ -6,7 +6,7 @@ options(mc.cores = 6)
 
 #we have problems running all subjects in a single run.
 #so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
-lba_rl_version<-"20180624_1"
+lba_rl_version<-"20180711_1"
 
 single_run_dir<-paste0(localsettings$data.dir,"lba_rl")
 output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")

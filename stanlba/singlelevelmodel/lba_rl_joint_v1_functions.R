@@ -44,7 +44,9 @@ select_rawdata_cols_for_run<-function(rawdata,sid,r,m){
                    ROI_Left.Caudate, ROI_Right.Caudate,
                    ROI_Left.Pallidum, ROI_Right.Pallidum,
                    ROI_Left.Putamen, ROI_Right.Putamen,
-                   ROI_Left.Thalamus.Proper, ROI_Right.Thalamus.Proper
+                   ROI_Left.Thalamus.Proper, ROI_Right.Thalamus.Proper,
+                   #control regions
+                   ROI_ctx_rh_S_occipital_ant,ROI_ctx_lh_S_temporal_sup,ROI_ctx_rh_G_cingul.Post.dorsal
                  )])
 }
 
@@ -106,18 +108,35 @@ qnorm1sd<-function(n){
 }
 
 
-get_starting_values<-function(n_chains,seed=25902583,theta_count=6){#n_chains=7
+get_starting_values<-function(n_chains,seed=25902583,thetaDelta_count=6){#n_chains=7
   set.seed(seed)
   alpha_pr<-qnorm1sd(n_chains)-3
   k_pr<-qnorm1sd(n_chains)+log(0.5)
   tau_pr<-qnorm1sd(n_chains)+log(0.5)
-  td_mu_txc<-do.call(rbind,lapply(1:theta_count,function(i){qnorm1sd(n_chains)}))
-  L_sigma_txc<-do.call(rbind,(lapply(1:theta_count,function(i){sample(qcauchy(seq(0.5,0.975,0.475/(n_chains+2)),0,2.5)[2:(n_chains+1)],replace=FALSE)})))
+  td_mu_txc<-do.call(rbind,lapply(1:thetaDelta_count,function(i){qnorm1sd(n_chains)}))
+  L_sigma_txc<-do.call(rbind,(lapply(1:thetaDelta_count,function(i){sample(qcauchy(seq(0.5,0.975,0.475/(n_chains+2)),0,2.5)[2:(n_chains+1)],replace=FALSE)})))
   
   return(lapply(1:n_chains,function(i){list(
     "alpha_pr"=alpha_pr[i],
     "k_pr"=k_pr[i],
     "tau_pr"=tau_pr[i],
+    "td_mu"=td_mu_txc[,i],
+    "L_sigma"=L_sigma_txc[,i],
+    "L_Omega"=diag(thetaDelta_count))}))
+}
+
+get_starting_values_alphabeta<-function(n_chains,seed=25902583,theta_count=6){#n_chains=7
+  set.seed(seed)
+  alpha_pr<-qnorm1sd(n_chains)
+  beta_pr<-qnorm2sd(n_chains)
+  # k_pr<-qnorm1sd(n_chains)+log(0.5)
+  # tau_pr<-qnorm1sd(n_chains)+log(0.5)
+  td_mu_txc<-do.call(rbind,lapply(1:theta_count,function(i){qnorm1sd(n_chains)}))
+  L_sigma_txc<-do.call(rbind,(lapply(1:theta_count,function(i){sample(qcauchy(seq(0.5,0.975,0.475/(n_chains+2)),0,2.5)[2:(n_chains+1)],replace=FALSE)})))
+  
+  return(lapply(1:n_chains,function(i){list(
+    "alpha_pr"=alpha_pr[i],
+    "beta_pr"=beta_pr[i],
     "td_mu"=td_mu_txc[,i],
     "L_sigma"=L_sigma_txc[,i],
     "L_Omega"=diag(theta_count))}))

@@ -254,6 +254,7 @@ for (s in model.summaries#[(1:4)*length(model.summaries)/4]
 ```
 
 Pairs plots show that regardless of other issues, parameter distributions in the posterior probability space are generally not highly correlated, with one exception. There are reasonably strong correlations across samples observable between reward and punishment parameters across run 1 and run 2. In samples estimating a high reward learning rate for run 1 (or run 2), a high punishment learning rate for the same run is also estimated. This is strange because I would have expected that learning rates between runs (e.g., between run 1 and 2) would have similar levels of correlations across posterior distribution samples as learning rates between motivation conditions. They are treated differently in the model, and so it is possible this different design choice is responsible for the divergent result.
+
 # Discussion
 
 $\beta$ values are reasonably consistent between repeated trials. But for our final and most comprehensive analysis, variational bayes varies widely between concluding that there is a real between-group difference and that there is not.

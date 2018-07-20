@@ -1,0 +1,186 @@
+---
+title: "hierarchical_summary"
+author: "Ben Smith"
+date: "7/15/2018"
+output: 
+  pdf_document: 
+    keep_tex: yes
+---
+
+## A two-level hierarchical model of behavioral analysis of all subjects across the task.
+
+This dataset was comprised of data from just one reward run, and was a hierarchical model across all three groups.
+
+In this dataset we found that 
+I analyzed a number of subjects and found that across the group, meth users had lower learning rates than non-meth users.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	tidy = TRUE
+)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2}
+
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir, "knitrcache"), warning = FALSE)
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+source("data_summarize_lbarlmodel.R")
+library(data.table)
+library(ggplot2)
+mainDataDir=localsettings$data.dir
+```
+
+
+```{r setup_flat_behavioral_analysis}
+
+library(ggplot2)
+
+source("../joint_msm_combined/bjs_misc_utils.R")
+version="h_m4"
+save.name=paste0("main_", version)
+source('de_mcmc/functions.R')
+source('de_mcmc/main_m1_setup.R')
+source('de_mcmc/functions_joint_v2.R')
+source(paste0('de_mcmc/functions_',version,'.R'))
+
+source("de_mcmc/functions_h_m3.R")
+source("visualization/geom_hdi.R")
+load(paste(save.dir,"output_h_m420180421T172527",".RData",sep=""))
+#load.image(paste(save.name,"run.ts",".RData",sep=""))
+setwd(mainDir)
+
+start=2
+start.weights=2
+
+pdf(paste(save.dir,save.name,".pdf",sep=""),10,5)
+par(mfrow=c(1,2),ask=FALSE)
+setwd(mainDir)
+source("de_mcmc/fig_base5.R")
+hpar.names<-paste0(dimnames(phi)[[2]],"_",rep(dimnames(phi)[[3]],times=1,each=6))
+phi<-matrix(phi,nrow = dim(phi)[1],ncol=prod(dim(phi)[2:3]))
+n.hpars<-18
+#fig_base(env = environment(),plot.phi=TRUE,plot.lower = TRUE,ask=FALSE)
+fig_base( env = environment(),plot.phi=TRUE,plot.lower = FALSE,ask=FALSE,
+          par.functions=rep(c(f_alpha_s_tr,f_thresh_s_tr,f_tau_s_tr),6))#list one function for each param. the second set are for the sigmas.
+dev.off()
+
+#now let's do some more plots.
+additional_output<-paste(save.dir,save.name,"_extended",sep="")
+dir.create(additional_output)
+
+
+#cool
+```
+
+This is derived from raw_data_all_runs_flat_v2.R.
+
+```{r flat_behavioral_analysis}
+
+
+start=2
+start.weights=2
+
+#now let's look at the relationships between each of the phi values.
+
+source("plot_library.R")
+res<-hyper_param(
+  param.names = par.names.l2,
+  group.names = l2.groups.list,
+  tnmc = 1001,
+  n.chains = n.chains)
+
+#dim(res)
+par(mfrow=c(3,3),ask=FALSE)
+sr_diff<-res[,,,"Risky No Meth"]-res[,,,"Safe No Meth"]
+hist(sr_diff[,,"alpha_mu"],breaks=100,main="Risky-Safe No Meth alpha_mu")
+hist(sr_diff[,,"thresh_mu"],breaks=100,main="Risky-Safe No Meth thresh_mu")
+hist(sr_diff[,,"tau_mu"],breaks=100,main="Risky-Safe No Meth tau_mu")
+HDIofMCMC(sr_diff[,,"tau_mu"])
+
+meth_diff<-res[,,,"Risky Meth"]-res[,,,"Risky No Meth"]
+table(meth_diff[,,"alpha_mu"]<0)/prod(dim(meth_diff[,,"alpha_mu"]))
+hist(meth_diff[,,"alpha_mu"],breaks=100,main="Meth-NoMeth (sexually risky) alpha_mu")
+HDIofMCMC(meth_diff[,,"alpha_mu"])
+hist(meth_diff[,,"thresh_mu"],breaks=100,main="Meth-NoMeth (sexually risky) thresh_mu")
+HDIofMCMC(meth_diff[,,"thresh_mu"])
+hist(meth_diff[,,"tau_mu"],breaks=100,main="Meth-NoMeth (sexually risky) tau_mu")
+HDIofMCMC(meth_diff[,,"tau_mu"])
+
+sr_meth_diff<-res[,,,"Risky Meth"]-res[,,,"Safe No Meth"]
+hist(sr_meth_diff[,,"alpha_mu"],breaks=100,main="Risky Meth - Safe NoMeth alpha_mu")
+HDIofMCMC(sr_meth_diff[,,"alpha_mu"])
+hist(sr_meth_diff[,,"thresh_mu"],breaks=100,main="Risky Meth - Safe NoMeth thresh_mu")
+hist(sr_meth_diff[,,"tau_mu"],breaks=100,main="Risky Meth - Safe NoMeth tau_mu")
+dim(res[,,,"Risky No Meth"])
+```
+
+```{r}
+res3<-array(res,dim=c(prod(dim(res)[1:2]),dim(res)[3],dim(res)[4]),
+            dimnames=dimnames(res)[2:4])
+
+# res3[2,,"Risky Meth"]
+# res[2,1,,"Risky Meth"]
+# res3[2,"alpha_mu",]
+# res[2,1,"alpha_mu",]
+alpha_mu<-data.table(res3[,"alpha_mu",])
+alpha_mu_graph<-gather(alpha_mu,key = "Group","alpha_mu")
+
+group_plot=ggplot(alpha_mu_graph,
+       aes(x=alpha_mu,color=Group))+geom_density(size=2)+geom_hdi(alpha=0.8,size=2)+
+  labs(title="standardized alpha_mu posterior estimates by group")
+
+group_plot
+
+```
+
+```{r}
+#print a table of the 95% HDIs
+#columns are parameters; rows are group comparisons
+hdi.table<-NULL
+group.comparisons<-list("sr_diff"=sr_diff,"meth_diff"=meth_diff,"sr_meth_diff"=sr_meth_diff)
+
+HDI_format<-function(hdi_pair,dp=NA){
+  if(is.na(dp)){
+    return(paste0("[",hdi_pair[1],", ",hdi_pair[2],"]"))
+  }else{
+    return(paste0("[",format(hdi_pair[1],digits=dp,nsmall=dp,scientific=-2),", ",format(hdi_pair[2],digits=dp,nsmall=dp,scientific=-2),"]"))
+  }
+  
+}
+
+for (gc_name in names(group.comparisons)){
+  gc=group.comparisons[[gc_name]]
+  hdi.table.r<-data.frame("alpha_mu" = HDI_format(HDIofMCMC(gc[,,"alpha_mu"]),3),
+                          "thresh_mu" = HDI_format(HDIofMCMC(gc[,,"thresh_mu"]),3),
+                          "tau_mu" = HDI_format(HDIofMCMC(gc[,,"tau_mu"]),3)
+                          )
+  rownames(hdi.table.r)[1]<-gc_name
+  if (is.null(hdi.table)){
+    hdi.table <- hdi.table.r
+  }else{
+    hdi.table<-rbind(hdi.table,hdi.table.r)
+  }
+  
+}
+```
+
+## Parameters
+
+Here is the HDI for each of the parameters for this model. 
+
+The learning rate difference between meth-using subjects and non-meth-using subjects was significant.
+
+```{r flat_behavioral_analysis_table}
+
+knitr::kable(hdi.table)
+ 
+```
+
