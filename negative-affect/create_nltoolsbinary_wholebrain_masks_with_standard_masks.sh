@@ -1,12 +1,14 @@
-#this script aims to create wholebrain subject masks from standard masks
 #!/bin/bash
-STANDARD_MASK_DIR="/expdata/bensmith/dmn-masks"
+#this script aims to create wholebrain subject masks from standard masks
+#based on the binary masks from nltools.
+#STANDARD_MASK_DIR="/expdata/bensmith/dmn-masks"
 #MASK_SUBFOLDERS=("/insula/" "/networks/" "/regions/" "/")
 #mkdir -p subject_mask_task_output
 #cd subject_mask_task_output
 #loop through each mask type
 #{1..500}
 #loop through each possible subject
+mask_to_use=/home/bensmith/.conda/envs/msm_behav_revlearn_pyenv/lib/python2.7/site-packages/nltools/resources/MNI152_T1_2mm_brain_mask.nii.gz
 for s in {100..500}
 do
 	#and each possible run
@@ -27,7 +29,12 @@ do
 				#ReversalLearning_Punish_run1_slicetiming_nosmooth_pre.feat
 				#flirt -applyxfm -init /expdata/xfgavin/MSM/sub106/analysis/ReversalLearning_Punish_run1_pre.feat/reg/standard2example_func.mat
 				# -in /opt/fmritools/fsl/data/standard/MNI152_T1_2mm_brain_mask.nii.gz -ref /expdata/xfgavin/MSM/sub106/analysis/ReversalLearning_Punish_run1_pre.feat/filtered_func_data.nii.gz -out /expdata/bensmith/joint-modeling/data/msm/reversallearning/masks/ReversalLearning_Punish_run1_pre_right_wholebrain_testmask.nii.gz
-				flirt -applyxfm -init ${SUBJECT_INPUT}/reg/standard2example_func.mat -in /opt/fmritools/fsl/data/standard/MNI152_T1_2mm_brain_mask.nii.gz -ref ${SUBJECT_INPUT}/filtered_func_data.nii.gz -out /expdata/bensmith/joint-modeling/data/msm/reversallearning/masks/wholebrain/sub${s}_${RUN_DIR}
+				
+				output_path=/expdata/bensmith/joint-modeling/data/msm/reversallearning/masks/nltoolswholebrain/sub${s}_${RUN_DIR}
+				flirt -applyxfm -init ${SUBJECT_INPUT}/reg/standard2example_func.mat -in ${mask_to_use} -ref ${SUBJECT_INPUT}/filtered_func_data.nii.gz -out ${output_path}_unthresh
+				#using a relatively liberal threshold.
+				fslmaths ${output_path}_unthresh -thr 0.2 -bin ${output_path}
+				rm ${output_path}_unthresh.nii.gz
 			fi
 		done
 	done

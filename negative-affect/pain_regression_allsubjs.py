@@ -42,21 +42,21 @@ class RLPain:
         self.onset_file_version='20170819T170218'
         self.data_fmri_space="nltoolstandard"
 
-    def get_wager_nps_map(self,nps_map_filepath=None):
+    def get_wager_nps_map(self,nps_map_filepath=None,data_mask=None):
         using_custom_filepath=False
         if nps_map_filepath is not None:
             using_custom_filepath=True
         else:
             nps_map_filepath = self.nps_map_filepath
         if(os.path.isfile(nps_map_filepath)):
-            nps = Brain_Data(nps_map_filepath)
+            nps = Brain_Data(nps_map_filepath,mask=data_mask)
             self.decoder=nps
             if using_custom_filepath:
                 self.decoder_origin = nps_map_filepath
             else:
                 self.decoder_origin='nps'
         else:
-            raise Exception("error; cannot find NPS map")
+            raise Exception("error; cannot find NPS map" + nps_map_filepath)
 
 
     def compile_pain_decoder(self,pain_dir=None):
@@ -108,8 +108,8 @@ class RLPain:
             for rid in [1,2]:
                 for m in motivations:
                     nifti_file=self.fMRI_dir + 'sub'+str(sid) + 'ReversalLearning' + m[0:6] + 'run'+str(rid)
-                    #print(nifti_file)
-                    if os.path.isfile(nifti_file+'.nii.gz'):
+                    print(nifti_file+self.data_fmri_space+'.nii.gz')
+                    if os.path.isfile(nifti_file+self.data_fmri_space+'.nii.gz'):
                         print(nifti_file)
                         #got an nii.gz, check tosee if there's also a onset file for this.
                         onset_file=self.onset_dir + '/runfiledetail'+self.onset_file_version+'_s'+str(sid)+'_' + m.lower() + '_r'+str(rid)+'.txt'
@@ -117,15 +117,16 @@ class RLPain:
                         if (os.path.isfile(onset_file)):
                             print ('we have a match; '+ onset_file)
                             #print("done the regressing :-)")
+                            
+                            data_mask_path=None
+                            if custom_data_mask_lambda is not None:
+                                data_mask_path=custom_data_mask_lambda(sid,rid,m[0:6])
 
                             if custom_pain_map_lambda is not None:
                                 #create the custom pain map in this subject's native space
                                 custom_pain_map_filepath = custom_pain_map_lambda(sid,rid,m[0:6])
-                                self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath)
+                                self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath,data_mask = data_mask_path)
 
-                            data_mask_path=None
-                            if custom_data_mask_lambda is not None:
-                                data_mask_path=custom_data_mask_lambda(sid,rid,m[0:6])
                             msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file,data_mask=data_mask_path)
                             msm_predicted_pain_dict['subid'] = sid
                             msm_predicted_pain_dict['runid'] = rid
