@@ -1,0 +1,552 @@
+Loading datasets...Compiling model...During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:1:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Core:531:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:2:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/LU:47:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:3:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Cholesky:12:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Jacobi:29:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:3:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Cholesky:43:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/QR:17:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Householder:27:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:5:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SVD:48:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Geometry:58:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:7:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Eigenvalues:58:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:26:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SparseCore:66:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:27:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/OrderingMethods:71:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:29:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SparseCholesky:43:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:32:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SparseQR:35:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file4886418973c1.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:33:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/IterativeLinearSolvers:46:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+13 warnings generated.
+compiled.
+  [1] "subid"                               
+  [2] "runid"                               
+  [3] "Motivation"                          
+  [4] "image"                               
+  [5] "presentation_n"                      
+  [6] "ID"                                  
+  [7] "cor_res"                             
+  [8] "Condition"                           
+  [9] "response_key"                        
+ [10] "reaction_time"                       
+ [11] "score"                               
+ [12] "onset_time_designed"                 
+ [13] "onset_time_actual"                   
+ [14] "reversal_trial"                      
+ [15] "blockid"                             
+ [16] "first_reversal.x"                    
+ [17] "presentation_n_after_reversal"       
+ [18] "trial_contains_reversal"             
+ [19] "presentation_n_in_segment.x"         
+ [20] "correct"                             
+ [21] "fileid"                              
+ [22] "presentation_n_over_segments"        
+ [23] "RiskCat"                             
+ [24] "RiskLabel"                           
+ [25] "MethUse"                             
+ [26] "SexRisk"                             
+ [27] "choice"                              
+ [28] "outcome"                             
+ [29] "cue"                                 
+ [30] "SubjectGroup"                        
+ [31] "cor_res_Counterbalanced"             
+ [32] "runmotiveid"                         
+ [33] "rawcode.x"                           
+ [34] "ROI_Left.Cerebral.White.Matter"      
+ [35] "ROI_Left.Cerebral.Cortex"            
+ [36] "ROI_Left.Lateral.Ventricle"          
+ [37] "ROI_Left.Inf.Lat.Vent"               
+ [38] "ROI_Left.Cerebellum.White.Matter"    
+ [39] "ROI_Left.Cerebellum.Cortex"          
+ [40] "ROI_Left.Thalamus.Proper"            
+ [41] "ROI_Left.Caudate"                    
+ [42] "ROI_Left.Putamen"                    
+ [43] "ROI_Left.Pallidum"                   
+ [44] "ROI_X3rd.Ventricle"                  
+ [45] "ROI_X4th.Ventricle"                  
+ [46] "ROI_Brain.Stem"                      
+ [47] "ROI_Left.Hippocampus"                
+ [48] "ROI_Left.Amygdala"                   
+ [49] "ROI_CSF"                             
+ [50] "ROI_Left.Accumbens.area"             
+ [51] "ROI_Left.VentralDC"                  
+ [52] "ROI_Left.vessel"                     
+ [53] "ROI_Left.choroid.plexus"             
+ [54] "ROI_Right.Cerebral.White.Matter"     
+ [55] "ROI_Right.Cerebral.Cortex"           
+ [56] "ROI_Right.Lateral.Ventricle"         
+ [57] "ROI_Right.Inf.Lat.Vent"              
+ [58] "ROI_Right.Cerebellum.White.Matter"   
+ [59] "ROI_Right.Cerebellum.Cortex"         
+ [60] "ROI_Right.Thalamus.Proper"           
+ [61] "ROI_Right.Caudate"                   
+ [62] "ROI_Right.Putamen"                   
+ [63] "ROI_Right.Pallidum"                  
+ [64] "ROI_Right.Hippocampus"               
+ [65] "ROI_Right.Amygdala"                  
+ [66] "ROI_Right.Accumbens.area"            
+ [67] "ROI_Right.VentralDC"                 
+ [68] "ROI_Right.vessel"                    
+ [69] "ROI_Right.choroid.plexus"            
+ [70] "ROI_WM.hypointensities"              
+ [71] "ROI_Optic.Chiasm"                    
+ [72] "ROI_CC_Posterior"                    
+ [73] "ROI_CC_Mid_Posterior"                
+ [74] "ROI_CC_Central"                      
+ [75] "ROI_CC_Mid_Anterior"                 
+ [76] "ROI_CC_Anterior"                     
+ [77] "ROI_ctx.lh.unknown"                  
+ [78] "ROI_ctx.rh.unknown"                  
+ [79] "ROI_ctx_lh_G_and_S_frontomargin"     
+ [80] "ROI_ctx_lh_G_and_S_occipital_inf"    
+ [81] "ROI_ctx_lh_G_and_S_paracentral"      
+ [82] "ROI_ctx_lh_G_and_S_subcentral"       
+ [83] "ROI_ctx_lh_G_and_S_transv_frontopol" 
+ [84] "ROI_ctx_lh_G_and_S_cingul.Ant"       
+ [85] "ROI_ctx_lh_G_and_S_cingul.Mid.Ant"   
+ [86] "ROI_ctx_lh_G_and_S_cingul.Mid.Post"  
+ [87] "ROI_ctx_lh_G_cingul.Post.dorsal"     
+ [88] "ROI_ctx_lh_G_cingul.Post.ventral"    
+ [89] "ROI_ctx_lh_G_cuneus"                 
+ [90] "ROI_ctx_lh_G_front_inf.Opercular"    
+ [91] "ROI_ctx_lh_G_front_inf.Orbital"      
+ [92] "ROI_ctx_lh_G_front_inf.Triangul"     
+ [93] "ROI_ctx_lh_G_front_middle"           
+ [94] "ROI_ctx_lh_G_front_sup"              
+ [95] "ROI_ctx_lh_G_Ins_lg_and_S_cent_ins"  
+ [96] "ROI_ctx_lh_G_insular_short"          
+ [97] "ROI_ctx_lh_G_occipital_middle"       
+ [98] "ROI_ctx_lh_G_occipital_sup"          
+ [99] "ROI_ctx_lh_G_oc.temp_lat.fusifor"    
+[100] "ROI_ctx_lh_G_oc.temp_med.Lingual"    
+[101] "ROI_ctx_lh_G_oc.temp_med.Parahip"    
+[102] "ROI_ctx_lh_G_orbital"                
+[103] "ROI_ctx_lh_G_pariet_inf.Angular"     
+[104] "ROI_ctx_lh_G_pariet_inf.Supramar"    
+[105] "ROI_ctx_lh_G_parietal_sup"           
+[106] "ROI_ctx_lh_G_postcentral"            
+[107] "ROI_ctx_lh_G_precentral"             
+[108] "ROI_ctx_lh_G_precuneus"              
+[109] "ROI_ctx_lh_G_rectus"                 
+[110] "ROI_ctx_lh_G_subcallosal"            
+[111] "ROI_ctx_lh_G_temp_sup.G_T_transv"    
+[112] "ROI_ctx_lh_G_temp_sup.Lateral"       
+[113] "ROI_ctx_lh_G_temp_sup.Plan_polar"    
+[114] "ROI_ctx_lh_G_temp_sup.Plan_tempo"    
+[115] "ROI_ctx_lh_G_temporal_inf"           
+[116] "ROI_ctx_lh_G_temporal_middle"        
+[117] "ROI_ctx_lh_Lat_Fis.ant.Horizont"     
+[118] "ROI_ctx_lh_Lat_Fis.ant.Vertical"     
+[119] "ROI_ctx_lh_Lat_Fis.post"             
+[120] "ROI_ctx_lh_Pole_occipital"           
+[121] "ROI_ctx_lh_Pole_temporal"            
+[122] "ROI_ctx_lh_S_calcarine"              
+[123] "ROI_ctx_lh_S_central"                
+[124] "ROI_ctx_lh_S_cingul.Marginalis"      
+[125] "ROI_ctx_lh_S_circular_insula_ant"    
+[126] "ROI_ctx_lh_S_circular_insula_inf"    
+[127] "ROI_ctx_lh_S_circular_insula_sup"    
+[128] "ROI_ctx_lh_S_collat_transv_ant"      
+[129] "ROI_ctx_lh_S_collat_transv_post"     
+[130] "ROI_ctx_lh_S_front_inf"              
+[131] "ROI_ctx_lh_S_front_middle"           
+[132] "ROI_ctx_lh_S_front_sup"              
+[133] "ROI_ctx_lh_S_interm_prim.Jensen"     
+[134] "ROI_ctx_lh_S_intrapariet_and_P_trans"
+[135] "ROI_ctx_lh_S_oc_middle_and_Lunatus"  
+[136] "ROI_ctx_lh_S_oc_sup_and_transversal" 
+[137] "ROI_ctx_lh_S_occipital_ant"          
+[138] "ROI_ctx_lh_S_oc.temp_lat"            
+[139] "ROI_ctx_lh_S_oc.temp_med_and_Lingual"
+[140] "ROI_ctx_lh_S_orbital_lateral"        
+[141] "ROI_ctx_lh_S_orbital_med.olfact"     
+[142] "ROI_ctx_lh_S_orbital.H_Shaped"       
+[143] "ROI_ctx_lh_S_parieto_occipital"      
+[144] "ROI_ctx_lh_S_pericallosal"           
+[145] "ROI_ctx_lh_S_postcentral"            
+[146] "ROI_ctx_lh_S_precentral.inf.part"    
+[147] "ROI_ctx_lh_S_precentral.sup.part"    
+[148] "ROI_ctx_lh_S_suborbital"             
+[149] "ROI_ctx_lh_S_subparietal"            
+[150] "ROI_ctx_lh_S_temporal_inf"           
+[151] "ROI_ctx_lh_S_temporal_sup"           
+[152] "ROI_ctx_lh_S_temporal_transverse"    
+[153] "ROI_ctx_rh_G_and_S_frontomargin"     
+[154] "ROI_ctx_rh_G_and_S_occipital_inf"    
+[155] "ROI_ctx_rh_G_and_S_paracentral"      
+[156] "ROI_ctx_rh_G_and_S_subcentral"       
+[157] "ROI_ctx_rh_G_and_S_transv_frontopol" 
+[158] "ROI_ctx_rh_G_and_S_cingul.Ant"       
+[159] "ROI_ctx_rh_G_and_S_cingul.Mid.Ant"   
+[160] "ROI_ctx_rh_G_and_S_cingul.Mid.Post"  
+[161] "ROI_ctx_rh_G_cingul.Post.dorsal"     
+[162] "ROI_ctx_rh_G_cingul.Post.ventral"    
+[163] "ROI_ctx_rh_G_cuneus"                 
+[164] "ROI_ctx_rh_G_front_inf.Opercular"    
+[165] "ROI_ctx_rh_G_front_inf.Orbital"      
+[166] "ROI_ctx_rh_G_front_inf.Triangul"     
+[167] "ROI_ctx_rh_G_front_middle"           
+[168] "ROI_ctx_rh_G_front_sup"              
+[169] "ROI_ctx_rh_G_Ins_lg_and_S_cent_ins"  
+[170] "ROI_ctx_rh_G_insular_short"          
+[171] "ROI_ctx_rh_G_occipital_middle"       
+[172] "ROI_ctx_rh_G_occipital_sup"          
+[173] "ROI_ctx_rh_G_oc.temp_lat.fusifor"    
+[174] "ROI_ctx_rh_G_oc.temp_med.Lingual"    
+[175] "ROI_ctx_rh_G_oc.temp_med.Parahip"    
+[176] "ROI_ctx_rh_G_orbital"                
+[177] "ROI_ctx_rh_G_pariet_inf.Angular"     
+[178] "ROI_ctx_rh_G_pariet_inf.Supramar"    
+[179] "ROI_ctx_rh_G_parietal_sup"           
+[180] "ROI_ctx_rh_G_postcentral"            
+[181] "ROI_ctx_rh_G_precentral"             
+[182] "ROI_ctx_rh_G_precuneus"              
+[183] "ROI_ctx_rh_G_rectus"                 
+[184] "ROI_ctx_rh_G_subcallosal"            
+[185] "ROI_ctx_rh_G_temp_sup.G_T_transv"    
+[186] "ROI_ctx_rh_G_temp_sup.Lateral"       
+[187] "ROI_ctx_rh_G_temp_sup.Plan_polar"    
+[188] "ROI_ctx_rh_G_temp_sup.Plan_tempo"    
+[189] "ROI_ctx_rh_G_temporal_inf"           
+[190] "ROI_ctx_rh_G_temporal_middle"        
+[191] "ROI_ctx_rh_Lat_Fis.ant.Horizont"     
+[192] "ROI_ctx_rh_Lat_Fis.ant.Vertical"     
+[193] "ROI_ctx_rh_Lat_Fis.post"             
+[194] "ROI_ctx_rh_Pole_occipital"           
+[195] "ROI_ctx_rh_Pole_temporal"            
+[196] "ROI_ctx_rh_S_calcarine"              
+[197] "ROI_ctx_rh_S_central"                
+[198] "ROI_ctx_rh_S_cingul.Marginalis"      
+[199] "ROI_ctx_rh_S_circular_insula_ant"    
+[200] "ROI_ctx_rh_S_circular_insula_inf"    
+[201] "ROI_ctx_rh_S_circular_insula_sup"    
+[202] "ROI_ctx_rh_S_collat_transv_ant"      
+[203] "ROI_ctx_rh_S_collat_transv_post"     
+[204] "ROI_ctx_rh_S_front_inf"              
+[205] "ROI_ctx_rh_S_front_middle"           
+[206] "ROI_ctx_rh_S_front_sup"              
+[207] "ROI_ctx_rh_S_interm_prim.Jensen"     
+[208] "ROI_ctx_rh_S_intrapariet_and_P_trans"
+[209] "ROI_ctx_rh_S_oc_middle_and_Lunatus"  
+[210] "ROI_ctx_rh_S_oc_sup_and_transversal" 
+[211] "ROI_ctx_rh_S_occipital_ant"          
+[212] "ROI_ctx_rh_S_oc.temp_lat"            
+[213] "ROI_ctx_rh_S_oc.temp_med_and_Lingual"
+[214] "ROI_ctx_rh_S_orbital_lateral"        
+[215] "ROI_ctx_rh_S_orbital_med.olfact"     
+[216] "ROI_ctx_rh_S_orbital.H_Shaped"       
+[217] "ROI_ctx_rh_S_parieto_occipital"      
+[218] "ROI_ctx_rh_S_pericallosal"           
+[219] "ROI_ctx_rh_S_postcentral"            
+[220] "ROI_ctx_rh_S_precentral.inf.part"    
+[221] "ROI_ctx_rh_S_precentral.sup.part"    
+[222] "ROI_ctx_rh_S_suborbital"             
+[223] "ROI_ctx_rh_S_subparietal"            
+[224] "ROI_ctx_rh_S_temporal_inf"           
+[225] "ROI_ctx_rh_S_temporal_sup"           
+[226] "ROI_ctx_rh_S_temporal_transverse"    
+[227] "IsPlaceholder.x"                     
+[228] "Segment.x"                           
+[229] "Outcome.x"                           
+[230] "ActivityPeriod.x"                    
+[231] "presentation_n_in_segment.y"         
+[232] "centered.x"                          
+[233] "first_reversal.y"                    
+[234] "ROI_X5th.Ventricle"                  
+[235] "rawcode.y"                           
+[236] "ROI_roi_accumbens_r"                 
+[237] "ROI_roi_frontal_medial_cortex"       
+[238] "ROI_roi_putamen_l"                   
+[239] "ROI_roi_accumbens_l"                 
+[240] "ROI_roi_frontal_orbital_cortex"      
+[241] "ROI_roi_putamen_r"                   
+[242] "IsPlaceholder.y"                     
+[243] "Segment.y"                           
+[244] "Outcome.y"                           
+[245] "ActivityPeriod.y"                    
+[246] "presentation_n_in_segment"           
+[247] "centered.y"                          
+[248] "first_reversal"                      
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001162 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.62 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.001689 seconds
+1000 transitions using 10 leapfrog steps per transition would take 16.89 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.001786 seconds
+1000 transitions using 10 leapfrog steps per transition would take 17.86 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001091 seconds
+1000 transitions using 10 leapfrog steps per transition would take 10.91 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001335 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.35 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+Iteration: 100 / 500 [ 20%]  (Warmup)
+
+Gradient evaluation took 0.001528 seconds
+1000 transitions using 10 leapfrog steps per transition would take 15.28 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 6.60528 seconds (Warm-up)
+               1.38703 seconds (Sampling)
+               7.99232 seconds (Total)
+
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 6.04275 seconds (Warm-up)
+               1.44521 seconds (Sampling)
+               7.48795 seconds (Total)
+
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 7.49799 seconds (Warm-up)
+               1.45195 seconds (Sampling)
+               8.94993 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 6.13241 seconds (Warm-up)
+               1.37182 seconds (Sampling)
+               7.50423 seconds (Total)
+
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 7.54292 seconds (Warm-up)
+               1.41624 seconds (Sampling)
+               8.95916 seconds (Total)
+
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)

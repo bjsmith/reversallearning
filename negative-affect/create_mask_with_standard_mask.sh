@@ -25,7 +25,9 @@ do
 				#create link
 				#ln -s $SUBJECT_INPUT /expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks/sub${s}ReversalLearningPunishrun${r}.nii.gz
 				#ReversalLearning_Punish_run1_slicetiming_nosmooth_pre.feat
-				echo flirt -applyxfm -init ${SUBJECT_INPUT}/reg/standard2example_func.mat -in /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/weights_NSF_grouppred_cvpcr.img -ref ${SUBJECT_INPUT}/filtered_func_data.nii.gz -out /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub${s}_${RUN_DIR}
+				subject_space_mask=/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/weights_NSF_grouppred_cvpcr_sub${s}_${RUN_DIR}
+				flirt -applyxfm -init ${SUBJECT_INPUT}/reg/standard2example_func.mat -in /expdata/bensmith/joint-modeling/code/wagertools/NPS_share/weights_NSF_grouppred_cvpcr.img -ref ${SUBJECT_INPUT}/filtered_func_data.nii.gz -out ${subject_space_mask}
+				#fslmaths ${subject_space_mask} -thr 0.2 -bin ${subject_space_mask}
 			fi
 		done
 	done

@@ -3,11 +3,11 @@ rlPain=RLPain()
 #july2018: updated this to use a custom mask for each subject data instead of the *misaligned* standard space mask.
 
 #don't see how there's a syntax error here.
-rlPain.fMRI_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/preprocessed_fMRI_symlinks'
-rlPain.onset_dir='/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/runfiles'
+rlPain.fMRI_dir='/expdata/bensmith/joint-modeling/data/msm/reversallearning/preprocessed_fMRI_symlinks/'
+rlPain.onset_dir='/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles'
 #rlPain.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
 rlPain.nps_map_filepath = '/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/weights_NSF_grouppred_cvpcr.img'
-rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/msm/behavioral-analysis/reversallearning/rlPainNPS/20180720_version/'
+rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/msm/reversallearning/rlPainNPS/20180720_version/'
 rlPain.get_wager_nps_map()
 rlPain.onset_file_version='20180220T031755'
 rlPain.data_fmri_space='subjectspace_cropped'
@@ -24,9 +24,10 @@ rlPain.process_detailed_regressors(
     lambda sid,rid,m: ('/expdata/bensmith/joint-modeling/code/wagertools/NPS_share/subject_space_masks/' +
                       'weights_NSF_grouppred_cvpcr_sub' + str(sid) + '_ReversalLearning_' + m +
                       '_run' + str(rid) + '_pre.feat.nii.gz'),
-    custom_data_mask_lambda= lambda sid,rid,m: ('/expdata/bensmith/joint-modeling/data/msm/reversallearning/masks/wholebrain/' +
+    custom_data_mask_lambda= lambda sid,rid,m: ('/expdata/bensmith/joint-modeling/data/msm/reversallearning/masks/nltoolswholebrain/' +
                       'sub' + str(sid) + '_ReversalLearning_' + m +
-                      '_run' + str(rid) + '_pre.feat.nii.gz')
+                      '_run' + str(rid) + '_pre.feat.nii.gz'),
+    motivations_all=['Reward']
     )
 
 #rlPain.process_all_punishment_subjects()

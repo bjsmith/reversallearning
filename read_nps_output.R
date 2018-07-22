@@ -37,14 +37,15 @@ read_nps_output <- function(pattern_csv){
   return(activity.eventvals)
 }
 
-get_nps_data_for_subs <- function(subjList){
+get_nps_data_for_subs <- function(subjList,nps_version=NA){
   pattern_data_allsubs<-NULL
   for (s in subjList) {
     for (r in 1:2){
       for (m in c("Punishment","Reward")){
         #print (paste("getting pain data for subject ",s, "run",r))
         #input and parse CSV
-        pr<-paste0(localsettings$data.dir,"rlPainNPS/",s,"_",tolower(m),"_r",r,".csv")
+        if(is.na(nps_version)){pr<-paste0(localsettings$data.dir,"rlPainNPS/",s,"_",tolower(m),"_r",r,".csv")
+        }else{pr<-paste0(localsettings$data.dir,"rlPainNPS/",nps_version,"/",s,"_",tolower(m),"_r",r,".csv")}
         if (file.exists(pr)){
           pattern_data<-read_nps_output(read.csv(file=pr))
           pattern_data$Motivation<-m
