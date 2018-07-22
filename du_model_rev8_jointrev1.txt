@@ -2191,3 +2191,13 @@ Iteration: 2000 / 5000 [ 40%]  (Sampling)
 Iteration: 2000 / 5000 [ 40%]  (Sampling)
 Iteration: 2000 / 5000 [ 40%]  (Sampling)
 Iteration: 4500 / 5000 [ 90%]  (Sampling)
+Iteration: 5000 / 5000 [100%]  (Sampling)
+
+ Elapsed Time: 22384.7 seconds (Warm-up)
+               183646 seconds (Sampling)
+               206030 seconds (Total)
+
+Iteration: 2500 / 5000 [ 50%]  (Sampling)
+Iteration: 2500 / 5000 [ 50%]  (Sampling)
+Iteration: 2500 / 5000 [ 50%]  (Sampling)
+Iteration: 2500 / 5000 [ 50%]  (Sampling)

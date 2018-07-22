@@ -56,7 +56,7 @@ class RLPain:
             else:
                 self.decoder_origin='nps'
         else:
-            raise Exception("error; cannot find NPS map")
+            raise Exception("error; cannot find NPS map" + nps_map_filepath)
 
 
     def compile_pain_decoder(self,pain_dir=None):
@@ -108,8 +108,8 @@ class RLPain:
             for rid in [1,2]:
                 for m in motivations:
                     nifti_file=self.fMRI_dir + 'sub'+str(sid) + 'ReversalLearning' + m[0:6] + 'run'+str(rid)
-                    print(nifti_file)
-                    if os.path.isfile(nifti_file+'.nii.gz'):
+                    print(nifti_file+self.data_fmri_space+'.nii.gz')
+                    if os.path.isfile(nifti_file+self.data_fmri_space+'.nii.gz'):
                         print(nifti_file)
                         #got an nii.gz, check tosee if there's also a onset file for this.
                         onset_file=self.onset_dir + '/runfiledetail'+self.onset_file_version+'_s'+str(sid)+'_' + m.lower() + '_r'+str(rid)+'.txt'
