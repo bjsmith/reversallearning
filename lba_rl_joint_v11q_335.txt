@@ -3867,3 +3867,591 @@ Iteration:  370 / 3700 [ 10%]  (Warmup)
 Iteration:  740 / 3700 [ 20%]  (Warmup)
 Iteration: 1110 / 3700 [ 30%]  (Warmup)
 Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+ [1] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                           
+ [2] "Exception: multiply: A[22] is -nan, but must not be nan!  (in 'model488646078b1a_lba_rl_single_exp_joint_v11' at line 250)"                               
+ [3] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                   
+ [4] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                 
+ [5] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                           
+ [6] "Exception: multi_normal_cholesky_lpdf: Random variable[1] is -nan, but must not be nan!  (in 'model488646078b1a_lba_rl_single_exp_joint_v11' at line 341)"
+ [7] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                   
+ [8] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                 
+ [9] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                           
+[10] "Exception: multi_normal_cholesky_lpdf: Random variable[1] is -nan, but must not be nan!  (in 'model488646078b1a_lba_rl_single_exp_joint_v11' at line 341)"
+[11] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                   
+[12] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                 
+[13] "Error in sampler$call_sampler(args_list[[i]]) : "                                                                                                         
+[14] "  reached elapsed time limit"                                                                                                                             
+[15] "In addition: There were 13 warnings (use warnings() to see them)"                                                                                         
+could not run calculation for sid304 rid1 mpunishment within 120 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. The policy for this run is not to repeated timed-out models."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001141 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.41 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.001856 seconds
+1000 transitions using 10 leapfrog steps per transition would take 18.56 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.001899 seconds
+1000 transitions using 10 leapfrog steps per transition would take 18.99 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001141 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.41 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001332 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.32 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.001664 seconds
+1000 transitions using 10 leapfrog steps per transition would take 16.64 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 8.67859 seconds (Warm-up)
+               2.1371 seconds (Sampling)
+               10.8157 seconds (Total)
+
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 9.40394 seconds (Warm-up)
+               2.25335 seconds (Sampling)
+               11.6573 seconds (Total)
+
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 11.2762 seconds (Warm-up)
+               2.03602 seconds (Sampling)
+               13.3122 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 9.10543 seconds (Warm-up)
+               2.41141 seconds (Sampling)
+               11.5168 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 10.0139 seconds (Warm-up)
+               2.11165 seconds (Sampling)
+               12.1255 seconds (Total)
+
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 1365.83 seconds (Warm-up)
+               377.86 seconds (Sampling)
+               1743.69 seconds (Total)
+
+[1] "One or more Rhat values for sid304 rid1 mreward were outside the accepted range. Trying again with more iterations and a different seed."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001177 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.77 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.001975 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.75 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.001911 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.11 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.00114 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.4 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.00136 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.6 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.00175 seconds
+1000 transitions using 10 leapfrog steps per transition would take 17.5 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 24.5153 seconds (Warm-up)
+               2.31901 seconds (Sampling)
+               26.8343 seconds (Total)
+
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 24.4198 seconds (Warm-up)
+               2.1664 seconds (Sampling)
+               26.5862 seconds (Total)
+
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 25.9874 seconds (Warm-up)
+               2.42148 seconds (Sampling)
+               28.4089 seconds (Total)
+
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 24.4553 seconds (Warm-up)
+               1.98866 seconds (Sampling)
+               26.444 seconds (Total)
+
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 26.7749 seconds (Warm-up)
+               1.94089 seconds (Sampling)
+               28.7158 seconds (Total)
+
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 4386.65 seconds (Warm-up)
+               379.839 seconds (Sampling)
+               4766.49 seconds (Total)
+
+[1] "One or more Rhat values for sid304 rid1 mreward were outside the accepted range. Trying again with more iterations and a different seed."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001152 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.52 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.00186 seconds
+1000 transitions using 10 leapfrog steps per transition would take 18.6 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.001941 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.41 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001153 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.53 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001276 seconds
+1000 transitions using 10 leapfrog steps per transition would take 12.76 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.001684 seconds
+1000 transitions using 10 leapfrog steps per transition would take 16.84 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 65.6201 seconds (Warm-up)
+               1.76604 seconds (Sampling)
+               67.3861 seconds (Total)
+
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 65.6369 seconds (Warm-up)
+               2.24808 seconds (Sampling)
+               67.885 seconds (Total)
+
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 66.9154 seconds (Warm-up)
+               2.05336 seconds (Sampling)
+               68.9688 seconds (Total)
+
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 66.7403 seconds (Warm-up)
+               2.10383 seconds (Sampling)
+               68.8441 seconds (Total)
+
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 68.0974 seconds (Warm-up)
+               2.24702 seconds (Sampling)
+               70.3445 seconds (Total)
+
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+ [1] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                           
+ [2] "Exception: multiply: A[10] is -nan, but must not be nan!  (in 'model488646078b1a_lba_rl_single_exp_joint_v11' at line 250)"                               
+ [3] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                   
+ [4] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                 
+ [5] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                                           
+ [6] "Exception: multi_normal_cholesky_lpdf: Random variable[1] is -nan, but must not be nan!  (in 'model488646078b1a_lba_rl_single_exp_joint_v11' at line 341)"
+ [7] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"                   
+ [8] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                                                 
+ [9] "Error in sampler$call_sampler(args_list[[i]]) : "                                                                                                         
+[10] "  reached elapsed time limit"                                                                                                                             
+[11] "In addition: There were 17 warnings (use warnings() to see them)"                                                                                         
+could not run calculation for sid304 rid1 mreward within 120 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. The policy for this run is not to repeated timed-out models."
+[1] "loading from file sid 304; r 2; m punishment"
+[1] "loading from file sid 304; r 2; m reward"
+[1] "loading from file sid 305; r 1; m punishment"
+[1] "loading from file sid 305; r 1; m reward"
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001342 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.42 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.002036 seconds
+1000 transitions using 10 leapfrog steps per transition would take 20.36 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.001986 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.86 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001219 seconds
+1000 transitions using 10 leapfrog steps per transition would take 12.19 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001811 seconds
+1000 transitions using 10 leapfrog steps per transition would take 18.11 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.001974 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.74 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 7.34143 seconds (Warm-up)
+               1.4832 seconds (Sampling)
+               8.82463 seconds (Total)
+
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)

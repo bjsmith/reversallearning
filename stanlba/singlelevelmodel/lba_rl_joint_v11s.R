@@ -1,5 +1,4 @@
-
-#sub-version q: uses FSL-created Harvard-Oxford ROIs instead of freesurfer ROIs.
+#sub-version s: applies Jonas's suggestion to regress out CSF. Uses freesurfer ROIs, all dmn regions.
 library(rstan)
 source("stanlba/lba_rl_joint_setup.R")
 require(R.utils)
@@ -12,7 +11,7 @@ source("stanlba/singlelevelmodel/lba_rl_joint_v11r_functions.R")
 #we have problems running all subjects in a single run.
 #so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
 lba_rl_version<-"joint_20180709_1"
-model.subversion<-"t"
+model.subversion<-"s"
 single_run_dir<-paste0(localsettings$data.dir,"lba_rl")
 output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")
 dir.create(single_run_dir, showWarnings = FALSE)
@@ -23,6 +22,7 @@ Rhat_corevals_limit=1.05 # I don't care about this at the moment. I just want to
 Rhat_general_limit=1.1
 
 
+
 results.list<-list()
 
 model.name<-"lba_rl_single_exp_joint_v11"
@@ -31,13 +31,14 @@ lba_rl_single_joint<-stan_model(paste0('stanlba/stanfiles/incremental/',model.na
 cat("compiled.\n")
 colnames(rawdata)
 #regions<-c("ROI_ctx_lh_S_suborbital","ROI_ctx_rh_S_suborbital", "ROI_Left.Accumbens.area", "ROI_Right.Accumbens.area")
-regions<-c("fsl_roi_frontal_medial_cortex","fsl_roi_frontal_orbital_cortex", "fsl_roi_accumbens_l", "fsl_roi_accumbens_r")
+regions<-paste0("con_",get_dmn_regions())
+
 #100,140,218,261,334
 ll=100;ul=139
-#ll=140;ul=217
-#ll=218;ul=260
-#ll=261;ul=334
-#ll=335;ul=400
+ll=140;ul=217
+ll=218;ul=260
+ll=261;ul=334
+ll=335;ul=400
 #ll=100;ul=400
 for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])){#r<-1

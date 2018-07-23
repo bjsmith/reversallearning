@@ -1,0 +1,1645 @@
+Loading datasets...Compiling model...During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:1:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Core:531:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:2:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/LU:47:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:3:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Cholesky:12:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Jacobi:29:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:3:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Cholesky:43:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/QR:17:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Householder:27:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:5:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SVD:48:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Geometry:58:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core.hpp:14:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/core/matrix_vari.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat/fun/Eigen_NumTraits.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:4:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Dense:7:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Eigenvalues:58:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:26:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SparseCore:66:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:27:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/OrderingMethods:71:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:29:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SparseCholesky:43:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:32:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/SparseQR:35:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:8:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math.hpp:4:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat.hpp:83:
+In file included from /usr/local/lib/R/site-library/StanHeaders/include/stan/math/prim/mat/fun/csr_extract_u.hpp:6:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/Sparse:33:
+In file included from /home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/IterativeLinearSolvers:46:
+/home/bensmith/R/x86_64-pc-linux-gnu-library/3.4/RcppEigen/include/Eigen/src/Core/util/ReenableStupidWarnings.h:10:30: warning: pragma diagnostic pop could not pop, no matching push [-Wunknown-pragmas]
+    #pragma clang diagnostic pop
+                             ^
+In file included from file6e88323049f.cpp:1591:
+In file included from /usr/local/lib/R/site-library/rstan/include/rstan/rstaninc.hpp:3:
+/usr/local/lib/R/site-library/rstan/include/rstan/stan_fit.hpp:438:8: warning: 'auto_ptr<stan::io::var_context>' is deprecated [-Wdeprecated-declarations]
+  std::auto_ptr<stan::io::var_context> init_context_ptr;
+       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/c++/7.3.0/backward/auto_ptr.h:285:7: note: 'auto_ptr<stan::io::var_context>' has been explicitly marked deprecated here
+    } _GLIBCXX_DEPRECATED;
+      ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/x86_64-linux-gnu/c++/7.3.0/bits/c++config.h:85:46: note: expanded from macro '_GLIBCXX_DEPRECATED'
+# define _GLIBCXX_DEPRECATED __attribute__ ((__deprecated__))
+                                             ^
+In file included from file6e88323049f.cpp:1591:
+In file included from /usr/local/lib/R/site-library/rstan/include/rstan/rstaninc.hpp:3:
+/usr/local/lib/R/site-library/rstan/include/rstan/stan_fit.hpp:547:10: warning: 'auto_ptr<rstan::rstan_sample_writer>' is deprecated [-Wdeprecated-declarations]
+    std::auto_ptr<rstan_sample_writer> sample_writer_ptr;
+         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/c++/7.3.0/backward/auto_ptr.h:285:7: note: 'auto_ptr<rstan::rstan_sample_writer>' has been explicitly marked deprecated here
+    } _GLIBCXX_DEPRECATED;
+      ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/7.3.0/../../../../include/x86_64-linux-gnu/c++/7.3.0/bits/c++config.h:85:46: note: expanded from macro '_GLIBCXX_DEPRECATED'
+# define _GLIBCXX_DEPRECATED __attribute__ ((__deprecated__))
+                                             ^
+15 warnings generated.
+compiled.
+  [1] "image"                               
+  [2] "presentation_n_in_segment"           
+  [3] "first_reversal"                      
+  [4] "presentation_n"                      
+  [5] "subid"                               
+  [6] "runid"                               
+  [7] "Motivation"                          
+  [8] "ID"                                  
+  [9] "cor_res"                             
+ [10] "Condition"                           
+ [11] "response_key"                        
+ [12] "reaction_time"                       
+ [13] "score"                               
+ [14] "onset_time_designed"                 
+ [15] "onset_time_actual"                   
+ [16] "reversal_trial"                      
+ [17] "blockid"                             
+ [18] "first_reversal.x"                    
+ [19] "presentation_n_after_reversal"       
+ [20] "trial_contains_reversal"             
+ [21] "presentation_n_in_segment.x"         
+ [22] "correct"                             
+ [23] "fileid"                              
+ [24] "presentation_n_over_segments"        
+ [25] "RiskCat"                             
+ [26] "RiskLabel"                           
+ [27] "MethUse"                             
+ [28] "SexRisk"                             
+ [29] "choice"                              
+ [30] "outcome"                             
+ [31] "cue"                                 
+ [32] "SubjectGroup"                        
+ [33] "cor_res_Counterbalanced"             
+ [34] "runmotiveid"                         
+ [35] "rawcode.x"                           
+ [36] "ROI_Left.Cerebral.White.Matter"      
+ [37] "ROI_Left.Cerebral.Cortex"            
+ [38] "ROI_Left.Lateral.Ventricle"          
+ [39] "ROI_Left.Inf.Lat.Vent"               
+ [40] "ROI_Left.Cerebellum.White.Matter"    
+ [41] "ROI_Left.Cerebellum.Cortex"          
+ [42] "ROI_Left.Thalamus.Proper"            
+ [43] "ROI_Left.Caudate"                    
+ [44] "ROI_Left.Putamen"                    
+ [45] "ROI_Left.Pallidum"                   
+ [46] "ROI_X3rd.Ventricle"                  
+ [47] "ROI_X4th.Ventricle"                  
+ [48] "ROI_Brain.Stem"                      
+ [49] "ROI_Left.Hippocampus"                
+ [50] "ROI_Left.Amygdala"                   
+ [51] "ROI_CSF"                             
+ [52] "ROI_Left.Accumbens.area"             
+ [53] "ROI_Left.VentralDC"                  
+ [54] "ROI_Left.vessel"                     
+ [55] "ROI_Left.choroid.plexus"             
+ [56] "ROI_Right.Cerebral.White.Matter"     
+ [57] "ROI_Right.Cerebral.Cortex"           
+ [58] "ROI_Right.Lateral.Ventricle"         
+ [59] "ROI_Right.Inf.Lat.Vent"              
+ [60] "ROI_Right.Cerebellum.White.Matter"   
+ [61] "ROI_Right.Cerebellum.Cortex"         
+ [62] "ROI_Right.Thalamus.Proper"           
+ [63] "ROI_Right.Caudate"                   
+ [64] "ROI_Right.Putamen"                   
+ [65] "ROI_Right.Pallidum"                  
+ [66] "ROI_Right.Hippocampus"               
+ [67] "ROI_Right.Amygdala"                  
+ [68] "ROI_Right.Accumbens.area"            
+ [69] "ROI_Right.VentralDC"                 
+ [70] "ROI_Right.vessel"                    
+ [71] "ROI_Right.choroid.plexus"            
+ [72] "ROI_WM.hypointensities"              
+ [73] "ROI_Optic.Chiasm"                    
+ [74] "ROI_CC_Posterior"                    
+ [75] "ROI_CC_Mid_Posterior"                
+ [76] "ROI_CC_Central"                      
+ [77] "ROI_CC_Mid_Anterior"                 
+ [78] "ROI_CC_Anterior"                     
+ [79] "ROI_ctx.lh.unknown"                  
+ [80] "ROI_ctx.rh.unknown"                  
+ [81] "ROI_ctx_lh_G_and_S_frontomargin"     
+ [82] "ROI_ctx_lh_G_and_S_occipital_inf"    
+ [83] "ROI_ctx_lh_G_and_S_paracentral"      
+ [84] "ROI_ctx_lh_G_and_S_subcentral"       
+ [85] "ROI_ctx_lh_G_and_S_transv_frontopol" 
+ [86] "ROI_ctx_lh_G_and_S_cingul.Ant"       
+ [87] "ROI_ctx_lh_G_and_S_cingul.Mid.Ant"   
+ [88] "ROI_ctx_lh_G_and_S_cingul.Mid.Post"  
+ [89] "ROI_ctx_lh_G_cingul.Post.dorsal"     
+ [90] "ROI_ctx_lh_G_cingul.Post.ventral"    
+ [91] "ROI_ctx_lh_G_cuneus"                 
+ [92] "ROI_ctx_lh_G_front_inf.Opercular"    
+ [93] "ROI_ctx_lh_G_front_inf.Orbital"      
+ [94] "ROI_ctx_lh_G_front_inf.Triangul"     
+ [95] "ROI_ctx_lh_G_front_middle"           
+ [96] "ROI_ctx_lh_G_front_sup"              
+ [97] "ROI_ctx_lh_G_Ins_lg_and_S_cent_ins"  
+ [98] "ROI_ctx_lh_G_insular_short"          
+ [99] "ROI_ctx_lh_G_occipital_middle"       
+[100] "ROI_ctx_lh_G_occipital_sup"          
+[101] "ROI_ctx_lh_G_oc.temp_lat.fusifor"    
+[102] "ROI_ctx_lh_G_oc.temp_med.Lingual"    
+[103] "ROI_ctx_lh_G_oc.temp_med.Parahip"    
+[104] "ROI_ctx_lh_G_orbital"                
+[105] "ROI_ctx_lh_G_pariet_inf.Angular"     
+[106] "ROI_ctx_lh_G_pariet_inf.Supramar"    
+[107] "ROI_ctx_lh_G_parietal_sup"           
+[108] "ROI_ctx_lh_G_postcentral"            
+[109] "ROI_ctx_lh_G_precentral"             
+[110] "ROI_ctx_lh_G_precuneus"              
+[111] "ROI_ctx_lh_G_rectus"                 
+[112] "ROI_ctx_lh_G_subcallosal"            
+[113] "ROI_ctx_lh_G_temp_sup.G_T_transv"    
+[114] "ROI_ctx_lh_G_temp_sup.Lateral"       
+[115] "ROI_ctx_lh_G_temp_sup.Plan_polar"    
+[116] "ROI_ctx_lh_G_temp_sup.Plan_tempo"    
+[117] "ROI_ctx_lh_G_temporal_inf"           
+[118] "ROI_ctx_lh_G_temporal_middle"        
+[119] "ROI_ctx_lh_Lat_Fis.ant.Horizont"     
+[120] "ROI_ctx_lh_Lat_Fis.ant.Vertical"     
+[121] "ROI_ctx_lh_Lat_Fis.post"             
+[122] "ROI_ctx_lh_Pole_occipital"           
+[123] "ROI_ctx_lh_Pole_temporal"            
+[124] "ROI_ctx_lh_S_calcarine"              
+[125] "ROI_ctx_lh_S_central"                
+[126] "ROI_ctx_lh_S_cingul.Marginalis"      
+[127] "ROI_ctx_lh_S_circular_insula_ant"    
+[128] "ROI_ctx_lh_S_circular_insula_inf"    
+[129] "ROI_ctx_lh_S_circular_insula_sup"    
+[130] "ROI_ctx_lh_S_collat_transv_ant"      
+[131] "ROI_ctx_lh_S_collat_transv_post"     
+[132] "ROI_ctx_lh_S_front_inf"              
+[133] "ROI_ctx_lh_S_front_middle"           
+[134] "ROI_ctx_lh_S_front_sup"              
+[135] "ROI_ctx_lh_S_interm_prim.Jensen"     
+[136] "ROI_ctx_lh_S_intrapariet_and_P_trans"
+[137] "ROI_ctx_lh_S_oc_middle_and_Lunatus"  
+[138] "ROI_ctx_lh_S_oc_sup_and_transversal" 
+[139] "ROI_ctx_lh_S_occipital_ant"          
+[140] "ROI_ctx_lh_S_oc.temp_lat"            
+[141] "ROI_ctx_lh_S_oc.temp_med_and_Lingual"
+[142] "ROI_ctx_lh_S_orbital_lateral"        
+[143] "ROI_ctx_lh_S_orbital_med.olfact"     
+[144] "ROI_ctx_lh_S_orbital.H_Shaped"       
+[145] "ROI_ctx_lh_S_parieto_occipital"      
+[146] "ROI_ctx_lh_S_pericallosal"           
+[147] "ROI_ctx_lh_S_postcentral"            
+[148] "ROI_ctx_lh_S_precentral.inf.part"    
+[149] "ROI_ctx_lh_S_precentral.sup.part"    
+[150] "ROI_ctx_lh_S_suborbital"             
+[151] "ROI_ctx_lh_S_subparietal"            
+[152] "ROI_ctx_lh_S_temporal_inf"           
+[153] "ROI_ctx_lh_S_temporal_sup"           
+[154] "ROI_ctx_lh_S_temporal_transverse"    
+[155] "ROI_ctx_rh_G_and_S_frontomargin"     
+[156] "ROI_ctx_rh_G_and_S_occipital_inf"    
+[157] "ROI_ctx_rh_G_and_S_paracentral"      
+[158] "ROI_ctx_rh_G_and_S_subcentral"       
+[159] "ROI_ctx_rh_G_and_S_transv_frontopol" 
+[160] "ROI_ctx_rh_G_and_S_cingul.Ant"       
+[161] "ROI_ctx_rh_G_and_S_cingul.Mid.Ant"   
+[162] "ROI_ctx_rh_G_and_S_cingul.Mid.Post"  
+[163] "ROI_ctx_rh_G_cingul.Post.dorsal"     
+[164] "ROI_ctx_rh_G_cingul.Post.ventral"    
+[165] "ROI_ctx_rh_G_cuneus"                 
+[166] "ROI_ctx_rh_G_front_inf.Opercular"    
+[167] "ROI_ctx_rh_G_front_inf.Orbital"      
+[168] "ROI_ctx_rh_G_front_inf.Triangul"     
+[169] "ROI_ctx_rh_G_front_middle"           
+[170] "ROI_ctx_rh_G_front_sup"              
+[171] "ROI_ctx_rh_G_Ins_lg_and_S_cent_ins"  
+[172] "ROI_ctx_rh_G_insular_short"          
+[173] "ROI_ctx_rh_G_occipital_middle"       
+[174] "ROI_ctx_rh_G_occipital_sup"          
+[175] "ROI_ctx_rh_G_oc.temp_lat.fusifor"    
+[176] "ROI_ctx_rh_G_oc.temp_med.Lingual"    
+[177] "ROI_ctx_rh_G_oc.temp_med.Parahip"    
+[178] "ROI_ctx_rh_G_orbital"                
+[179] "ROI_ctx_rh_G_pariet_inf.Angular"     
+[180] "ROI_ctx_rh_G_pariet_inf.Supramar"    
+[181] "ROI_ctx_rh_G_parietal_sup"           
+[182] "ROI_ctx_rh_G_postcentral"            
+[183] "ROI_ctx_rh_G_precentral"             
+[184] "ROI_ctx_rh_G_precuneus"              
+[185] "ROI_ctx_rh_G_rectus"                 
+[186] "ROI_ctx_rh_G_subcallosal"            
+[187] "ROI_ctx_rh_G_temp_sup.G_T_transv"    
+[188] "ROI_ctx_rh_G_temp_sup.Lateral"       
+[189] "ROI_ctx_rh_G_temp_sup.Plan_polar"    
+[190] "ROI_ctx_rh_G_temp_sup.Plan_tempo"    
+[191] "ROI_ctx_rh_G_temporal_inf"           
+[192] "ROI_ctx_rh_G_temporal_middle"        
+[193] "ROI_ctx_rh_Lat_Fis.ant.Horizont"     
+[194] "ROI_ctx_rh_Lat_Fis.ant.Vertical"     
+[195] "ROI_ctx_rh_Lat_Fis.post"             
+[196] "ROI_ctx_rh_Pole_occipital"           
+[197] "ROI_ctx_rh_Pole_temporal"            
+[198] "ROI_ctx_rh_S_calcarine"              
+[199] "ROI_ctx_rh_S_central"                
+[200] "ROI_ctx_rh_S_cingul.Marginalis"      
+[201] "ROI_ctx_rh_S_circular_insula_ant"    
+[202] "ROI_ctx_rh_S_circular_insula_inf"    
+[203] "ROI_ctx_rh_S_circular_insula_sup"    
+[204] "ROI_ctx_rh_S_collat_transv_ant"      
+[205] "ROI_ctx_rh_S_collat_transv_post"     
+[206] "ROI_ctx_rh_S_front_inf"              
+[207] "ROI_ctx_rh_S_front_middle"           
+[208] "ROI_ctx_rh_S_front_sup"              
+[209] "ROI_ctx_rh_S_interm_prim.Jensen"     
+[210] "ROI_ctx_rh_S_intrapariet_and_P_trans"
+[211] "ROI_ctx_rh_S_oc_middle_and_Lunatus"  
+[212] "ROI_ctx_rh_S_oc_sup_and_transversal" 
+[213] "ROI_ctx_rh_S_occipital_ant"          
+[214] "ROI_ctx_rh_S_oc.temp_lat"            
+[215] "ROI_ctx_rh_S_oc.temp_med_and_Lingual"
+[216] "ROI_ctx_rh_S_orbital_lateral"        
+[217] "ROI_ctx_rh_S_orbital_med.olfact"     
+[218] "ROI_ctx_rh_S_orbital.H_Shaped"       
+[219] "ROI_ctx_rh_S_parieto_occipital"      
+[220] "ROI_ctx_rh_S_pericallosal"           
+[221] "ROI_ctx_rh_S_postcentral"            
+[222] "ROI_ctx_rh_S_precentral.inf.part"    
+[223] "ROI_ctx_rh_S_precentral.sup.part"    
+[224] "ROI_ctx_rh_S_suborbital"             
+[225] "ROI_ctx_rh_S_subparietal"            
+[226] "ROI_ctx_rh_S_temporal_inf"           
+[227] "ROI_ctx_rh_S_temporal_sup"           
+[228] "ROI_ctx_rh_S_temporal_transverse"    
+[229] "IsPlaceholder.x"                     
+[230] "Segment.x"                           
+[231] "Outcome.x"                           
+[232] "ActivityPeriod.x"                    
+[233] "presentation_n_in_segment.y"         
+[234] "centered.x"                          
+[235] "first_reversal.y"                    
+[236] "ROI_X5th.Ventricle"                  
+[237] "rawcode.y"                           
+[238] "fsl_roi_accumbens_r"                 
+[239] "fsl_roi_frontal_medial_cortex"       
+[240] "fsl_roi_putamen_l"                   
+[241] "fsl_roi_accumbens_l"                 
+[242] "fsl_roi_frontal_orbital_cortex"      
+[243] "fsl_roi_putamen_r"                   
+[244] "IsPlaceholder.y"                     
+[245] "Segment.y"                           
+[246] "Outcome.y"                           
+[247] "ActivityPeriod.y"                    
+[248] "centered.y"                          
+[249] "rawcode"                             
+[250] "IsPlaceholder"                       
+[251] "Segment"                             
+[252] "Outcome"                             
+[253] "ActivityPeriod"                      
+[254] "centered"                            
+[255] "nltools_accumbens_r"                 
+[256] "nltools_accumbens_l"                 
+[257] "nltools_frontal_orbital_cortex"      
+[258] "nltools_frontal_medial_cortex"       
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001313 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.13 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.002136 seconds
+1000 transitions using 10 leapfrog steps per transition would take 21.36 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002174 seconds
+1000 transitions using 10 leapfrog steps per transition would take 21.74 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001264 seconds
+1000 transitions using 10 leapfrog steps per transition would take 12.64 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001878 seconds
+1000 transitions using 10 leapfrog steps per transition would take 18.78 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.002261 seconds
+1000 transitions using 10 leapfrog steps per transition would take 22.61 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)Iteration: 450 / 500 [ 90%]  (Sampling)
+
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.7161 seconds (Warm-up)
+               2.84929 seconds (Sampling)
+               16.5654 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.2724 seconds (Warm-up)
+               2.7786 seconds (Sampling)
+               16.051 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.4266 seconds (Warm-up)
+               3.0738 seconds (Sampling)
+               16.5004 seconds (Total)
+
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.5348 seconds (Warm-up)
+               3.36272 seconds (Sampling)
+               16.8975 seconds (Total)
+
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.3704 seconds (Warm-up)
+               2.83861 seconds (Sampling)
+               16.2091 seconds (Total)
+
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.4571 seconds (Warm-up)
+               3.75764 seconds (Sampling)
+               17.2148 seconds (Total)
+
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001795 seconds
+1000 transitions using 10 leapfrog steps per transition would take 17.95 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.002865 seconds
+1000 transitions using 10 leapfrog steps per transition would take 28.65 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002757 seconds
+1000 transitions using 10 leapfrog steps per transition would take 27.57 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001704 seconds
+1000 transitions using 10 leapfrog steps per transition would take 17.04 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002286 seconds
+1000 transitions using 10 leapfrog steps per transition would take 22.86 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.002665 seconds
+1000 transitions using 10 leapfrog steps per transition would take 26.65 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 11.1188 seconds (Warm-up)
+               2.86687 seconds (Sampling)
+               13.9857 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+
+ Elapsed Time: 12.376 seconds (Warm-up)
+               2.25048 seconds (Sampling)
+               14.6265 seconds (Total)
+
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.2028 seconds (Warm-up)
+               2.15718 seconds (Sampling)
+               15.36 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.8167 seconds (Warm-up)
+               2.9464 seconds (Sampling)
+               16.7631 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.5422 seconds (Warm-up)
+               2.37424 seconds (Sampling)
+               15.9165 seconds (Total)
+
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 26.3181 seconds (Warm-up)
+               3.10553 seconds (Sampling)
+               29.4236 seconds (Total)
+
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001181 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.81 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.001998 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.98 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002084 seconds
+1000 transitions using 10 leapfrog steps per transition would take 20.84 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001119 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.19 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001493 seconds
+1000 transitions using 10 leapfrog steps per transition would take 14.93 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.00199 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.9 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 11.0026 seconds (Warm-up)
+               2.57161 seconds (Sampling)
+               13.5742 seconds (Total)
+
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+
+ Elapsed Time: 11.9136 seconds (Warm-up)
+               2.28131 seconds (Sampling)
+               14.1949 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 10.5235 seconds (Warm-up)
+               2.18602 seconds (Sampling)
+               12.7095 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 12.79 seconds (Warm-up)
+               2.33192 seconds (Sampling)
+               15.1219 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 11.9477 seconds (Warm-up)
+               2.1609 seconds (Sampling)
+               14.1086 seconds (Total)
+
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 1274.18 seconds (Warm-up)
+               353.586 seconds (Sampling)
+               1627.77 seconds (Total)
+
+[1] "One or more Rhat values for sid140 rid2 mreward were outside the accepted range. Trying again with more iterations and a different seed."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.002209 seconds
+1000 transitions using 10 leapfrog steps per transition would take 22.09 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.002243 seconds
+1000 transitions using 10 leapfrog steps per transition would take 22.43 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002258 seconds
+1000 transitions using 10 leapfrog steps per transition would take 22.58 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.002035 seconds
+1000 transitions using 10 leapfrog steps per transition would take 20.35 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001932 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.32 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.002179 seconds
+1000 transitions using 10 leapfrog steps per transition would take 21.79 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 29.8521 seconds (Warm-up)
+               2.31533 seconds (Sampling)
+               32.1674 seconds (Total)
+
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 31.1612 seconds (Warm-up)
+               2.48854 seconds (Sampling)
+               33.6497 seconds (Total)
+
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 29.1009 seconds (Warm-up)
+               1.92915 seconds (Sampling)
+               31.03 seconds (Total)
+
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 31.4124 seconds (Warm-up)
+               2.92897 seconds (Sampling)
+               34.3414 seconds (Total)
+
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 30.5614 seconds (Warm-up)
+               2.83017 seconds (Sampling)
+               33.3915 seconds (Total)
+
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 3540.51 seconds (Warm-up)
+               279.701 seconds (Sampling)
+               3820.22 seconds (Total)
+
+[1] "One or more Rhat values for sid140 rid2 mreward were outside the accepted range. Trying again with more iterations and a different seed."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001407 seconds
+1000 transitions using 10 leapfrog steps per transition would take 14.07 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.001989 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.89 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.002166 seconds
+1000 transitions using 10 leapfrog steps per transition would take 21.66 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001047 seconds
+1000 transitions using 10 leapfrog steps per transition would take 10.47 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.00125 seconds
+1000 transitions using 10 leapfrog steps per transition would take 12.5 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.001974 seconds
+1000 transitions using 10 leapfrog steps per transition would take 19.74 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 3700 [  0%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 2220 / 3700 [ 60%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 77.4628 seconds (Warm-up)
+               2.72297 seconds (Sampling)
+               80.1858 seconds (Total)
+
+Iteration: 2590 / 3700 [ 70%]  (Warmup)
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 77.139 seconds (Warm-up)
+               2.02037 seconds (Sampling)
+               79.1594 seconds (Total)
+
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 76.7659 seconds (Warm-up)
+               2.00546 seconds (Sampling)
+               78.7713 seconds (Total)
+
+Iteration: 2960 / 3700 [ 80%]  (Warmup)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 80.6781 seconds (Warm-up)
+               2.58662 seconds (Sampling)
+               83.2647 seconds (Total)
+
+Iteration: 3330 / 3700 [ 90%]  (Warmup)
+Iteration: 3601 / 3700 [ 97%]  (Sampling)
+Iteration: 3700 / 3700 [100%]  (Sampling)
+
+ Elapsed Time: 78.87 seconds (Warm-up)
+               2.87925 seconds (Sampling)
+               81.7493 seconds (Total)
+
+Iteration:  370 / 3700 [ 10%]  (Warmup)
+Iteration:  740 / 3700 [ 20%]  (Warmup)
+Iteration: 1110 / 3700 [ 30%]  (Warmup)
+Iteration: 1480 / 3700 [ 40%]  (Warmup)
+Iteration: 1850 / 3700 [ 50%]  (Warmup)
+ [1] "Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:"                        
+ [2] "Exception: multiply: A[7] is -nan, but must not be nan!  (in 'model6e887fabb46d_lba_rl_single_exp_joint_v11' at line 250)"             
+ [3] "If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,"
+ [4] "but if this warning occurs often then your model may be either severely ill-conditioned or misspecified."                              
+ [5] "Error in sampler$call_sampler(args_list[[i]]) : "                                                                                      
+ [6] "  reached elapsed time limit"                                                                                                          
+ [7] "In addition: Warning messages:"                                                                                                        
+ [8] "1: There were 100 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 12. See"                  
+ [9] "http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded "                                                                     
+[10] "2: Examine the pairs() plot to diagnose sampling problems"                                                                             
+[11] " "                                                                                                                                     
+[12] "3: There were 100 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 12. See"                  
+[13] "http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded "                                                                     
+[14] "4: Examine the pairs() plot to diagnose sampling problems"                                                                             
+[15] " "                                                                                                                                     
+could not run calculation for sid140 rid2 mreward within 120 minutes. skipping!NA
+[1] "model couldn't be calculated within the selected time limit. The policy for this run is not to repeated timed-out models."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.000954 seconds
+1000 transitions using 10 leapfrog steps per transition would take 9.54 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.001511 seconds
+1000 transitions using 10 leapfrog steps per transition would take 15.11 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.001381 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.81 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.000865 seconds
+1000 transitions using 10 leapfrog steps per transition would take 8.65 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.001169 seconds
+1000 transitions using 10 leapfrog steps per transition would take 11.69 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.001417 seconds
+1000 transitions using 10 leapfrog steps per transition would take 14.17 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 6.69195 seconds (Warm-up)
+               1.09197 seconds (Sampling)
+               7.78391 seconds (Total)
+
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 6.40404 seconds (Warm-up)
+               1.07209 seconds (Sampling)
+               7.47613 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+
+ Elapsed Time: 7.48131 seconds (Warm-up)
+               1.20549 seconds (Sampling)
+               8.6868 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 5.98548 seconds (Warm-up)
+               1.21169 seconds (Sampling)
+               7.19717 seconds (Total)
+
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 6.94795 seconds (Warm-up)
+               1.01256 seconds (Sampling)
+               7.96051 seconds (Total)
+
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 7.3203 seconds (Warm-up)
+               1.10234 seconds (Sampling)
+               8.42264 seconds (Total)
+
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001829 seconds
+1000 transitions using 10 leapfrog steps per transition would take 18.29 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.003052 seconds
+1000 transitions using 10 leapfrog steps per transition would take 30.52 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.0045 seconds
+1000 transitions using 10 leapfrog steps per transition would take 45 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.00137 seconds
+1000 transitions using 10 leapfrog steps per transition would take 13.7 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002095 seconds
+1000 transitions using 10 leapfrog steps per transition would take 20.95 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.00255 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.5 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:   1 / 500 [  0%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 10.762 seconds (Warm-up)
+               2.22575 seconds (Sampling)
+               12.9877 seconds (Total)
+
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 11.6177 seconds (Warm-up)
+               2.22056 seconds (Sampling)
+               13.8382 seconds (Total)
+
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 10.5714 seconds (Warm-up)
+               2.26351 seconds (Sampling)
+               12.8349 seconds (Total)
+
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 13.0046 seconds (Warm-up)
+               2.32587 seconds (Sampling)
+               15.3305 seconds (Total)
+
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 15.2165 seconds (Warm-up)
+               2.18757 seconds (Sampling)
+               17.404 seconds (Total)
+
+Iteration:  50 / 500 [ 10%]  (Warmup)
+Iteration: 100 / 500 [ 20%]  (Warmup)
+Iteration: 150 / 500 [ 30%]  (Warmup)
+Iteration: 200 / 500 [ 40%]  (Warmup)
+Iteration: 250 / 500 [ 50%]  (Warmup)
+Iteration: 300 / 500 [ 60%]  (Warmup)
+Iteration: 350 / 500 [ 70%]  (Warmup)
+Iteration: 400 / 500 [ 80%]  (Warmup)
+Iteration: 401 / 500 [ 80%]  (Sampling)
+Iteration: 450 / 500 [ 90%]  (Sampling)
+Iteration: 500 / 500 [100%]  (Sampling)
+
+ Elapsed Time: 1861.94 seconds (Warm-up)
+               525.894 seconds (Sampling)
+               2387.83 seconds (Total)
+
+[1] "One or more Rhat values for sid142 rid1 mreward were outside the accepted range. Trying again with more iterations and a different seed."
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 1).
+
+Gradient evaluation took 0.001698 seconds
+1000 transitions using 10 leapfrog steps per transition would take 16.98 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 2).
+
+Gradient evaluation took 0.003012 seconds
+1000 transitions using 10 leapfrog steps per transition would take 30.12 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 3).
+
+Gradient evaluation took 0.00257 seconds
+1000 transitions using 10 leapfrog steps per transition would take 25.7 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 4).
+
+Gradient evaluation took 0.001534 seconds
+1000 transitions using 10 leapfrog steps per transition would take 15.34 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 5).
+
+Gradient evaluation took 0.002069 seconds
+1000 transitions using 10 leapfrog steps per transition would take 20.69 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'lba_rl_single_exp_joint_v11' NOW (CHAIN 6).
+
+Gradient evaluation took 0.00282 seconds
+1000 transitions using 10 leapfrog steps per transition would take 28.2 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 1300 [  0%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 33.7226 seconds (Warm-up)
+               2.29767 seconds (Sampling)
+               36.0203 seconds (Total)
+
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1040 / 1300 [ 80%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 35.0702 seconds (Warm-up)
+               2.34543 seconds (Sampling)
+               37.4157 seconds (Total)
+
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 36.2742 seconds (Warm-up)
+               2.22474 seconds (Sampling)
+               38.4989 seconds (Total)
+
+Iteration: 1170 / 1300 [ 90%]  (Warmup)
+Iteration: 1201 / 1300 [ 92%]  (Sampling)
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 33.4557 seconds (Warm-up)
+               2.60287 seconds (Sampling)
+               36.0586 seconds (Total)
+
+Iteration: 1300 / 1300 [100%]  (Sampling)
+
+ Elapsed Time: 34.6869 seconds (Warm-up)
+               2.31996 seconds (Sampling)
+               37.0069 seconds (Total)
+
+Iteration:  130 / 1300 [ 10%]  (Warmup)
+Iteration:  260 / 1300 [ 20%]  (Warmup)
+Iteration:  390 / 1300 [ 30%]  (Warmup)
+Iteration:  520 / 1300 [ 40%]  (Warmup)
+Iteration:  650 / 1300 [ 50%]  (Warmup)
+Iteration:  780 / 1300 [ 60%]  (Warmup)
+Iteration:  910 / 1300 [ 70%]  (Warmup)

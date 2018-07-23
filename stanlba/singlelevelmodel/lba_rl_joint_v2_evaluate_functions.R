@@ -133,7 +133,7 @@ do_akt_violin<-function(grand_posterior_estimate_dt,
 
 
 
-heatmap<-function(covar_matrix,label="Covariance",show_labels=TRUE,extra_ggitems=NULL,order=TRUE){#covar_matrix<-Sigma_mean
+heatmap<-function(covar_matrix,label="Covariance",show_labels=TRUE,extra_ggitems=NULL,order=TRUE,labelsize=2,scale_midpoint=0){#covar_matrix<-Sigma_mean
   # Get lower triangle of the correlation matrix
   get_lower_tri<-function(cormat){
     cormat[upper.tri(cormat)] <- NA
@@ -164,14 +164,14 @@ heatmap<-function(covar_matrix,label="Covariance",show_labels=TRUE,extra_ggitems
   ggheatmap <- ggplot(covar_matrix_ordered_melted, aes(Var2, Var1, fill = value))+
     geom_tile(color = "white")+
     scale_fill_gradient2(low = "blue", high = "red", mid = "#bbbbbb", 
-                         midpoint = 0, space = "Lab", 
+                         midpoint = scale_midpoint, space = "Lab", 
                          name=label) +
     theme_minimal()+ # minimal theme
     theme(axis.text.x = element_text(angle = 45, vjust = 1, 
                                      size = 12, hjust = 1))+
     coord_fixed()
   if(show_labels){
-    ggheatmap = ggheatmap + geom_text(aes(Var2, Var1, label = round(covar_matrix_ordered_melted$value,digits=2)), color = "black", size = 2,fontface="bold")
+    ggheatmap = ggheatmap + geom_text(aes(Var2, Var1, label = round(covar_matrix_ordered_melted$value,digits=2)), color = "black", size = labelsize,fontface="bold")
   }
   
   ggheatmap = ggheatmap + 

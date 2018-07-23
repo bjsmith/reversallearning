@@ -1,5 +1,4 @@
-
-#sub-version q: uses FSL-created Harvard-Oxford ROIs instead of freesurfer ROIs.
+#subversion t: uses just four ROIs, they're freesurfer ROIs, and they are controlled for WM, CSF, ventricles.
 library(rstan)
 source("stanlba/lba_rl_joint_setup.R")
 require(R.utils)
@@ -29,12 +28,11 @@ model.name<-"lba_rl_single_exp_joint_v11"
 cat("Compiling model...")
 lba_rl_single_joint<-stan_model(paste0('stanlba/stanfiles/incremental/',model.name,'.stan'))
 cat("compiled.\n")
-colnames(rawdata)
-#regions<-c("ROI_ctx_lh_S_suborbital","ROI_ctx_rh_S_suborbital", "ROI_Left.Accumbens.area", "ROI_Right.Accumbens.area")
-regions<-c("fsl_roi_frontal_medial_cortex","fsl_roi_frontal_orbital_cortex", "fsl_roi_accumbens_l", "fsl_roi_accumbens_r")
+
+regions<-c("con_ROI_ctx_lh_S_suborbital","con_ROI_ctx_rh_S_suborbital", "con_ROI_Left.Accumbens.area", "con_ROI_Right.Accumbens.area")
 #100,140,218,261,334
-ll=100;ul=139
-#ll=140;ul=217
+#ll=100;ul=139
+ll=140;ul=217
 #ll=218;ul=260
 #ll=261;ul=334
 #ll=335;ul=400

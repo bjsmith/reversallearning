@@ -37,15 +37,17 @@ read_nps_output <- function(pattern_csv){
   return(activity.eventvals)
 }
 
-get_nps_data_for_subs <- function(subjList,nps_version=NA){
+get_nps_data_for_subs <- function(subjList,nps_version=NA,data.subdir="rlPainNPS",file_prefix=NA,verbose=TRUE){
   pattern_data_allsubs<-NULL
+  if(is.na(file_prefix))file_prefix=""
   for (s in subjList) {
+    cat(". ")
     for (r in 1:2){
       for (m in c("Punishment","Reward")){
         #print (paste("getting pain data for subject ",s, "run",r))
         #input and parse CSV
-        if(is.na(nps_version)){pr<-paste0(localsettings$data.dir,"rlPainNPS/",s,"_",tolower(m),"_r",r,".csv")
-        }else{pr<-paste0(localsettings$data.dir,"rlPainNPS/",nps_version,"/",s,"_",tolower(m),"_r",r,".csv")}
+        if(is.na(nps_version)){pr<-paste0(localsettings$data.dir,data.subdir,"/",file_prefix,s,"_",tolower(m),"_r",r,".csv")
+        }else{pr<-paste0(localsettings$data.dir,data.subdir,"/",nps_version,"/",file_prefix,s,"_",tolower(m),"_r",r,".csv")}
         if (file.exists(pr)){
           pattern_data<-read_nps_output(read.csv(file=pr))
           pattern_data$Motivation<-m
@@ -53,7 +55,7 @@ get_nps_data_for_subs <- function(subjList,nps_version=NA){
             stop("mismatch between filename and file contents subject id or runid")
           }
         }else{
-          print(paste("Run",r,"M",m,", data not available for subject ",s))
+          if(verbose) print(paste("Run",r,"M",m,", data not available for subject ",s))
           next
         }
         if (is.null(pattern_data_allsubs)){
@@ -66,6 +68,6 @@ get_nps_data_for_subs <- function(subjList,nps_version=NA){
   }
   #normalize this data.
   #pattern_data_allsubs$Value_n<-scale(pattern_data_allsubs$Value,center = 0,scale=TRUE)
-  
+  cat("\n")
   return (pattern_data_allsubs)
 }

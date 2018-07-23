@@ -1,5 +1,4 @@
-
-#sub-version q: uses FSL-created Harvard-Oxford ROIs instead of freesurfer ROIs.
+#sub-version r: uses principle components derived from the freesurfer ROIs.
 library(rstan)
 source("stanlba/lba_rl_joint_setup.R")
 require(R.utils)
@@ -12,7 +11,7 @@ source("stanlba/singlelevelmodel/lba_rl_joint_v11r_functions.R")
 #we have problems running all subjects in a single run.
 #so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
 lba_rl_version<-"joint_20180709_1"
-model.subversion<-"t"
+model.subversion<-"r"
 single_run_dir<-paste0(localsettings$data.dir,"lba_rl")
 output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")
 dir.create(single_run_dir, showWarnings = FALSE)
@@ -30,14 +29,39 @@ cat("Compiling model...")
 lba_rl_single_joint<-stan_model(paste0('stanlba/stanfiles/incremental/',model.name,'.stan'))
 cat("compiled.\n")
 colnames(rawdata)
-#regions<-c("ROI_ctx_lh_S_suborbital","ROI_ctx_rh_S_suborbital", "ROI_Left.Accumbens.area", "ROI_Right.Accumbens.area")
-regions<-c("fsl_roi_frontal_medial_cortex","fsl_roi_frontal_orbital_cortex", "fsl_roi_accumbens_l", "fsl_roi_accumbens_r")
+#regions<-c("ROI_ctx_lh_S_suborbital","ROI_ctx_rh_S_suborbital",
+#           "ROI_ctx_lh_G_orbital","ROI_ctx_rh_G_orbital", 
+#           "ROI_Left.Accumbens.area", "ROI_Right.Accumbens.area")
+regions <- get_wideset_regions()
+frsurf.prcomp<-prcomp(rawdata[,regions,with=FALSE])
+
+#select principle components most associated with Accumbens, orbital, suborbital
+get_names_of_top_x<-function(region_name,x){
+  return(sort(names(sort(-frsurf.prcomp$rotation[region_name,])[1:x])))
+}
+components_to_use<-unique(c(
+  get_names_of_top_x("ROI_Left.Accumbens.area",5),
+  get_names_of_top_x("ROI_Right.Accumbens.area",5),
+  get_names_of_top_x("ROI_ctx_lh_S_suborbital",5),
+  get_names_of_top_x("ROI_ctx_rh_S_suborbital",5),
+  get_names_of_top_x("ROI_ctx_lh_G_orbital",5),
+  get_names_of_top_x("ROI_ctx_rh_G_orbital",5)))
+#how much of the variance do these capture?
+components.numeric<-as.numeric(gsub("PC","",components_to_use))
+sum(frsurf.prcomp$sdev[components.numeric])/sum(frsurf.prcomp$sdev)
+#34% of all variance...but these can be assumed to be processes unrelated to those we're interested in.
+
+#let's give this a try...how do we get these components back?
+components_to_test<-frsurf.prcomp$x[,components.numeric]
+colnames(components_to_test)<-paste0("fsurf_roi_components_",colnames(components_to_test))
+rawdata<-cbind(rawdata,components_to_test)
+#regions<-c("ROI_roi_frontal_medial_cortex","ROI_roi_frontal_orbital_cortex", "ROI_roi_accumbens_l", "ROI_roi_accumbens_r")
 #100,140,218,261,334
-ll=100;ul=139
+#ll=100;ul=139
 #ll=140;ul=217
 #ll=218;ul=260
 #ll=261;ul=334
-#ll=335;ul=400
+ll=335;ul=400
 #ll=100;ul=400
 for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
@@ -61,10 +85,10 @@ for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$sub
             expr = {
               withTimeout({
                 sampling(lba_rl_single_joint, 
-                         data = create_standatalist(srm.data = srm.data,theta_count = 2, delta_names = regions),
+                         data = create_standatalist(srm.data = srm.data,theta_count = 2, delta_names = colnames(components_to_test)),
                          warmup = warmup, 
                          iter = iterations,
-                         init= get_starting_values(n_chains,thetaDelta_count=length(regions)+2),
+                         init= get_starting_values(n_chains,thetaDelta_count=length(colnames(components_to_test))+2),
                          chains = n_chains,
                          seed = roundseed,
                          control = list(max_treedepth = 12,adapt_delta=0.85))
