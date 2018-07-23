@@ -42,6 +42,9 @@ class RLPain:
         self.onset_file_version='20170819T170218'
         self.data_fmri_space="nltoolstandard"
 
+        self.motion_param_dir=''
+        self.motion_param_file=''
+
     def get_wager_nps_map(self,nps_map_filepath=None,data_mask=None):
         using_custom_filepath=False
         if nps_map_filepath is not None:
@@ -127,9 +130,17 @@ class RLPain:
                                 custom_pain_map_filepath = custom_pain_map_lambda(sid,rid,m[0:6])
                                 self.get_wager_nps_map(nps_map_filepath=custom_pain_map_filepath,data_mask = data_mask_path)
 
-                            msm_predicted_pain_dict = self.get_trialtype_pain_regressors(nifti_file, onset_file,data_mask=data_mask_path)
+                            motion_regressors = self.get_motion_regressors(sid, rid, m)
+
+                            msm_predicted_pain_dict = self.get_trialtype_pain_regressors(
+                                nifti_file,
+                                onset_file,
+                                data_mask=data_mask_path,
+                                motion_regressors =motion_regressors )
                             msm_predicted_pain_dict['subid'] = sid
                             msm_predicted_pain_dict['runid'] = rid
+
+
                             with open(self.regressor_output_filepathprefix + str(sid) + '_' + m.lower() + '_r' + str(rid) + '.csv',
                                       'w') as csvfile:
                                 w = csv.DictWriter(csvfile, msm_predicted_pain_dict.keys())
@@ -164,60 +175,77 @@ class RLPain:
                                 spamwriter.writerow([sid,rid,r])
                         #attach the subject and run ID to the output and concatenate.
 
-    #the standard paine regressor from nlTools
-    def get_trialtype_pain_regressors(self,nifti_data,onset_file,data_mask=None):
+    def get_motion_regressors(self,sid,rid,motivation):
+
+        motion_param_path = self.motion_param_dir + "sub",sid,"/analysis/ReversalLearning_",motivation,"_run",rid,"_pre.feat/" + self.motion_param_file
+
+        motion_params = pandas.read_table(motion_param_path,names=["Motion" + str(i) for i in range(1,7)],delim_whitespace=True)
+        return motion_params
+
+
+    def import_and_convolve(self,nifti_data,onset_file,data_mask=None,motion_regressors=None):
         print("importing nifti")
-        #import the nifti
-        #load the nltools prepped file if it's available.
+        # import the nifti
+        # load the nltools prepped file if it's available.
         if (os.path.isfile(nifti_data + self.data_fmri_space + ".nii.gz")):
             msmrl1 = Brain_Data(
-                nifti_data + self.data_fmri_space + ".nii.gz",mask=data_mask)
-        else:#but if it's not; no worries; just load the original one.
+                nifti_data + self.data_fmri_space + ".nii.gz", mask=data_mask)
+        else:  # but if it's not; no worries; just load the original one.
             msmrl1 = Brain_Data(
-                nifti_data + ".nii.gz",mask=data_mask)
+                nifti_data + ".nii.gz", mask=data_mask)
             msmrl1.write(nifti_data + self.data_fmri_space + ".nii.gz")
 
-        #I want to standardize globally; this will preserve the relative strengths of each time point
-        #and preserve the relative activity at each voxel.
-        #and let's use the mean standard deviation across all the images.
-        #msmrl1.data = msmrl1.data - np.tile(msmrl1.mean().mean(),msmrl1.data.shape)
-        #msmrl1.data = msmrl1.data / np.tile(np.std(msmrl1.data,axis=1).mean(),msmrl1.data.shape)
+        # I want to standardize globally; this will preserve the relative strengths of each time point
+        # and preserve the relative activity at each voxel.
+        # and let's use the mean standard deviation across all the images.
+        # msmrl1.data = msmrl1.data - np.tile(msmrl1.mean().mean(),msmrl1.data.shape)
+        # msmrl1.data = msmrl1.data / np.tile(np.std(msmrl1.data,axis=1).mean(),msmrl1.data.shape)
         # OR we could apply the standardization to the OUTPUT.
-        #grand_mean=msmrl1.mean().mean()
-        #grand_sd=np.std(msmrl1.data,axis=1).mean()
+        # grand_mean=msmrl1.mean().mean()
+        # grand_sd=np.std(msmrl1.data,axis=1).mean()
 
-        #preprocess the nifti?
+        # preprocess the nifti?
         print("importing onsets")
-        #import the onset
+        # import the onset
         onsets = onsets_to_dm(
             onset_file,
             TR=2,
             runLength=msmrl1.shape()[0]
         )
 
-        #process the onset files
+        # process the onset files
         #
-        onsets.sampling_rate=2
+        onsets.sampling_rate = 2
 
-        onsets_convolved=onsets.convolve()
+        onsets_convolved = onsets.convolve()
 
-        #delete columns with no information in them.
+        # delete columns with no information in them.
         for c in onsets_convolved.columns:
             if sum(onsets_convolved.ix[:, c]) <= 0:
-                print('deleting '+ str(c))
+                print('deleting ' + str(c))
                 del onsets_convolved[c]
 
-
-        rowcount=onsets_convolved.__len__()
+        rowcount = onsets_convolved.__len__()
         if rowcount != 360:
             warnings.warn("Just a friendly FYI: expected number of rows is 360 but this subject had " + str(
                 rowcount) + ". Probably this subject got cut off the task half-way through.")
         onsets_convolved['linearterm'] = range(1, rowcount + 1)
 
-        onsets_convolved['quadraticterm']=[pow(x,2) for x in onsets_convolved['linearterm']]
-        onsets_convolved['cubicterm']=[pow(x,3) for x in onsets_convolved['linearterm']]
-        onsets_convolved['ones']=[1]*rowcount
-        msmrl1.X=onsets_convolved
+        onsets_convolved['quadraticterm'] = [pow(x, 2) for x in onsets_convolved['linearterm']]
+        onsets_convolved['cubicterm'] = [pow(x, 3) for x in onsets_convolved['linearterm']]
+        onsets_convolved['ones'] = [1] * rowcount
+
+        if(motion_regressors is not None):
+            onsets_convolved = pandas.concat([onsets_convolved, motion_regressors], axis=1)
+
+
+        msmrl1.X = onsets_convolved
+        return msmrl1
+
+    #the standard paine regressor from nlTools
+    def get_trialtype_pain_regressors(self,nifti_data,onset_file,data_mask=None,motion_regressors=None):
+        msmrl1 = self.import_and_convolve(nifti_data,onset_file,data_mask,motion_regressors=motion_regressors)
+
         print("convolved onsets; regressing...")
         #regress the file on each of the onsets. So then, when we compare similarity to the regression, we'll be getting the
         #regression to the each event, not to each TR.
@@ -225,11 +253,31 @@ class RLPain:
         print("Regressing; calculating similarity to the pain map from " + self.decoder_origin + "...")
         msm_predicted_pain = regression['beta'].similarity(self.decoder, 'dot_product')
         msm_predicted_pain_scaled=msm_predicted_pain-msmrl1.data.std()
-        onset_colnames = onsets_convolved.columns.tolist()
+
+        #onset_colnames = onsets_convolved.columns.tolist()
+        onset_colnames = msmrl1.X.columns.tolist()
         msm_predicted_pain_dict={}
         for i, b in enumerate(msm_predicted_pain_scaled):
             msm_predicted_pain_dict[onset_colnames[i]] = b
         return msm_predicted_pain_dict
+
+    # the standard paine regressor from nlTools
+    def get_roi_from_current_mask(self, nifti_data, onset_file, data_mask=None):
+        msmrl1 = self.import_and_convolve(nifti_data, onset_file, data_mask)
+
+        print("convolved onsets; regressing...")
+        # regress the file on each of the onsets. So then, when we compare similarity to the regression, we'll be getting the
+        # regression to the each event, not to each TR.
+        regression = msmrl1.regress()
+        print("Regressing; calculating similarity to the pain map from " + self.decoder_origin + "...")
+        msm_predicted_pain = regression['beta'].similarity(self.decoder, 'dot_product')
+        msm_predicted_pain_scaled = msm_predicted_pain - msmrl1.data.std()
+        onset_colnames = msmrl1.X.columns.tolist()
+        msm_predicted_pain_dict = {}
+        for i, b in enumerate(msm_predicted_pain_scaled):
+            msm_predicted_pain_dict[onset_colnames[i]] = b
+        return msm_predicted_pain_dict
+
 
 
 
