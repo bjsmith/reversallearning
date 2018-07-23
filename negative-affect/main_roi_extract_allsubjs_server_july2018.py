@@ -12,6 +12,8 @@ for fsl_harvardoxford_region in ["frontal_medial_cortex","frontal_orbital_cortex
     rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/msm/reversallearning/roi_event_data/fsl_roi_event_data_nltools/20180722_version/'+fsl_harvardoxford_region
     rlPain.onset_file_version='20180220T031755'
     rlPain.data_fmri_space='subjectspace_cropped'
+    rlPain.motion_param_dir = "/expdata/xfgavin/MSM"
+    rlPain.motion_param_file = 'mc/prefiltered_func_data_mcf.par'
 
     rlPain.process_detailed_regressors(
         range(100,500),

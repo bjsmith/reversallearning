@@ -1,11 +1,11 @@
 from pain_regression_allsubjs import *
 rlPain=RLPain()
 
-rlPain.fMRI_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed'
-rlPain.onset_dir='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
+rlPain.fMRI_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/preprocessed/'
+rlPain.onset_dir='/Users/benjaminsmith/Dropbox/joint-modeling/reversal-learning/behavioral-analysis/data/runfiles'
 #rlPain.decoder_file='/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/pain_decoder.pkl'
-rlPain.nps_map_filepath = '/Users/benjaminsmith/GDrive/joint-modeling/wager-pain-dataset/NPS_share/weights_NSF_grouppred_cvpcr.img'
-rlPain.regressor_output_filepathprefix = '/Users/benjaminsmith/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/rlPainNPSTesting/'
+rlPain.nps_map_filepath = '/Users/benjaminsmith/Dropbox/joint-modeling/wager-pain-dataset/NPS_share/weights_NSF_grouppred_cvpcr.img'
+rlPain.regressor_output_filepathprefix = '/Users/Dropbox/GDrive/joint-modeling/reversal-learning/behavioral-analysis/data/rlPainNPSTesting/'
 rlPain.get_wager_nps_map()
 rlPain.onset_file_version='20171020T012118'
 

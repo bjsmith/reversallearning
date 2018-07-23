@@ -11,6 +11,8 @@ rlPain.regressor_output_filepathprefix = '/expdata/bensmith/joint-modeling/data/
 rlPain.get_wager_nps_map()
 rlPain.onset_file_version='20180220T031755'
 rlPain.data_fmri_space='subjectspace_cropped'
+rlPain.motion_param_dir = "/expdata/xfgavin/MSM"
+rlPain.motion_param_file = 'mc/prefiltered_func_data_mcf.par'
 #sid=113
 #rid=2
 #nifti_file = rlPain.fMRI_dir + '/sub' + str(sid) + 'ReversalLearningPunishrun' + str(rid)
