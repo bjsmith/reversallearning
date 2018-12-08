@@ -1,0 +1,113 @@
+---
+title: "R Notebook"
+output:
+  pdf_document:
+    keep_tex: yes
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, tidy=TRUE)
+knitr::opts_knit$set(root.dir="../")
+
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+library(ggplot2)
+library(scales)
+library(rstan)
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
+
+```
+
+```{r getData}
+
+load(paste0(localsettings$data_dir,"behavioral_linear_stan_model_logistic.RData"))
+
+```
+
+## Linear model
+
+In this section, I take a look at hierarchical linear model of task performance and try to predict task behavior using only a hierarchical linear model.
+
+This is a sensible baseline against which to measure the performance of more complex hierarchical and joint models.
+
+For hierarchical linear models of increasing complexity, standard parametric estimation techniques can fail to produce accurate estimates (Gelman, 2005). 
+In these cases, it is advantageous to use a Bayesian approach to estimation. The rstanarm package allows for the estimation of a linear model using
+the Bayesian MCMC approach built into the stan package.
+
+### Method
+I thus specified a hierarchical logistic regression model to test the ability to predict correct vs. incorrect responses $C$ from both fixed and mixed effects predictors. The fixed effects I specified are reaction time $RT$, Motivation (reward vs. punishment) $M$, meth use $METH$, sex risk $SR$, and the position $P$ of a presentation in a pre- or post- reversal segment of cue presentations. I also specified individual intercepts and slopes on the presentation position for each subject $S$ and for each individual run $R$. I also specified a separate mixed effect intercept on each image to represent ease of recognizing any particular image cue $CUE$.
+
+#next section
+
+This can be written as
+
+$$\begin{aligned}
+\text{logit}(C_{0 j}) & = \gamma_{0 0}+\gamma_{0 1} M_{ij}+\gamma_{0 2} RT_{ij}+\gamma_{0 3} RTS_{ij}+\gamma_{0 4} METH_{ij}+\gamma_{0 5} SR_{ij}+\gamma_{0 6} P_{ij} + e_{i j} \\
+S_{1 j} & = \gamma_{10} + \gamma_{1 1} P_{1j} + R_{2j}\\
+CUE_{2 j} & = \gamma_{10} + u_{2j}
+\end{aligned}$$
+
+<!-- notes on notation: https://en.wikipedia.org/wiki/Multilevel_model#cite_note-Fidell-2 -->
+
+The R code is written as
+
+```{r model_code, eval=FALSE, echo=TRUE}
+
+correct~Motivation + reaction_time + (reaction_time<0.1) + presentation_n_in_segment + MethUse+SexRisk+
+  (1+presentation_n_in_segment | subid/runmotiveid) + (1 | image)
+
+```
+
+Reaction times recorded at less than 0.1 were considered as a separate regressor because we assume that a genuine reaction time of less than 0.1 is not possible; thus those recorded at less than 0.1 must be button presses unrelated to the actual stimulus, or perhaps a subject anticipating the appearance of a stimulus and responding to the anticipation rather than the stimulus itself. The specific cue presented could not be anticipated, and thus subjects could not actually perform better than chance, but they may be able to anticipate the appearance of _some_ cue and respond to that.
+
+
+
+### Result
+
+
+#### Reliability
+
+The effective sample size and $\hat{R}$ values for all parameters were within generally within the desired ranges, with the exception of the Motivation parameter, which appeared to show good reliability from its $\hat{R}$ value but may have had poor efficiency.
+
+
+
+```{r fixed_effects, echo=FALSE, message=FALSE}
+
+table_to_show<-summary(m.rp.1.stan)[1:7,]
+rownames(table_to_show)<-gsub("_"," ",rownames(table_to_show))
+knitr::kable(table_to_show[,c(-5,-7)],digits=2)
+
+```
+
+<!-- ```{r result_reliability, echo=FALSE, message=FALSE} -->
+<!-- table_to_show<-data.frame(t(summary(m.rp.1.stan)[1:7,c("n_eff","Rhat")])) -->
+<!-- table_to_show$Aim<-c(4000,1) -->
+
+<!-- colnames(table_to_show)<-gsub("_"," ",colnames(table_to_show)) -->
+<!-- #colnames(table_to_show)<-gsub("..."," \lt ",colnames(table_to_show)) -->
+<!-- colnames(table_to_show)[2]<-"Motivation (Reward)" -->
+<!-- colnames(table_to_show)[6]<-"Meth User" -->
+<!-- colnames(table_to_show)[7]<-"Sexually Risky" -->
+<!-- pander::pander(table_to_show,digits=3, split.cells = 5) -->
+
+<!-- ``` -->
+
+
+#### Fixed effects
+
+Fixed effects from the regression are shown below.
+
+
+Of the parameters, reaction time and position in segment showed strong predictive effects. We weren't able to detect predictive effects of motivation type, meth use, or sex risk in this model.
+
+
+## Discussion
+
+Although the logistic regression model predicting correct response did not show clear group differences, we can see within-run effects in expected and interesting directions. Subjects with slower reaction times tend to be more likely to get a correct response (95% CI $b_{RT}=[0.53, 0.70]$), suggesting that subjects who respond quickly may be too hasty. With each presentation of a stimulus, within the pre-reversal or post-reversal segments, subjects improve their performance, with a roughly [`r round(29/4)`%, `r round(35.8/4)`%] performance increase with each trial.
+
+

@@ -9,7 +9,9 @@ source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
-models_to_run<-c("double_update_rev8","double_update_jointrev1")
+#models_to_run<-c("double_update_jointrev1","double_update_rev8")
+models_to_run<-c("double_update_jointrev1")
+#models_to_run<-c("double_update_rev8")
 
 estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC))
 #estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))
@@ -18,7 +20,7 @@ subject_groups<-1:3
 
 times_to_run<-1
 #run.
-summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev8_v_jointrev1.RData")
+summaryfilepath<-paste0(localsettings$data.dir,"du_model_rev8_v_jointrev1_20170731.RData")
 
 models.with.4.separate.runs.count<-0
 models.with.runs.considered.together.count<-1
@@ -36,7 +38,7 @@ if(file.exists(summaryfilepath)){
 if(any(sapply(model.summaries,is.null))){
   for (em in estimation_methods){
     if (em==as.character(ESTIMATION_METHOD.MCMC)){
-      iterations<-5000
+      iterations<-2000
       warmup_iter=1000
     }else if (em==as.character(ESTIMATION_METHOD.VariationalBayes)){
       iterations<-10000
@@ -44,9 +46,9 @@ if(any(sapply(model.summaries,is.null))){
     }else{
       times_to_run=0
     }
-    for (t in 1:times_to_run){
-      for (m in models_to_run){
-        for (g in subject_groups){
+    for (t in 1:times_to_run){#t<-1
+      for (m in models_to_run){#m<-models_to_run[1]
+        for (g in subject_groups){g<-1
           print (paste0("g:",g,";m:",m,";t:",t,collapse=", "))
           variable_run_lengths=FALSE
           stan_data_style=NA

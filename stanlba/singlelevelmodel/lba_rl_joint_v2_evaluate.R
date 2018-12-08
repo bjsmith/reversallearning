@@ -128,7 +128,13 @@ heatmap<-function(covar_matrix,label="Covariance",show_labels=FALSE){#covar_matr
   
   #http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization
   ggheatmap <- ggplot(covar_matrix_ordered_melted, aes(Var2, Var1, fill = value))+
-    geom_tile(color = "white")+
+    geom_tile(color = "white")
+  if(!is.na(map_limits)){
+    ggheatmap <- ggheatmap + scale_fill_gradient2(low = "blue", high = "red", mid = "#bbbbbb", 
+                                                  midpoint = 0, space = "Lab", 
+                                                  name=label,limits=map_limits, oob=squish)
+  }
+  ggheatmap <- ggheatmap + 
     scale_fill_gradient2(low = "blue", high = "red", mid = "#bbbbbb", 
                          midpoint = 0, space = "Lab", 
                          name=label) +

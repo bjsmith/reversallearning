@@ -1,0 +1,139 @@
+---
+title: "behavioral_performance"
+output: html_document
+---
+
+
+```{r setup, echo=FALSE,message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	tidy = TRUE
+)
+knitr::opts_knit$set(root.dir="../")
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir, "knitrcache"), warning = FALSE)
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+source("visualization/geom_hdi.R")
+
+source("rl_behav_analysis_learning_setup_amendment_2.R")
+```
+
+```{r dataprocessing}
+accuracy.by.pres_seg.subid.3g<-rl.all.subjects.list[RiskLabel %in% c("Safe No Meth", "Risky No Meth", "Risky Meth"),.(prop.correct=sum(correct)/.N,count=.N),.(presentation_n_over_segments,subid,RiskLabel,MethUse,SexRisk)]
+accuracy.by.pres_seg.subid.3g.summary<-accuracy.by.pres_seg.subid.3g[
+  presentation_n_over_segments<=13,
+  .(prop.correct.m=mean(prop.correct),
+    prop.correct.sd=sd(prop.correct)),
+  .(presentation_n_over_segments,RiskLabel)]
+
+accuracy.by.pres_seg.subid.3g.finalpc<-
+  accuracy.by.pres_seg.subid.3g[presentation_n_over_segments==4,.(final.prop.correct=prop.correct),.(subid)]
+accuracy.by.pres_seg.subid.3g.ifpc<-merge(accuracy.by.pres_seg.subid.3g,accuracy.by.pres_seg.subid.3g.finalpc,by=c("subid"))
+
+
+reversal_learning_timeline_ggplot_commands<-
+  list(scale_x_continuous(breaks=1:length(break.labels),labels=break.labels),
+       labs(x="Presentation"),
+       theme(text=element_text(size=18),
+         axis.text.x = element_text(hjust=0),
+             axis.text = element_text(face="bold"),#left-align presentation labels
+             strip.text = element_text(face="bold"),
+             legend.position = "bottom"
+       ))
+
+```
+
+
+```{r rawdata_display, include=FALSE}
+
+
+main.prop.cor.ggplot<-
+  ggplot(accuracy.by.pres_seg.subid.3g.ifpc[!is.na(presentation_n_over_segments)],
+       aes(x=presentation_n_over_segments,y=prop.correct,group=subid))+
+  geom_line(aes(colour=final.prop.correct),size=1.5,alpha=0.3)+ scale_colour_gradientn(colours=c("red","green","blue","violet"))+
+  scale_y_continuous(breaks = c(0.2,0.4,0.6,0.8,1.0),minor_breaks = seq(0,1,by = 0.1))+
+  labs(#x="Presentation",
+    y="Proportion correct across all images by user",
+    color="Final Proportion Correct",
+    title=paste0("proportion correct across all images by subject\n from start to finish of reversal learning"))+
+  geom_line(data=accuracy.by.pres_seg.subid.3g.summary,aes(x=presentation_n_over_segments,y=prop.correct.m,group=NULL))+
+      facet_grid(RiskLabel ~ .)+
+  #theme(strip.text.y=element_text(colour="orange"))+
+  reversal_learning_timeline_ggplot_commands+
+  geom_hline(data=accuracy.by.pres_seg.subid.3g.summary[presentation_n_over_segments==5],
+             aes(yintercept = prop.correct.m),
+             linetype=2)+
+  geom_hline(data=accuracy.by.pres_seg.subid.3g.summary[presentation_n_over_segments==13],
+             aes(yintercept = prop.correct.m),
+             linetype=2)
+  
+
+
+```
+
+
+
+
+```{r rawdata_display, include=FALSE}
+
+main.prop.cor.ggplot
+
+```
+
+
+```{r rawdata_table, include=FALSE}
+
+accuracy.by.pres_seg.subid.3g.ifpc[,.(SubjectMean=mean(prop.correct)),by=.(presentation_n_over_segments,RiskLabel)] %>% dcast(RiskLabel~presentation_n_over_segments)
+
+accuracy.by.pres_seg.subid.3g.ifpc[,.(SubjectMean=mean(prop.correct,na.rm = TRUE),
+                                      SubjectSD=sd(prop.correct,na.rm = TRUE)),by=.(presentation_n_over_segments)]
+
+t.test(accuracy.by.pres_seg.subid.3g.ifpc[presentation_n_over_segments==8,prop.correct-0.5])
+t.test(accuracy.by.pres_seg.subid.3g.ifpc[presentation_n_over_segments==13,prop.correct-0.5])
+```
+
+
+
+```{r rawdata_table2, include=FALSE}
+
+dcast(accuracy.by.pres_seg.subid.3g.ifpc[,.(RiskLabel,presentation_n_over_segments,prop.correct)],
+      RiskLabel~presentation_n_over_segments,fun.aggregate = function(pc){
+        paste0(round(mean(pc),2)," ± ",round(sd(pc),2))
+      })
+      
+      
+      #[,.(SubjectMean=mean(prop.correct)),by=.(presentation_n_over_segments,RiskLabel)] %>% dcast(RiskLabel~presentation_n_over_segments)
+```
+
+
+
+
+
+```{r graph3, include=FALSE}
+#get means and SDs by group.
+mean_sd_table<-accuracy.by.pres_seg.subid.3g.ifpc[,.(SubjectMean=mean(prop.correct),
+                                      SubjectLower=mean(prop.correct)-sd(prop.correct),
+                                      SubjectUpper=mean(prop.correct)+sd(prop.correct)),by=.(presentation_n_over_segments,RiskLabel)]
+
+group_average_plot<-
+  ggplot(mean_sd_table,
+       aes(x=presentation_n_over_segments,y=SubjectMean,group=RiskLabel,color=RiskLabel))+
+  geom_line(aes(colour=RiskLabel),size=1.5,alpha=0.3)+
+  scale_y_continuous(breaks = c(0.2,0.4,0.6,0.8,1.0),minor_breaks = seq(0,1,by = 0.1))+
+  labs(#x="Presentation",
+    y="Proportion correct across all images by group",
+    title=paste0("proportion correct across all images by group\n from start to finish of reversal learning"))+
+  geom_errorbar(aes(ymin=SubjectLower,ymax=SubjectUpper))+
+  #theme(strip.text.y=element_text(colour="orange"))+
+  reversal_learning_timeline_ggplot_commands
+      #[,.(SubjectMean=mean(prop.correct)),by=.(presentation_n_over_segments,RiskLabel)] %>% dcast(RiskLabel~presentation_n_over_segments)
+```

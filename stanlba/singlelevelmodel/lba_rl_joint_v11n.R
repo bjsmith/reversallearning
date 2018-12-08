@@ -37,7 +37,7 @@ regions<-get_dmn_regions()[1:5]
 #ll=335;ul=400
 #ll=100;ul=400
 ll=106;ul=106
-cholesky_priors<-c(0.25,0.5,1.0,2.0,4.0)
+cholesky_priors<-c(0.01,0.25,0.5,1.0,2.0,4.0)
 sigma_priors<-c(0.25,0.5,1.0,2.0,4.0)
 for (sid in c(106)){#unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])[1]){#r<-1

@@ -3,7 +3,9 @@ title: "Comparing starting values"
 author: "Ben Smith"
 date: "6/4/2018"
 output:
-  pdf_document: 
+  html_document:
+    df_print: paged
+  pdf_document:
     keep_tex: yes
 ---
 
@@ -81,7 +83,7 @@ mean(summary(randomized_init_vals_fit)$summary[,"n_eff"])
 load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_bootstrapped_init_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
 bootstrapped_init_vals_fit<-rmfit
 
-load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_empirical_distribution_init_v1_rep_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
+# load("../../../data/msm/reversallearning/Fits/lba_rl_multi_subj_7_3level_empiricalpriors_noncentered_10subs_empirical_distribution_init_v1_rep_12c_run12_model_distinct_runs_itercount500_wup450_MCMC.RData")
 
 ```
 
@@ -137,7 +139,7 @@ ggplot(init_vals_main.long,aes(x=Chain,y=Value,color=Param))+
 
 ```
 
-And the randomly determind initial were defined as such:
+And the randomly determined initial were defined as such:
 
  - subj $\alpha_{\mu} \sim \mathrm{norm}(`r round(informative_priors$priors_alpha,2)`,`r round(informative_priors$priors_alpha_spread,2)`)$
  - subj $k_{\mu} \sim \mathrm{norm}(`r round(informative_priors$priors_lba_k,2)`,`r round(informative_priors$priors_lba_k_spread,2)`)$
@@ -211,7 +213,7 @@ The following seemed to initialize, but not produce useful estimates:
 
 After this was applied, I was able to properly estimate initial values. However, these models appeared to have poor efficiency and calculations also took a long time. Thus I looked into ways to speed up calculation.
 
-### Chains initiailizing
+### Chains initializing
 
 Furthermore, for the bootstrap and randomized distribution method, some chains regularly failed to initialize even though other chains correctly initialized. For a reliable estimation, I believe that we would need to ensure that all chains can initialize.
 

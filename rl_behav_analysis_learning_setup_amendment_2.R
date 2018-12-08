@@ -107,6 +107,7 @@ buttonChangesThreshold<-max(RunsWithChanges$ChangeNum[RunsWithChanges$ExpectedRu
 OverallPerformanceDt<-rl.all.subjects.list[,.(RunPerformance=sum(outcome==1)/.N),by=.(runid,subid,Motivation)]
 OverallPerformanceBySubjDt<-OverallPerformanceDt[,.(RunPerformanceBySubject=mean(RunPerformance)),by=subid]
 
+#rl.all.subjects.list[,.N,by=.(runid,subid,Motivation)]%>% mean
 rl.all.subjects.list.uncleaned<-rl.all.subjects.list
 rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,buttonChangesDtByRun,by=c("runid","subid","Motivation"))
 rl.all.subjects.list.uncleaned<-merge(rl.all.subjects.list.uncleaned,OverallPerformanceBySubjDt,by=c("subid"))

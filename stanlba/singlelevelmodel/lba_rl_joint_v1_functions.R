@@ -50,12 +50,12 @@ select_rawdata_cols_for_run<-function(rawdata,sid,r,m){
                  )])
 }
 
-create_standatalist<-function(srm.data){
+create_standatalist<-function(srm.data,param_A=0.01){
   #let's just add in one or two rois to test:
   list(
     LENGTH=dim(srm.data)[1],
     NUM_CHOICES=2,
-    A=0.01,
+    A=param_A,
     response_time=srm.data$reaction_time,
     response=srm.data$choice,
     required_choice=srm.data$cor_res_Counterbalanced,

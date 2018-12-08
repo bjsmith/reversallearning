@@ -3,10 +3,11 @@ title: 'Reversal learning: basic data description'
 output:
   html_document: default
   html_notebook: default
-  pdf_document: default
+  pdf_document:
+    keep_tex: yes
 ---
 
-This is a basic description of the reversal learning dataset.
+For this thesis, I analyzed data collected in our large study examining three distinct groups of sexually active and non-monogamous men who have sex with men. One group reported consistent safe sex practice over the prior 90 days; one group reported sometimes having unsafe sex, and one group reported having unsafe sex and some use of methamphetamine at any time. Thus, this methamphetamine use group ranged from people who tried methamphetamine years prior to the study, all the way through to people who regularly use methamphetamine.
 
 
 
@@ -20,10 +21,11 @@ knitr::opts_knit$set(root.dir="../")
 source("../util/apply_local_settings.R")
 library(ggplot2)
 library(scales)
+#library(kableExtra)
 source("visualization/geom_hdi.R")
 apply_local_settings()
 knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir,"knitrcache"))
-source("rl_behav_analysis_learning_setup_amendment_1.R")
+source("rl_behav_analysis_learning_setup_amendment_2.R")
 
 rl.all.subjects.list.g1g2g3<-rl.all.subjects.list[RiskLabel!="Safe Meth"]
 ```
@@ -35,43 +37,69 @@ There were two runs of two different Motivation conditions, the Reward Motivatio
 The table below shows the number of subjects whose data we had for each condition.
 
 ```{r MySubjectInfo, echo=FALSE}
+
 subjecttable<-rl.all.subjects.list.g1g2g3[,.(Subjects=length(unique(subid))),by=.(Motivation,runid,RiskLabel)] %>% spread(RiskLabel,Subjects)
+
 subjecttable$All<-subjecttable$`Risky Meth`+subjecttable$`Risky No Meth`+subjecttable$`Safe No Meth`
 
 knitr::kable(subjecttable)
 ```
 
+## Subject data cleaning
+
+Unless otherwise stated\footnote{need to go through and make sure each section really does reflect the right situations here}, data cleaning followed the following process.
+
+A total of 164 subjects were recorded in the dataset with complete data across the three groups - 54 in the Safe No Meth Group, Group 1, 68 in the Risky No Meth Group, Group 2, and 42 in the Risky Meth Group, Group 3.\footnote{this all from rl\_behav\_analysis\_learning\_setup.R}
+
+Several subjects were eliminated because during analysis, it became clear that several subjects classified as "sexually risky" could not reliably be determined to have had unprotected casual sex. In order to be included in the study, subjects had to have had anal sex with a man other than their primary partner in the prior 90 days. In order to be included in the risky group, subjects had to have had unprotected anal sex with a man in the prior 90 days, but this could have been their primary partner. It is unclear that unprotected sex with a primary sexual partner such as a husband really represents risky behavior. We did collect data about the total number of men with which participants had had unprotected anal sex, but not data about whether that group included their primary partner. Thus, if a man had had unprotected anal sex with precisely one other person, and had a primary partner, we could not determine whether they had unprotected anal sex with a non-primary partner. Because they could not be reliably assigned to a particular group these men were removed from the study altogether. Following this step, I was left with a total of 161 subjects--54 in the Safe No Meth Group, 66 in the Risky No Meth group, and 41 in the Risky Meth group.
+
+Following this stage, I further removed runs within the study where subjects performed so poorly that we had clear evidence they were not learning at all. These were removed because no learning at all might indicate that they aren't trying to complete the task. Because we hope to estimate actual learning ability, and not simply willingness to complete the task, these subjects were removed. There were two metrics uesd to estimate overall performance. 
+<!-- yes: the first test definitely works by run, whereas the second test is applied by subject -->
+The first test eliminated runs in which subjects had made fewer than the expected number of switches between buttons. In the task, subjects must repeatedly press a 1 or 2. Seldom switching between 1 and 2 may indicate subjects are simply repeatedly pressing a single button, rather than making any judgement about the task. For each run, I counted the number of switches between consecutively pressing 1 and consecutively pressing 2. I then used a binomial probability distribution to estimate the likelihood of switching as many times as the subject did, assuming that the probability of switching at each time point was 0.5. This would be the case if subjects really were making independent judgements about each trial. This was determined by:
+
+$B(x; N, P) = B(N_{changes},N_{trials},0.5)$
+
+Based on that binomial probability, for each run, I calculated the expected number of runs that would have at least $B(x; N, P)$ button switches by multiplying by the total number of trials in the dataset, ranked the runs in order of their number of switches, and then removed all runs for which the probability of observing a run with that many switches was less than 1. This ranked-based method was inspired by the False Discovery Rate method of correcting for multiple comparisons (cite BenjaminiHochberg), ranks p-values in order and rejects the null hypothesis for all tests in which the p-value is less than or equal to the expected p-value at that rank based on a null distribution.
+
+<!-- a poor way of describing this method but it's not my focus so I don't want to do it right. May need to revisit! -->
+
+The second test eliminated subjects which seemed to be performing significantly below chance level. Subject overall performance was calculated as a function of the number of correct responses divided by the total number of trials in each run; the mean of run performance across all runs for each subject represented subject overall performance. In order to determine a threshold for below chance performance, I took the inverse of the number of runs, $646^{-1}=0.001548$ as the minimum expected chance performance probability for any one run. I then solved the number of correct trials necessary to approximate this probability in a binomial distribution representing the probability of getting a particular number of trials correct:
+
+$$
+\begin{aligned}
+B(x; N, P) &= B(N_{correct},N_{trials},0.5) \\
+  &= B(N_{correct},218,0.5) \\
+  &\approx0.001548
+\end{aligned}
+$$
+The closest integer solution for this was $N_{correct}\geq 87$, which represents an approximately 40% proportion of correct responses. Thus, all subjects with a mean across their runs of less than 40% performance were excluded. Importantly, subjects had to consistently underperform across several runs in order to have a mean of 40% proportion of correct responses, making this a more conservative exclusion rule than it would otherwise be.
+
+Following these steps, there were 584 runs over 159 subjects; 53 in the Safe Group, 63 in the Risky Sex No Meth Group, and 39 in the Risky Sex Meth Group.
+
+<!-- right; this is also abysmal.  I may have a write-up somewhere that descrbies how I go to here, but in b -->
 
 # Runs
 
-Within each of the two runs, for either reward or punishment, subjects saw 218 images in total; a total of 18 unique images per subject, per run, plus additional 'control' images at the start and end of the task which were never reversed. There were 5-8 presentations of each image before reversal and 5 presentations of the image after reversal. 
+Within each of the two runs, for either reward or punishment, subjects saw 218 images in total; a total of 18 unique images per subject, per run, plus additional 'control' images at the start and end of the task which were never reversed. There were 5-8 presentations of each image before reversal and 5 presentations of the image after reversal. There were 4 images, two at the start of the run and 2 at the end, presented 5 times each without reversal. These were excluded from the data, leaving 198 images. Within these, 
 
 The table below shows the count of images for one particular subject, at each time point relative to that image's reversal. All subjects were given the same basic design as shown here.
 
-
-
 ```{r ImageInSegment, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::kable(rl.all.subjects.list.g1g2g3[subid==113,.(.N),by=.(Motivation,runid,presentation_n_after_reversal)] %>% spread(presentation_n_after_reversal,N))
+knitr::kable(rl.all.subjects.list.g1g2g3[subid==113,.(.N),by=.(Motivation,runid,presentation_n_after_reversal)] %>% spread(presentation_n_after_reversal,N)) 
 ```
 
-Subjects received the same set of images for each of the motivations and runs; a random selection of image IDs for three different subjects is shown below:
+<!-- Subjects received the same set of images for each of the motivations and runs; a random selection of image IDs for three different subjects is shown below: -->
 
-```{r ImageInSegment2, echo=FALSE}
+<!-- ```{r ImageInSegment2, echo=FALSE} -->
 
-knitr::kable(rl.all.subjects.list.g1g2g3[subid %in% sample(rl.all.subjects.list.g1g2g3$subid,3,replace=FALSE),image,by=.(Motivation,runid,subid)] %>%  .[, lapply(.SD, function(x) toString(unique(x))), by = .(Motivation,runid,subid)] %>% spread(subid,image,sep=" "))
-```
+<!-- pander::pander(rl.all.subjects.list.g1g2g3[subid %in% sample(rl.all.subjects.list.g1g2g3$subid,3,replace=FALSE),image,by=.(Motivation,runid,subid)] %>%  .[, lapply(.SD, function(x) toString(unique(x))), by = .(Motivation,runid,subid)] %>% spread(subid,image,sep=" ")) -->
+<!-- ``` -->
 
-
-
-The first 40 image presentations are presented below. Pay attention to several things here:
-
- - Each image is presented between 5 and 8 times pre-reversal, and 5 times post-reversal.
- - Image presentations are interleaved, with two new images presented at a time
- - For each presentation, subjects must press either the LEFT key or the RIGHT key. Either left or right is the correct response
- - There's about 3 seconds between each presentation
- - at the beginning and end, there are a few "Control" trials using images whose reinforcement contingencies are never reversed.
- - left and right key presses are counterbalanced across subjects
- - This is data from one particular subject (Sub 146). The order is exactly the same for all subjects but the onsets will be slightly different and the responses and response times will of course be different.
+The first 40 image presentations are presented below. Each image is presented between 5 and 8 times pre-reversal, and 5 times post-reversal. Image presentations are interleaved, with two new images presented at a time.  For each presentation, subjects must press either the LEFT key or the RIGHT key. Either left or right is the correct response.
+There's about 3 seconds between each presentation.
+ At the beginning and end, there are a few "Control" trials using images whose reinforcement contingencies are never reversed.
+ Left and right key presses are counterbalanced across subjects
+ This is data from one particular subject (Sub 146). The order is exactly the same for all subjects but the onsets will be slightly different and the responses and response times will of course be different.
  
 ```{r UniqueImages, echo=FALSE}
 #are images mapped directly from the image ID to the image itself
@@ -106,9 +134,7 @@ Last 40:
 knitr::kable(by_trial[(dim(by_trial)[1]-40):dim(by_trial)[1],])
 ```
 
-
 #Hierarchy
-
 
 ```{r, include=FALSE}
 runcountmatrix<-rl.all.subjects.list.g1g2g3[,.("Run"=paste0(runid,Motivation)),by=.(subid,runid,Motivation)] %>% .[,.(RunCount=.N),by=subid]
@@ -125,17 +151,6 @@ runcounttable.bymotivation<- table(runcountmatrix.bymotivation[,.(punishment,rew
 In order to model the RL task hierarchically it is important to grasp the levels we need to model. These are:
 
  * Subjects are organized into three groups, with around 50 subjects per group. The groups are Safe Sex, Risky Sex No Meth, and Risky Sex Meth. Between-group comparisons may have interesting implications for sexual health or drug abuse research.
- * There are two types of sessions, Reward and Punishment. Most subjects have done two sessions of each, i.e., four sessions per subject. However, there's quite a lot of missing data. Overall, `r runcounttable[3] ` subjects have four sessions, `r runcounttable[2] ` have three sessions (all of which include both a punishment and a reward session), and `r runcounttable[1] `subjects have only two sessions (`r runcounttable.bymotivation[3,1] ` of which are subjects with only reward sessions; `r runcounttable.bymotivation[1,3] ` are subjects with only punishment sessions). 
+ * There are two types of sessions, Reward and Punishment. Most subjects have done two sessions of each, i.e., four sessions per subject. However, there's quite a lot of missing data. Overall, `r runcounttable[3] ` subjects have four sessions, `r runcounttable[2] ` have three sessions (all of which include both a punishment and a reward session), and `r runcounttable[1] ` subjects have only two sessions (`r runcounttable.bymotivation[3,1] ` of which are subjects with only reward sessions; `r runcounttable.bymotivation[1,3] ` are subjects with only punishment sessions). 
  
  
-
-Within each session:
-
- * We model two parameters:
-    + learning rate $\alpha$
-    + inverse temperature $\beta$
- * A delta learning rule uses the learning rate parameter and performs learning of each item's value after performance in the task.
- * A softmax algorithm uses the inverse temperature to determine the choice in each trial probabilistically based on the previously learned information.
- * There is no current integration of ROI or other neural signals but I want to do this eventually. I'm working on getting surface-based ROIs which should be higher-fidelity than 3D-space ROIs.
- * No current modeling of confusion between stimuli. Brandon and I have discussed this. I am uncertain how much variance this would explain over treating discriminability as random error.
-  

@@ -26,10 +26,10 @@ list.files(data_location)
 
 #read_roi_output(pattern_csv = read.csv(runfilepath,header = TRUE,row.names = "EventName"),subid = 149,runid = "N")
 
-
+datats<-"20180722T224831"
 
 get_fsl_harvardoxford_data_for_subs <- function(subjList){#subjList<-c(105:106)
-  data_filepathprefix<-"roi_event_data/fsl_roi_event_data/20180721T120724sub"
+  data_filepathprefix<-paste0("roi_event_data/fsl_roi_event_data/",datats,"sub")
   data_filepathsuffix<-"_beta_vals.csv"
   pattern_data_allsubs<-NULL
   for (s in subjList) {#s<-106
@@ -76,4 +76,4 @@ for (missing_region in names(which(colSums(is.na(roi_data))>0))){
 #why is some output missing the cerebral cortex?
 #which subjects?
 #should consider excluding subjects with values missing...
-save(roi_data,file=paste0(data_location,"20180721T120724","data_allsubjs.RData"))
+save(roi_data,file=paste0(data_location,datats,"data_allsubjs.RData"))

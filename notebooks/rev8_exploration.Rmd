@@ -1,0 +1,271 @@
+---
+title: "Exploring Revision 8 MCMC"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+This document is an adaptation of rev5a_exploration-3.Rmd.
+
+#Method
+
+Revision 8 follows Rev5a with the following features:
+
+ - includes one group of subjects
+ - Has a level for multiple runs as random effects
+ - Runs can be either reward, punishment, or unspecified. Each subject has an individual parameter specifying difference between reward and punishment runs, and these are drawn from a group-level distribution of runs.
+ 
+I ran Revision 8 using `rstan` MCMC, running separately on each of the three risk groups. 
+
+This analysis demonstrates that it is in principle possible to run a three-level behavioral model in MCMC on our reversal learning dataset. A joint model built on this initial three-level behavioral model is very time-intensive to run, and so I have not included it in this thesis. Still, by examining behavioral data we are able to glean insight into behavioral patterns. The behavioral model also serves as a useful baseline for testing the efficacy of joint modeling. It may be that some insights are available using a joint model that cannot be gleaned using the method presented here.
+
+```{r setup, echo=FALSE,message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	tidy = TRUE
+)
+knitr::opts_knit$set(root.dir="../")
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir, "knitrcache"), warning = FALSE)
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+source("visualization/geom_hdi.R")
+
+```
+
+
+```{r message=FALSE, warning=FALSE}
+source("du_model_rev8.R")
+```
+
+
+
+```{r getDataIntoTable, echo=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+```
+
+#Results
+
+## Diagnostics: Reliablity, representativeness, and accuracy
+
+### Reliability
+
+Previously I had run the MCMC algorithm multiple times, getting the same result each time. This confirms that the posterior is representative of the underlying data. I didn't repeat the reliability test for the final analysis because there was very, very little difference between repetitions in earlier tests.
+
+### Representativeness
+
+To assess Representativeness for an MCMC algorithm, we need to see whether chains have converged such that initial randomly-chosen priors are not related to final values. We can examine the Gelman-Rubin statistic (Gelman & Rubin, 1992), also known as the "potential scale reduction factor" or "shrink factor". In $rstan$, this is available as the statistic $\widehat{r}$.
+
+
+```{r StanGeneralStats, echo=FALSE, fig.cap=TRUE, warning=FALSE, cache=TRUE, results='asis'}
+#class(model.stanfits[[5]])
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=ModelName][i,V1],"vars=",length(names(model.stanfits[[i]])))
+    #cols.to.process<-[names(model.stanfits[[i]]) %in% 
+    cols.to.process<-names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+    #print(cols.to.process)
+    #print(model.stanfits[[i]],pars=c("group_mu_alpha","group_mu_beta","group_rew_mu_alpha","group_pun_mu_alpha"))
+    print(knitr::kable(summary(model.stanfits[[i]])$summary[c("group_mu_alpha","group_mu_beta","group_rew_mu_alpha","group_pun_mu_alpha"),c("mean","se_mean","sd","n_eff","Rhat")],caption = traceplot.title,digits = 2))
+    # print("Increase in sample size required to get an ESS of 10^5 at this level of efficiency:")
+    # print(round(10000/summary(model.stanfits[[i]],pars=c("group_mu_alpha","group_mu_beta","group_rew_mu_alpha","group_pun_mu_alpha"))$summary[,"n_eff"],1))
+    cat("\n")
+    
+  }
+}
+
+```
+
+### Accuracy
+
+Accuracy can be measured by the effective sample size, as described in the sectio nabove. 
+
+For Group 3, specifically for the group beta parameter, the effective sample size is just 189, indicating poor sampling for that value. However, for all other values, the Rhat was in the appropriate range. For all other groups, the Rhat was within the appropriate range for all variables of interest.
+
+## Group differences
+
+The basic graphs show that there is substantial overlap in estimated alpha and beta parameters within each model.
+
+```{r echo=FALSE}
+
+
+ggplot(model.summary.all[Statistic=="mu" & EstimationMethod=="MCMC"],aes(x=Value ,fill=factor(Group),color=factor(Group)
+))+
+  geom_freqpoly(alpha=0.9,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  facet_grid(.~Parameter,scales = "free")+
+  labs(title=paste0("mu statistic (all rounds), variable number of runs model"))
+
+ggplot(model.summary.all[Statistic %in% c("rew_mu","pun_mu") & EstimationMethod=="MCMC"],aes(x=Value ,fill=factor(Group),color=factor(Group)
+))+
+  geom_freqpoly(alpha=0.9,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  facet_grid(Statistic~Parameter,scales = "free")+
+  labs(title=paste0("mu statistic (all rounds), Reward and Punishment Runs"))
+
+
+
+```
+
+We can compare Motivational conditions by subtracting the posteriors derived for one condition with the posteriors derived in the other condition.
+
+Comapring reward and punishment estimates, there is not a clear estimate of a difference of overall performance between the two motivational conditions.
+
+```{r}
+
+model.summary.all.rewpun<-model.summary.all[Statistic %in% c("rew_mu","pun_mu")] %>%
+  dcast(iter+Run+Parameter+TestId+Group+ModelName~Statistic,value.var="Value")
+#tidyr::spread(Statistic,Value)
+
+model.summary.all.rewpun[,rew_minus_pun_mu:=rew_mu-pun_mu]
+
+
+ggplot(model.summary.all.rewpun,aes(x=rew_minus_pun_mu))+
+  geom_freqpoly(alpha=0.9,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  facet_grid(Group~Parameter,scales = "free")+
+  labs(title=paste0("mu statistic (all rounds), alpha, Reward Minus Punishment"))
+
+model.summary.all.notestid<-model.summary.all[,TestId:=NULL] 
+
+model.summary.all.groupcompare<- tidyr::spread(model.summary.all.notestid,Group,Value,sep="")
+model.summary.all.groupcompare$Group3_minus_Group2<-
+  model.summary.all.groupcompare$Group3-model.summary.all.groupcompare$Group2
+
+ggplot(model.summary.all.groupcompare[EstimationMethod=="MCMC"],aes(x=Group3_minus_Group2 ))+
+  geom_freqpoly(alpha=0.9,binwidth=0.001)+
+  geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+  facet_grid(Statistic~Parameter,scales = "free")+
+  labs(title=paste0("mu statistic (all rounds), Group 3 Minus Group 2"))
+
+```
+
+
+We can also compare the groups, looking at group differences overall, and also specifically at group differences within each reward and punishment conditions. We use the same method as before: subtracting the posteriors derived in one group from the posteriors derived in another group.
+
+
+In the reward condition, there's no difference apparent in learning rate between the meth-using group and the other groups. However, in the punishment condition, there may be some evidence of a difference, with the Highest Density Interval of the differnce just crossing zero.
+
+
+```{r echo=FALSE}
+model.summary.all.g3g2compare.bypar<- 
+  tidyr::spread(
+    model.summary.all.groupcompare[,.(iter,Run,Statistic,Parameter,ModelName,
+                                      EstimationMethod,Group3_minus_Group2)],
+    Parameter,
+    Group3_minus_Group2)
+
+ggplot(model.summary.all.g3g2compare.bypar[
+  EstimationMethod=="MCMC" & 
+    Statistic %in% c("mu","rew_mu","pun_mu")
+  ],aes(x=alpha,y=beta 
+        #,fill=factor(Statistic),color=factor(Statistic)
+  ))+
+  geom_point(alpha=0.1)+
+  facet_grid(~Statistic,scales = "free")+
+  labs(title=paste0("mu statistic (all rounds), Group 3 Minus Group 2"))
+
+
+
+```
+
+Comparing group 2 with group 3, there may be a difference between alpha learning rates in the punishment condition.
+
+```{r}
+
+#group 2 compared to group 3.
+model.summary.all.notestid<-model.summary.all[,TestId:=NULL] 
+
+model.summary.all.groupcompare<- tidyr::spread(model.summary.all.notestid,Group,Value,sep="")
+model.summary.all.groupcompare$Group3_minus_Group2<-
+  model.summary.all.groupcompare$Group3-model.summary.all.groupcompare$Group2
+
+
+ggplot(model.summary.all.groupcompare[EstimationMethod=="MCMC"],aes(x=Group3_minus_Group2))+
+    geom_freqpoly(alpha=0.9,binwidth=0.001)+
+     geom_hdi(size=2, lineend = "round",alpha=0.5,credible_mass=0.95)+
+    facet_grid(Statistic~Parameter,scales = "free")+
+    labs(title=paste0("mu statistic (all rounds), Group 3 Minus Group 2"))
+```
+
+```{r}
+knitr::kable(model.summary.all.groupcompare[Parameter=="alpha",
+                               .(Mean=mean(Group3_minus_Group2),
+                                 SD=sd(Group3_minus_Group2),
+                                 HDI=paste0("[",
+                                            formatC(HDIofMCMC(Group3_minus_Group2)[1],2,format="f"),",",
+                                            formatC(HDIofMCMC(Group3_minus_Group2)[2],2,format="f"),"]")
+                                  ),by=Statistic])
+```
+
+The highest density interval for the difference between Group3 minus Group 2 still encompassed zero. We can also look at a multivariate 95% highest density interval. This uses the R function |MASS::cov.mve| to estimate the ellipsoid with the minimum volume encompassing 95% of the points.
+
+
+```{r}
+
+model.summary.all.g3g2compare.bypar<- 
+  tidyr::spread(
+    model.summary.all.groupcompare[,.(iter,Run,Statistic,Parameter,ModelName,AnalysisRepetition,
+                                   EstimationMethod,Group3_minus_Group2)],
+    Parameter,
+    Group3_minus_Group2)
+
+source("rev8_exploration_functions.R")
+
+
+model.summary.all.g3g2compare.bypar[
+  ,alphabeta_95_ellipse:=get_95_ellipse(cbind(alpha,beta)),by=Statistic]
+
+ggplot(model.summary.all.g3g2compare.bypar[
+  EstimationMethod=="MCMC" & 
+    Statistic %in% c("mu","rew_mu","pun_mu")
+  ],aes(x=alpha,y=beta,color= alphabeta_95_ellipse
+  ))+
+  geom_point(alpha=0.1)+
+  facet_grid(~Statistic,scales = "free")+
+  labs(title=paste0("mu statistic (all rounds), Group 3 Minus Group 2"))
+
+
+```
+
+We can't confirm using a bivariate confidence interval that there is a difference between the means of Group 2 and Group 3 in the punishment condition.
+
+

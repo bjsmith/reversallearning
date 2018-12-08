@@ -1,0 +1,25 @@
+---
+title: "R Notebook"
+output:
+  pdf_document:
+    keep_tex: yes
+  html_document: default
+---
+
+This is a minimal example of the failure to recognize the align environment.
+
+$$\text{log}(x)=y+z$$
+
+Now here is a set of equations. They don't use the align environment.
+
+$$
+\text{ln}(x) =y+z \\
+a =b+c
+$$
+
+But these ones do use the align environment:
+
+$$\begin{aligned}
+\text{ln}(x) & =y+z \\
+a & =b+c
+\end{aligned}$$

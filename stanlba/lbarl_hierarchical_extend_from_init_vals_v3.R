@@ -23,7 +23,8 @@ print(paste0("using ", cores_to_use, " cores."))
 #Get a minimal amount of data to test a three level model.
 multisubj_multirun_moresubs<-rawdata[subid %in% c(105:115) #& Motivation=="reward" 
                                      & reaction_time>0,
-                                     .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
+                                     .(onset_time_actual,
+                                       reaction_time,outcome,cue,choice,cor_res_Counterbalanced,subid,
                                        ConsecSubId=as.integer(as.factor(as.character(subid))),
                                        WithinSubjRunId=runid,Motivation=Motivation,
                                        UniqueRunID=as.numeric(interaction(runid,Motivation,subid,drop = TRUE)))]

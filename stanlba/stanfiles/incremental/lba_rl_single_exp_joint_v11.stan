@@ -224,8 +224,6 @@ transformed data{
       }
     }
   }
-  
-  
 }
 
 parameters {

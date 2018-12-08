@@ -10,8 +10,6 @@ source("visualization/geom_hdi.R")
 source("de_mcmc/hierarchical_summarize.R")
 ```
 
-
-
 # Hierarchical model 3
 
 Includes just one run.
@@ -24,8 +22,6 @@ load(paste(save.dir,"output_h_m320180411T175926",".RData",sep=""))
 hierarchical_summarize()
 
 ```
-
-
 
 # Hierarchical model 4a
 
@@ -49,5 +45,4 @@ hierarchical_summarize()
 # Hierarchical Model 5
 
 Hierarchical model 5 is a three-level hierarchical model.
-
 

@@ -97,8 +97,8 @@ n.Sigma=n.link.pars^2
 # n.delta.pars=length(delta.pars)
 # n.theta.pars=length(theta.pars)
 
-nmc=5000
-burnin=4000
+nmc=3000
+burnin=2000
 thin=1
 keep.samples=seq(burnin,nmc,thin)
 length(keep.samples)*n.chains

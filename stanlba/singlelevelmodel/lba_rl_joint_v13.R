@@ -8,7 +8,7 @@ source("stanlba/singlelevelmodel/lba_rl_joint_v10_functions.R")
 
 #we have problems running all subjects in a single run.
 #so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
-lba_rl_version<-"joint_20180716_1"
+lba_rl_version<-"joint_20180723_1"
 model.subversion<-""
 single_run_dir<-paste0(localsettings$data.dir,"lba_rl")
 output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")
@@ -21,21 +21,21 @@ Rhat_general_limit=1.1
 
 
 results.list<-list()
-
+source("stanlba/singlelevelmodel/empirical_correlations_estimate.R")
 model.name<-"lba_rl_single_exp_joint_v13"
 cat("Compiling model...")
 lba_rl_single_joint<-stan_model(paste0('stanlba/stanfiles/incremental/',model.name,'.stan'))
 cat("compiled.\n")
 
-regions<-get_dmn_regions()
+regions<-c("con_ROI_Left.Accumbens.area","con_ROI_Right.Accumbens.area","con_ROI_ctx_lh_G_front_inf.Orbital","con_ROI_ctx_rh_G_front_inf.Orbital")
 
 #100,140,218,261,334
-ll=100;ul=139
-#ll=140;ul=217
+#ll=100;ul=139
+ll=140;ul=217
 #ll=218;ul=260
 #ll=261;ul=334
 #ll=335;ul=400
-ll=106;ul=106
+#ll=106;ul=106
 
 for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
@@ -76,10 +76,17 @@ for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$sub
           end_time<-Sys.time()
           if(!is.null(srm.fit)){
             #only save it if Rhat is within the accepted range.
-            test_rhat_vals<-function(rhat_vector){
+            test_rhat_vals<-function(rhat_vector){#rhat_vector<-summary(srm.fit)$summary[,"Rhat"]
+              #don't worry about values that are part of the td_var or theta_delta array.
+              
               #ignore "nan" values as long as they're not all NaN
               if (all(is.nan(rhat_vector)))return(FALSE)
-              if (all(rhat_vector[!is.nan(rhat_vector)]<=Rhat_general_limit)){
+              #no need to test td_var, theta_delta, or nan rows.
+              td_var_col<-grep("td_var",names(rhat_vector))
+              theta_delta_col<-grep("theta_delta",names(rhat_vector))
+              nan_col<-which(is.nan(rhat_vector))
+              test_values<-!(1:length(rhat_vector) %in% unique(c(td_var_col,theta_delta_col,nan_col)))
+              if (all(rhat_vector[test_values]<=Rhat_general_limit)){
                 if(all(rhat_vector[1:3]<=Rhat_corevals_limit)){
                   return(TRUE)
                 }
@@ -92,7 +99,7 @@ for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$sub
               save(run_package,file=package_filepath)
               results.list<-c(results.list,list(run_package))
             }else if (iterations<5000){
-              print(paste0("One or more Rhat values for sid",sid," rid", r, " m", m, " were outside the accepted range. Trying again with more iterations."))
+              print(paste0("One or more Rhat values for sid",sid," rid", r, " m", m, " were outside the accepted range. Highest Rhat value is",max(summary(srm.fit)$summary[,"Rhat"][!is.nan(summary(srm.fit)$summary[,"Rhat"]) & is.finite(summary(srm.fit)$summary[,"Rhat"])]),"Trying again with more iterations."))
               iterations=iterations+warmup*2
               warmup=warmup+warmup*2
               

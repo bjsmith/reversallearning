@@ -1,0 +1,171 @@
+---
+title: "Exploring Revision 8 Joint model rev 4 MCMC"
+output:
+  pdf_document:
+    keep_tex: yes
+  html_document: default
+---
+ 
+
+I ran Revision 8 using `rstan` MCMC, running separately on each of the three risk groups. 
+
+## Method
+
+The model was the same as in the previous section, except that a correlation matrix was added in which the correlation between four brain regions was estimated.
+
+To add the correlation matrix, several changes needed to be made to the stan code. First, in the parameters block, we declare two additional parameters:
+
+```{Rcpp parametersblock, eval=FALSE, echo=TRUE,output.var="stanmodeldummy"}
+parameters{
+  ...
+  cholesky_factor_corr[TD_N] L_Omega;
+  vector<lower=0>[TD_N] L_sigma;
+}
+transformed parameters{
+  ...
+  matrix[TD_N, TD_N] L_Sigma = diag_pre_multiply(L_sigma, L_Omega);
+  ...
+}
+```
+
+In the transformed parameters block, we also define the $\Sigma$ matrix itself; the name is preceded with an `L', indicating the matrix only stores the lower half of the matrix.
+
+Next, the model block contains the command to specify the distribution from which priors for |Sigma| would be drawn are specified. The model block also contains the key commands to estimate the correlation between the data.
+
+```{Rcpp modelblock, eval=FALSE, echo=TRUE,output.var="stanmodeldummy"}
+model{
+  ...
+  
+  for (r in 1:NUM_RUNS){
+    ...
+    theta_delta[:,THETA_rpe]=logit(run_pred_err_c2/4+0.5);
+    theta_delta[:,THETA_ev]=logit(trial_expected_val/2+0.5);
+    
+    //transfer the deltas into the theta-delta matrix.
+    for (d_i in 1:DELTA_N){
+      theta_delta[:,THETA_N+d_i]=neural_data[run_first_trial_id:run_last_trial_id, d_i];
+    }
+  
+    for (tdi in 1:TD_N){
+      td_mean[tdi] = mean(theta_delta[:,tdi]);  //separately calculate mean for each ThetaDelta var
+      td_sd[tdi] = sd(theta_delta[:,tdi]);      //separately calculate SD for each ThetaDelta var
+    }
+  
+    for (i in 1:run_N_trials[r]){
+      td_var[i,:] = (to_vector(theta_delta[i,:]) - td_mean) ./ td_sd;
+    }
+  
+    L_Omega ~ lkj_corr_cholesky(1);
+    L_sigma ~ cauchy(0,1); //these yield standard deviations of each individual value.
+    td_var ~ multi_normal_cholesky(zeros,L_Sigma);
+    
+  }
+}
+```
+  
+The second and third lines simply copy the expected value and reward prediction error into the |theta_delta| matrix of behavioral variables ('thetas') and neural data ('deltas'), transforming them into a space with infinite support (i.e., in the range of negative to positive infinity). The following |for| loop copies the neural data into that same matrix. Then, a set of commands normalize each column in the matrix, so that each variable is normally distributed with a mean of zero and standard deviation of 1. This makes interpretation simpler, because we can simply calculate a correlation matrix rather than a covariance matrix, and these will be equivalent. The final set of three command actually estimates values; L_Omega estimates correlation, while L_sigma estimates covariance. (I should note the covariance estimation here is redundant because of the transformation of values to standard space and if I was to run this again, I would remove this redundancy and focus on modeling correlation. However, I have run some limited tests for a subset of subjects and found that a correlation-based estimate without this redundancy produces similar results.)
+
+I am not aware of any prior implementations of Turner's joint modeling paradigm in stan; the closest analogue was implemented in jags, and was not hierarchical. Thus, I tested the ability of this code to recover synthetic data, and it was accurately able to recover synthetic data.\footnote{need to insert; both the completely synthetic data and the partially synthetic tests I may have done, related to looking at the distribuions these commands produced.}
+
+One novel element to this design is that the correlation matrix is estimated using the same prior matrix independently for each run. This may cause problems if there is a large variance in the actual correlation matrices existing across subjects, but if there are similarities then the model should allow us to recover a correlation matrix reflecting correlations between each of the theta and delta variables.
+
+
+
+```{r setup, echo=FALSE,message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	tidy = TRUE
+)
+knitr::opts_knit$set(root.dir="../")
+```
+
+```{r setup2, include=FALSE}
+source("../util/apply_local_settings.R")
+apply_local_settings()
+knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir, "knitrcache"), warning = FALSE)
+source("nate_files/fitGroupsV3Onegroup.R")
+source("data_summarize.R")
+library(data.table)
+library(ggplot2)
+source("visualization/geom_hdi.R")
+
+```
+
+
+```{r message=FALSE, warning=FALSE}
+source("du_model_rev8_jointrev4.R")
+```
+
+
+
+```{r getDataIntoTable, echo=FALSE}
+#arrange all the data into a single data table.
+model.summary.all<-NULL
+
+#iterations
+miters<-unlist(lapply(model.summaries,function(m){
+  return(length(m$summaryObj$iter))
+}))
+for(ms.i in 1:length(model.summaries)){
+  #ms.i=2
+  ms<-model.summaries[[ms.i]]
+  ms.summaryObj<-ms$summaryObj
+  ms.summaryObj$TestId<-ms.i
+  ms.summaryObj$Group<-ms$g
+  ms.summaryObj$ModelName<-ms$m
+  ms.summaryObj$AnalysisRepetition<-ms$t
+  ms.summaryObj$EstimationMethod<-ms$EstimationMethod
+  #because when we ran this, we hadn't explicitly recorded estimation methods; 
+  #but these are distinguishable by the number of iterations.
+  if(is.null(model.summary.all)){
+    model.summary.all<-ms.summaryObj
+  }else{
+    model.summary.all<-rbind(model.summary.all,ms.summaryObj,fill=TRUE)
+  }
+}
+model.summary.all$EstimationMethod<-factor(model.summary.all$EstimationMethod)
+
+```
+
+##Results
+
+### Diagnostics: Reliablity, representativeness, and accuracy
+
+As in the previous section, I assess representativeness for an MCMC algorithm by looking at the Gelman-Rubin statistic (Gelman & Rubin, 1992) chain convergence statistic, $\widehat{r}$.
+
+
+```{r StanGeneralStats, echo=FALSE, fig.cap=TRUE, warning=FALSE, cache=TRUE, results='asis'}
+#class(model.stanfits[[5]])
+
+for (i in 1:length(model.summaries)){
+  if(model.summaries[[i]]$EstimationMethod=="MCMC" & model.summaries[[i]]$t==1){
+    #only look at these because looking at models with trial posteriors is unnecessary and timeconsuming.
+    traceplot.title<-paste("group=",model.summaries[[i]]$g,model.summaries[[i]]$m,model.summaries[[i]]$t,model.summary.all[,first(EstimationMethod),by=ModelName][i,V1],"vars=",length(names(model.stanfits[[i]])))
+    #cols.to.process<-[names(model.stanfits[[i]]) %in% 
+    cols.to.process<-names(model.stanfits[[i]])[!sapply(names(model.stanfits[[i]]),function(x){
+      return(grepl("alpha\\[",x) || grepl("beta\\[",x) || grepl("alpha_pr",x) || grepl("beta_pr",x) || grepl("log_lik\\[",x))
+    })]
+    #print(cols.to.process)
+    #print(model.stanfits[[i]],pars=c("group_mu_alpha","group_mu_beta","group_rew_mu_alpha","group_pun_mu_alpha"))
+    print(knitr::kable(summary(model.stanfits[[i]])$summary[c("group_mu_alpha","group_mu_beta","group_rew_mu_alpha","group_pun_mu_alpha"),c("mean","se_mean","sd","n_eff","Rhat")],caption = traceplot.title,digits = 2))
+    # print("Increase in sample size required to get an ESS of 10^5 at this level of efficiency:")
+    # print(round(10000/summary(model.stanfits[[i]],pars=c("group_mu_alpha","group_mu_beta","group_rew_mu_alpha","group_pun_mu_alpha"))$summary[,"n_eff"],1))
+    cat("\n")
+    
+  }
+}
+
+```
+
+As can be seen in the tables, $\widehat{r}$ values are substantially outside the acceptable range of $\widehat{r} < 1.05$. The `n_eff` column offers a hint why these $\widehat{r}$ values are so poor:  for some reason, this model was not able produce acceptable samples. Most likely, the prior distributions used do not closely enough represent the space inhabited by the data, and so the sample space cannot be explored effectively.
+
+## Discussion 
+
+There may be several ways to improve on this implementation. First, it may be that another approach to modeling across the runs is needed. In this implementation, I simply modeled the theta-delta correlation using the same matrix for all runs. In practice, this will vary between runs. It may be more suitable to generate the matrix using a hyper-parameter and generate a posterior sample from that run. 
+
+Alternatively, theta-deltas across all runs could be inserted into a single large matrix and the correlation of each could be measured in that matrix. This might complicate the interpretation, because it would include both within- and between-run variance. The current design strictly measures the within-run correlation of theta and delta values in a way that is generalizable to other runs. However, we could overcome some of the problem by normalizing the data from each run separately.
+
+I have seen from the single level models (REF) that it is unlikely there are strong correlations between the neural and behavioral parameters. This should _not_ be a problem for the joint model presented here, because the prior for the correlation matrix allows for zero correlations.
+

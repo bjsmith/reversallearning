@@ -1,3 +1,4 @@
+library(rstan)
 source("stanlba/singlelevelmodel/lba_rl_joint_v2_evaluate_functions.R")
 #this evaluates a cholesky matrix without data - in other words, we're sampling from the prior here.
 load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/lba_rl/joint_20180713_1/run_package_106_1_punishment_lba_rl_single_exp_joint_v11_priorsamplejointh.RData")
@@ -29,5 +30,4 @@ myfit$summary[myfit$summary[,"Rhat"]<300,]
 heatmap(get_sigma_array(myfit,DeltaThetaLabels = paste0("TD",1:7)))
 
 myfit.summary.dt<-data.table(myfit$summary)
-heatmap(matrix(myfit$summary[paste0("Sigma[",rep(1:7,times=7),",",rep(1:7,each=7),"]"),"mean"],nrow=7),
-        order=FALSE)
+heatmap(matrix(myfit$summary[paste0("Sigma[",rep(1:7,times=7),",",rep(1:7,each=7),"]"),"mean"],nrow=7),order=FALSE)

@@ -23,15 +23,15 @@ Rhat_corevals_limit=1.05 # I don't care about this at the moment. I just want to
 Rhat_general_limit=1.1
 
 results.list<-list()
-# model.name.vector<-c("lba_rl_single_exp_discrim_v1a",
-#                      "lba_rl_single_exp_v3a",
-#                      "lba_rl_single_exp_v3_foil",
-#                      "lba_rl_single_exp_discrim_v2a",
-#                      "lba_rl_single_exp_discrim_v3a"
-#                      #"lba_rl_single_exp_discrim_foil"
-#                      )
+model.name.vector<-c("lba_rl_single_exp_discrim_v8a"#,
+                     #"lba_rl_single_exp_discrim_v1a",
+                     #"lba_rl_single_exp_v3a",
+                     #"lba_rl_single_exp_v3_foil",
+                     #"lba_rl_single_exp_discrim_v2a"
+                     #"lba_rl_single_exp_discrim_foil"
+                     )
 
-model.name.vector<-c("lba_rl_single_exp_v3a");
+#model.name.vector<-c("lba_rl_single_exp_v3a");
 model.list<-list();
 for (model.name in model.name.vector){#model.name<-"rl_single_exp_joint_v6"
   cat("Compiling model...")
@@ -60,8 +60,8 @@ for (sid in unique(rawdata$subid)){#[unique(rawdata$subid)>ll & unique(rawdata$s
         
         if(!file.exists(package_filepath)){
           model_attempts=0
-          warmup=400
-          iterations=500
+          warmup=200
+          iterations=300
           #warmup=80;iterations=100
           #warmup=10;iterations=20
           #warmup=180;iterations=200
@@ -83,7 +83,7 @@ for (sid in unique(rawdata$subid)){#[unique(rawdata$subid)>ll & unique(rawdata$s
                            init = model.init,
                            chains = 6,
                            control = list(max_treedepth = 15))
-                },timeout = 1200)
+                },timeout = 2400)
               }, 
               TimeoutException = function(ex){cat(paste0("could not run calculation for sid",sid," rid", r, " m", m, " within 20 minutes. skipping!"))
                 cat(ex)

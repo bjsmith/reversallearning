@@ -1,0 +1,154 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Stimulus comparisons},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Stimulus comparisons}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+How many stimuli would we need to compare to get a score of
+`confusability' between images?
+
+All the images are presented in sequence, and they are the same sequence
+for each subject:
+
+\begin{longtable}[]{@{}lrlll@{}}
+\toprule
+Motivation & runid & subid 148 & subid 249 & subid 350\tabularnewline
+\midrule
+\endhead
+punishment & 1 & 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64,
+65, 66, 67, 68, 69, 70, 71, 72 & 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72 & 51, 52, 53, 54, 55, 56,
+57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+72\tabularnewline
+punishment & 2 & 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88,
+89, 90, 91, 92, 93, 94, 95, 96 & 75, 76, 77, 78, 79, 80, 81, 82, 83, 84,
+85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96 & 75, 76, 77, 78, 79, 80,
+81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+96\tabularnewline
+reward & 1 & 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+18, 19, 20, 21, 22 & 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+16, 17, 18, 19, 20, 21, 22 & 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+14, 15, 16, 17, 18, 19, 20, 21, 22\tabularnewline
+reward & 2 & 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+40, 41, 42, 43, 44, 45, 46 & 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46 & 25, 26, 27, 28, 29, 30, 31,
+32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
+46\tabularnewline
+\bottomrule
+\end{longtable}
+
+The simplest way to get a measure of ``confusability'' here might be to
+present exactly the same sequence of images and ask subject, ``Have you
+seen this image before?'' If subjects say ``yes'' when they have not in
+fact seen the image before, we could infer that the images are more
+``confusable''. In this design, we wouldn't know which image is being
+confused.
+
+If we do some 2x2 test, we might want to comapre all images with all the
+images that preceded them. We can calculate a matrix describing how many
+timesteps prior to each image each other image was observed. We should
+do this separately for run1, run2, reward, and punishment; it only needs
+to be done with one subject. We can pick subject 229 as one subject we
+know has all data intact.
+
+\begin{verbatim}
+## 
+## punishment     reward 
+##        436        436
+\end{verbatim}
+
+\begin{verbatim}
+## 
+##   1   2 
+## 436 436
+\end{verbatim}
+
+The total number of comparisons is 348. If we had to run each comparison
+only once per subject, and each trial took 3 seconds, the length of the
+task would be 17.4 minutes. With 270 comparisons, this drops to 13.5
+minutes.
+
+
+\end{document}

@@ -133,7 +133,9 @@ do_akt_violin<-function(grand_posterior_estimate_dt,
 
 
 
-heatmap<-function(covar_matrix,label="Covariance",show_labels=TRUE,extra_ggitems=NULL,order=TRUE){#covar_matrix<-Sigma_mean
+heatmap<-function(covar_matrix,label="Covariance",show_labels=TRUE,extra_ggitems=NULL,order=TRUE,
+                  labelsize=2,scale_midpoint=0,map_limits=NA){#covar_matrix<-Sigma_mean
+  require(scales)
   # Get lower triangle of the correlation matrix
   get_lower_tri<-function(cormat){
     cormat[upper.tri(cormat)] <- NA
@@ -162,16 +164,28 @@ heatmap<-function(covar_matrix,label="Covariance",show_labels=TRUE,extra_ggitems
   
   #http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization
   ggheatmap <- ggplot(covar_matrix_ordered_melted, aes(Var2, Var1, fill = value))+
-    geom_tile(color = "white")+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "#bbbbbb", 
-                         midpoint = 0, space = "Lab", 
-                         name=label) +
+    geom_tile(color = "white")
+  if(!is.na(map_limits)){
+    ggheatmap <- ggheatmap + 
+      scale_fill_gradient2(low = "blue", high = "red", mid = "#bbbbbb", 
+                           midpoint = scale_midpoint, space = "Lab", 
+                           name=label,limits=map_limits, oob=squish)
+    
+  }else{
+    ggheatmap <- ggheatmap + 
+      scale_fill_gradient2(low = "blue", high = "red", mid = "#bbbbbb", 
+                           midpoint = scale_midpoint, space = "Lab", 
+                           name=label)
+    
+  }
+  
+  ggheatmap <- ggheatmap + 
     theme_minimal()+ # minimal theme
     theme(axis.text.x = element_text(angle = 45, vjust = 1, 
                                      size = 12, hjust = 1))+
     coord_fixed()
   if(show_labels){
-    ggheatmap = ggheatmap + geom_text(aes(Var2, Var1, label = round(covar_matrix_ordered_melted$value,digits=2)), color = "black", size = 2,fontface="bold")
+    ggheatmap = ggheatmap + geom_text(aes(Var2, Var1, label = round(covar_matrix_ordered_melted$value,digits=2)), color = "black", size = labelsize,fontface="bold")
   }
   
   ggheatmap = ggheatmap + 
@@ -252,3 +266,20 @@ show_distribution_of_all_sigmas_new<-function(
   
 }
 
+get_Sigma_m_n<-function(rsdt,theta_names,delta_names){
+  
+  mat_names<-c(theta_names,delta_names)
+  sigma_diameter<-length(mat_names)
+  Sigma_matrix_mean<-matrix(NA,nrow=sigma_diameter,ncol=sigma_diameter)
+  for (m in 1:length(mat_names)){#m<-1
+    for(n in 1:length(mat_names)){#n<-1
+      Sigma_m_n<-mean(rsdt[param_name==paste0("Sigma[",m,",",n,"]"),.(SigmaSubjectMean=mean(mean)),.(sid)]$SigmaSubjectMean)
+      Sigma_matrix_mean[m,n]<-Sigma_m_n
+    }
+  }
+  colnames(Sigma_matrix_mean)<-mat_names
+  rownames(Sigma_matrix_mean)<-mat_names
+  return(Sigma_matrix_mean)
+  
+  
+}

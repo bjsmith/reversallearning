@@ -3,6 +3,9 @@ freesurfer_region_naming<-function(textcode){
 }
 
 freesurfer_region_name<-function(textcode){
+  if(length(textcode)>1){
+    stop("don't pass a list to freesurfer_region_name. Pass your lists to freesurfer_region_naming instead.")
+  }
   regname<-gsub("ROI ", "",gsub("\\.", " ",gsub("_"," ",gsub("ROI_ctx_","", textcode))))
   print(regname)
   
@@ -23,15 +26,6 @@ freesurfer_region_name<-function(textcode){
     #append "Right" on end.
   }
   
-  if (length(grep("rh ",regname))>0){
-    #take it out
-    regname<-paste0(gsub("rh ","",regname), " (Right)")
-    #append "Right" on end.
-  }
-  if (length(grep("lh ",regname))>0){
-    #take it out
-    regname<-paste0(gsub("lh ","",regname), " (Left)")
-  }
   
   if (length(grep("Left ",regname))>0){
     #take it out
@@ -42,6 +36,18 @@ freesurfer_region_name<-function(textcode){
     #take it out
     regname<-paste0(gsub("Right ","",regname), " (Right)")
   }
+  
+  
+  if (length(grep("rh ",regname))>0){
+    #take it out
+    regname<-paste0(gsub("rh ","",regname), " (Right)")
+    #append "Right" on end.
+  }
+  if (length(grep("lh ",regname))>0){
+    #take it out
+    regname<-paste0(gsub("lh ","",regname), " (Left)")
+  }
+  
   
   
   return(regname)

@@ -73,9 +73,9 @@ log.dens.like=function(x_s,use.data_s,method="full"){
       tau_s_tr<-f_tau_s_tr(x_s[which(par.names=="tau")] )
       dens.s<-sum(log(get.dens.2choice(t=use.data_s$rt[use.data_s$choice!=0],
                                        choice=use.data_s$choice[use.data_s$choice!=0],
-                                       alpha=c(thresh_s_tr,thresh_s_tr),
-                                       v=v_t[use.data_s$choice!=0,],
-                                       theta=c(tau_s_tr,tau_s_tr)
+                                       alpha=c(thresh_s_tr,thresh_s_tr),    #theta
+                                       v=v_t[use.data_s$choice!=0,],       #A_c
+                                       theta=c(tau_s_tr,tau_s_tr)         #tau
       )))
       dens=dens+dens.s#is this right?-BJS
       if(is.nan(dens.s)){

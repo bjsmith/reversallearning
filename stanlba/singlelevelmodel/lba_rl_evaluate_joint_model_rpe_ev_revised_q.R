@@ -211,23 +211,13 @@ rsdt<-data.table(model_lba_rl_joint_v11g$results_summary)
 table(rsdt$param_name)
 
 regions<-c("ROI_ctx_lh_S_suborbital","ROI_ctx_rh_S_suborbital", "ROI_Left.Accumbens.area", "ROI_Right.Accumbens.area")
-ttests<-vector("list",6*2)
+
 #now do a FDR p-value correction.
 theta_names<-c("RPE","EV")
-for (t in 1:2){
-  for(i in 3:6){#i<-2
-    tesres<-t.test(rsdt[param_name==paste0("Sigma[",t,",",i,"]"),.(SigmaSubjectMean=mean(mean)),.(sid)]$SigmaSubjectMean)
-    testres.dt<-data.table(t(data.table(tesres)))
-    colnames(testres.dt)<-names(tesres)
-    testres.dt$Region<-freesurfer_region_naming(regions)[i-2]
-    testres.dt$Theta<-theta_names[t]
-    ttests[[i-2+(t-1)*37]]<-testres.dt
-  }
-}
+source("lba_rl_evaluate_functions.R")
+runs_missing(rawdata,rsdt)
 
-testres.dt<-rbindlist(ttests)
-
-testres.dt$AdjustedPVals<-p.adjust(unlist(testres.dt$p.value),method="fdr")
+testres.dt$AdjustedPVals<-p.adjust(testres.dt$p.value,method="fdr")
 testres.dt$CI95Pct<-unlist(lapply(testres.dt$conf.int, function(ci){paste0("[",formatC(ci[1],digits=2),", ",formatC(ci[2],digits=2),"]")}))
 testres.summary.CIs<-tidyr::spread(testres.dt[,.(Region,Theta,CI95Pct)],Theta,CI95Pct)
 testres.summary.AdjustedPVals<-tidyr::spread(testres.dt[,.(Region,Theta,AdjustedPVals)],Theta,AdjustedPVals)
@@ -240,8 +230,8 @@ results<-testres.summary.wide[order(unlist(RPEAdjustedPVals)),
                                 "RPE_FDRadjustedPValue"=format.pval(unlist(RPEAdjustedPVals),digits = 2)
                                 #,"UnadjustedPVal"=format.pval(unlist(p.value))
 )]
-View(results)
-write.csv(results,paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11g_provisional.csv"))
+
+write.csv(testres.dt,paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11g_provisional_raw.csv"))
 
 
 

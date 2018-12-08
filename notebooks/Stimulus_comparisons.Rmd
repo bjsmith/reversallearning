@@ -1,6 +1,10 @@
 ---
 title: "Stimulus comparisons"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
 ---
 How many stimuli would we need to compare to get a score of 'confusability' between images?
 
@@ -13,7 +17,7 @@ knitr::opts_knit$set(root.dir="../")
 ```
 
 ```{r setup2, include=FALSE}
-source("util/apply_local_settings.R")
+source("../util/apply_local_settings.R")
 library(ggplot2)
 source("visualization/geom_hdi.R")
 apply_local_settings()

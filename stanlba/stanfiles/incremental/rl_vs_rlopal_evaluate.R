@@ -16,7 +16,7 @@ model_rl_joint_v6<-single_level_model_summarize(
 
 rsdt.v6<-data.table(model_rl_joint_v6$results_summary)
 
-rl_joint_v6_logprob<-rsdt[param_name=="lp__",mean,by=.(sid,rid,motivation)]
+rl_joint_v6_logprob<-rsdt.v6[param_name=="lp__",mean,by=.(sid,rid,motivation)]
 
 model_rl_opal_joint<-single_level_model_summarize(
   single_run_dir=paste0(localsettings$data.dir,"lba_rl"),
