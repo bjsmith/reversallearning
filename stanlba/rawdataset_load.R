@@ -1,4 +1,4 @@
-rawdata_version = 6
+rawdata_version = 7
 
 rawdataset_cache_path<-paste0(localsettings$data.dir,"/rawdata_with_rois_version",rawdata_version,".RData")
 
@@ -11,7 +11,11 @@ if (file.exists(rawdataset_cache_path)){
   rawdata <- data.table(read.table(paste0(dd,"all_subjs_datacomplete_reward_and_punishment_amendment2.txt"), header=T))
   cat("...main dataset loaded;loading freesurfer data...")
   
+  #load regressors.
+  
+  
   load_and_merge_neural_dataset<-function(roi_locationpath,rawdata,colname_prefix="ROI_"){
+    #roi_locationpath<-paste0(dd,"freesurfer_rl/roi_event_data/","20180722T232052","data_allsubjs.RData");
     #now also load the neural data.
     #created by load_fs_rois.R
     load(roi_locationpath)
@@ -58,7 +62,7 @@ if (file.exists(rawdataset_cache_path)){
     return(rawdata);
   }
   
-  rawdata<-load_and_merge_neural_dataset(paste0(dd,"freesurfer_rl/roi_event_data/","20180626T165755","data_allsubjs.RData"),rawdata)
+  rawdata<-load_and_merge_neural_dataset(paste0(dd,"freesurfer_rl/roi_event_data/","20180722T232052","data_allsubjs.RData"),rawdata)
   fs_rois<-colnames(rawdata)[grep(pattern = "ROI_",colnames(rawdata))]
   #regress out ventricles, white matter, and CSF
   colnames(rawdata)
@@ -89,7 +93,7 @@ if (file.exists(rawdataset_cache_path)){
   
   
   cat("...datasets merged...loading fsl_harvardoxford_dataset...")
-  rawdata<-load_and_merge_neural_dataset(paste0(dd,"roi_event_data/fsl_roi_event_data/","20180721T120724","data_allsubjs.RData"),rawdata,
+  rawdata<-load_and_merge_neural_dataset(paste0(dd,"roi_event_data/fsl_roi_event_data/","20180722T224831","data_allsubjs.RData"),rawdata,
                                          colname_prefix = "fsl_")
   fsl_rois<-colnames(rawdata)[grep(pattern = "fsl_",colnames(rawdata))]
   rawdata<-regress_out_freesurfer_wm.csf.ventricles(rawdata,fsl_rois)

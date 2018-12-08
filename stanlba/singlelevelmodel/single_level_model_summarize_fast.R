@@ -54,28 +54,29 @@ single_level_model_summarize_fast <- function(
   save_new_posteriors<-FALSE
   save_summary<-FALSE
   for (rli in 1:dim(run_list)[1]){#sid<-106;r<-1;m<-"reward"#rli<-8
-    print("iterating")
+    cat(".")
+    #print("iterating")
     sid=run_list[[rli,"subid"]]
     r=run_list[[rli,"runid"]]
     m=run_list[[rli,"Motivation"]]
     list_counter<-run_list[[rli,"RunIdOverAll"]]
-    print(rli)
+    #print(rli)
 
     posterior_estimate_runcode<-paste0("s",sid,"_r",r,"_",m)
     package_filepath<-paste0(output_dir,"run_package_",sid,"_",r,"_",m,"_",model_name,model_subversion,".RData")
     
-    print(paste(sid,r,m))
+    #print(paste(sid,r,m))
     
     summary_created<-any(unlist(lapply(results.summary.list[!unlist(lapply(results.summary.list,is.null))],
                                        function(rsl){
                                          rsl$sid==sid & rsl$rid==r & rsl$motivation==m
                                          })))
     added_to_grand_posterior<-any(grand_posterior_estimate$UniqueRunCode==posterior_estimate_runcode)
-    print("checking file exists...")
+    #print("checking file exists...")
     if(file.exists(package_filepath)){
       # print("getting srm.data")
       # srm.data<-rawdata[subid==sid & Motivation==m & runid==r,.(reaction_time,outcome,cue,choice,cor_res_Counterbalanced)]
-      print("file exists. Checking if a record has been created...")
+      #print("file exists. Checking if a record has been created...")
       if((!summary_created | !added_to_grand_posterior)){ 
         #we haven't already got an entry for this one.{
         print(paste0("loading from file sid ",sid, "; r ",r, "; m ", m))
@@ -114,10 +115,10 @@ single_level_model_summarize_fast <- function(
           # }
         }
       }else{
-        cat(".")
+        cat("*")
       } 
     }else{
-      print(paste0("no file basis file exists for ",package_filepath))
+      #print(paste0("no file basis file exists for ",package_filepath))
     } 
     
   }
@@ -164,6 +165,7 @@ single_level_model_summarize_fast <- function(
   rownames(results.summary.df)<-NULL
   
   return(list("complete_posterior_list"=grand_posterior_estimate,
-              "results_summary"=results.summary.df))
+              "results_summary"=results.summary.df,
+              "results_summary_dt"=data.table(results.summary.df)))
 }
 

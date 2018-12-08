@@ -1,0 +1,9 @@
+library(parallel)
+
+p <- parallel:::mcfork()
+if (inherits(p, "masterProcess")) {
+  cat("I'm a child! ", Sys.getpid(), "\n")
+  parallel:::mcexit(,"I was a child")
+}
+cat("I'm the master\n")
+unserialize(parallel:::readChildren(1.5))

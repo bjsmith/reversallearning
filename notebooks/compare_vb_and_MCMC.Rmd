@@ -21,6 +21,7 @@ knitr::opts_chunk$set(cache.path = paste0(localsettings$data.dir, "knitrcache"),
 source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 library(data.table)
+library(corrplot)
 library(ggplot2)
 ```
 
@@ -259,8 +260,6 @@ To assess the _accuracy_ of the chains, we need to take into account the _effect
 
 We can view and measure autocorrelation in a number of ways:
  - To get the effective sample size, we can use `rstan`'s `stan_ess`; bayesplot also offers [appropriate diagnostic tools]([https://cran.r-project.org/web/packages/bayesplot/vignettes/visual-mcmc-diagnostics.html#effective-sample-size). Kruschke (20xx) recommends an effective sample size of 10000 for estimating an HDI.
- 
- 
 
 ```{r StanAutocorrelationSetup, fig.cap=TRUE, message=FALSE, warning=FALSE, cache=TRUE, include=FALSE}
 get.model.title<-function(ms,i){

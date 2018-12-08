@@ -1,6 +1,4 @@
-#CANCELLED THIS ONE. We're going to add control for motion parameters as well as the existing controls
-#so no point in running another set until I've got this coded in.
-#sub-version u: uses FSL-created Harvard-Oxford ROIs controlled with freesurfer 
+#sub-version u: applies Jonas's suggestion to regress out CSF+WM+Motion; and uses FSL-created Harvard-Oxford ROIs
 #sub-version q: uses FSL-created Harvard-Oxford ROIs instead of freesurfer ROIs.
 library(rstan)
 source("stanlba/lba_rl_joint_setup.R")
@@ -35,9 +33,9 @@ colnames(rawdata)
 #regions<-c("ROI_ctx_lh_S_suborbital","ROI_ctx_rh_S_suborbital", "ROI_Left.Accumbens.area", "ROI_Right.Accumbens.area")
 regions<-paste0("con_fsl_roi_",c("frontal_medial_cortex","frontal_orbital_cortex", "accumbens_l", "accumbens_r"))
 #100,140,218,261,334
-ll=100;ul=139
+#ll=100;ul=139
 #ll=140;ul=217
-#ll=218;ul=260
+ll=218;ul=260
 #ll=261;ul=334
 #ll=335;ul=400
 #ll=100;ul=400

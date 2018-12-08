@@ -6,7 +6,7 @@
 #When RT<1, IT would be weighed larger than it currently is to represent uncertainty.
 #Currently we don't have a parameter representing how much RT actually matters...should we?
 print("initializing...")
-source("util/get_my_preferred_cores.R")
+source("../util/get_my_preferred_cores.R")
 options(mc.cores = get_my_preferred_cores())
 #options(mc.cores = NULL)
 #source files
@@ -14,7 +14,8 @@ source("nate_files/fitGroupsV3Onegroup.R")
 source("data_summarize.R")
 
 #set settings.
-models_to_run<-c("double_update_rev5a", "double_update_rev6","double_update_rev6a")
+#models_to_run<-c("double_update_rev5a", "double_update_rev6","double_update_rev6a")
+models_to_run<-c("double_update_rev6","double_update_rev6a")
 #models_to_run<-c("double_update_rev6")
 estimation_methods<-c(as.character(ESTIMATION_METHOD.MCMC),as.character(ESTIMATION_METHOD.VariationalBayes))
 #estimation_methods<-c(as.character(ESTIMATION_METHOD.VariationalBayes))

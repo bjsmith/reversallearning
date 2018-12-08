@@ -117,3 +117,31 @@ heatmap(cor(rawdata[,.(con_nltools_accumbens_l,con_fsl_roi_accumbens_l,con_ROI_L
                        con_nltools_frontal_medial_cortex,con_fsl_roi_frontal_medial_cortex,
                        con_ROI_ctx_lh_G_orbital,con_ROI_ctx_rh_G_orbital,con_ROI_ctx_lh_S_suborbital,con_ROI_ctx_rh_S_suborbital)],
             use = "complete.obs"),label="Correlation",order=TRUE,labelsize=4,scale_midpoint=0.5)
+
+
+library(rstan)
+library(dplyr)
+source("stanlba/lba_rl_joint_setup.R")
+
+library(scales)
+corrected<-grep("^ROI_",colnames(rawdata))
+corrected.isNA<-apply(rawdata[,corrected,with=FALSE],2,function(x){sum(is.na(x))<100})
+
+map1<-heatmap(cor(rawdata[,names(corrected.isNA)[corrected.isNA],with=FALSE],
+            use = "complete.obs"),label="Correlation",show_labels=FALSE,order=TRUE,labelsize=0.1,scale_midpoint=0.5,
+            extra_ggitems = list(theme(axis.text.x = element_text(size=2),axis.text.y = element_text(size=2.5)),labs(title="Motion correction only\n")),
+            map_limits=c(0,1))
+
+corrected<-grep("con_ROI",colnames(rawdata))
+corrected.isNA<-apply(rawdata[,corrected,with=FALSE],2,function(x){sum(is.na(x))<100})
+
+map2<-heatmap(cor(rawdata[,names(corrected.isNA)[corrected.isNA],with=FALSE],
+                  use = "complete.obs"),label="Correlation",show_labels=FALSE,order=TRUE,labelsize=0.5,scale_midpoint=0.5,
+              extra_ggitems = list(theme(axis.text.x = element_text(size=2),axis.text.y = element_text(size=2.5)),labs(title="Motion correction\nWith CSF+WM+Ventricles correction")),
+              map_limits=c(0,1))
+
+
+library(gridExtra)
+grid.arrange(map1,map2,ncol=2)
+library(savePNG)
+ggsave("motion_CSF_WM_V_correction.png",arrangeGrob(map1,map2,ncol = 2),width = 12,height = 6)

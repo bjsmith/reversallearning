@@ -1,0 +1,566 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={MCMC Analysis Final Report},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{{#1}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{{#1}}}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\NormalTok}[1]{{#1}}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{MCMC Analysis Final Report}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\subsection{Introduction}\label{introduction}
+
+In this chapter, I describe a Differential Evolution MCMC model.
+
+Unfortunately, I was unable to build a three-level Differential
+Evolution MCMC model. The attempt to build this will be discussed in
+another section. However, I did implement a two-level Differential
+Evolution MCMC model. In the dataset, all subjects took part in four
+runs. Thus, I was able to implement a two-level model by analyzing each
+run separately in Differential Evolution MCMC.
+
+Differential Evolution MCMC is an implementation of Monte Carlo Markov
+Estimation pioneered in psychology by Turner (reference). The iterative
+algorithm consists of two key steps. In the first step, two chains are
+randomly selected, and the difference between the chains is taken and
+added to another chain. In this way, there is a sort of bootstrap
+sampling of the space currently occupied across all of the chains. In
+the second step, occuring only during the warmup phase of the MCMC, a
+few values are probabilistically selected for swaps between chains. This
+acts as an accelerator and a form of evolutionary propagation of values
+between the chains, speeding up their journey toward the
+highest-likelihood probability space.
+
+\subsection{Method}\label{method}
+
+\subsubsection{Implementation}\label{implementation}
+
+Following the pattern laid out in Brandon Turner's DE-MCMC
+implementation, the model built here contains several key functions.
+
+The prior log density is calculated by calculating the log density
+summed across all first-level parameters \(\alpha\), \(thresh\), and
+\(\tau\), based on their respective second-level hyperpriors. All are
+modeld using a normal distribution before being transformed for
+exploration in the model itself.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dens=}\KeywordTok{sum}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x_s[par.ids.l1[[}\StringTok{"alpha"}\NormalTok{]]],}
+               \NormalTok{use.phi[par.ids.l2[[}\StringTok{"alpha_mu"}\NormalTok{]]],}
+               \NormalTok{use.phi[par.ids.l2[[}\StringTok{"alpha_sigma"}\NormalTok{]]],}\DataTypeTok{log=}\OtherTok{TRUE}\NormalTok{)) +}\StringTok{ }
+\StringTok{    }\KeywordTok{sum}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x_s[par.ids.l1[[}\StringTok{"thresh"}\NormalTok{]]],}
+              \NormalTok{use.phi[par.ids.l2[[}\StringTok{"thresh_mu"}\NormalTok{]]],}
+              \NormalTok{use.phi[par.ids.l2[[}\StringTok{"thresh_sigma"}\NormalTok{]]],}\DataTypeTok{log=}\OtherTok{TRUE}\NormalTok{)) +}
+\StringTok{    }\KeywordTok{sum}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x_s[par.ids.l1[[}\StringTok{"tau"}\NormalTok{]]],}
+              \NormalTok{use.phi[par.ids.l2[[}\StringTok{"tau_mu"}\NormalTok{]]],}
+              \NormalTok{use.phi[par.ids.l2[[}\StringTok{"tau_sigma"}\NormalTok{]]],}\DataTypeTok{log=}\OtherTok{TRUE}\NormalTok{)) }
+\end{Highlighting}
+\end{Shaded}
+
+The log density likelihood is calculated using the following
+calculations
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dens=}\DecValTok{0}
+
+\NormalTok{ev=}\KeywordTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{100}\NormalTok{,}\DecValTok{2}\NormalTok{)}
+\NormalTok{v_t=}\KeywordTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,nt,}\DecValTok{2}\NormalTok{)}
+
+\NormalTok{alpha_tr<-}\KeywordTok{f_alpha_s_tr}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(x_s[}\KeywordTok{which}\NormalTok{(par.names==}\StringTok{"alpha"}\NormalTok{)]))}
+\NormalTok{for(tr in }\DecValTok{1}\NormalTok{:use.data_s$choice)\{}
+  \NormalTok{if (use.data_s$choice[tr]!=}\DecValTok{0}\NormalTok{) \{}
+    \CommentTok{#this must come first - this represents the choice being made.}
+    \CommentTok{# there is some transformation based on ev and beta needed}
+    \CommentTok{# before a drift rate can be obtained}
+    \NormalTok{v_t[tr,]=}\KeywordTok{invlogit}\NormalTok{(ev[use.data_s$cue[tr],])}
+    
+    \CommentTok{# prediction error}
+    \NormalTok{PE   =}\StringTok{  }\NormalTok{use.data_s$outcome[tr] -}\StringTok{ }\NormalTok{ev[use.data_s$cue[tr],use.data_s$choice[tr]]}
+    \NormalTok{PEnc =}\StringTok{ }\NormalTok{-use.data_s$outcome[tr] -}\StringTok{ }\NormalTok{ev[use.data_s$cue[tr],}\DecValTok{3}\NormalTok{-use.data_s$choice[tr]]}
+    
+    \CommentTok{# value updating (learning)}
+    \NormalTok{ev[use.data_s$cue[tr],}\DecValTok{3}\NormalTok{-use.data_s$choice[tr]] =}\StringTok{ }
+\StringTok{      }\NormalTok{ev[use.data_s$cue[tr],}\DecValTok{3}\NormalTok{-use.data_s$choice[tr]] +}\StringTok{ }\NormalTok{alpha_tr *}\StringTok{ }\NormalTok{PEnc;}
+    \NormalTok{ev[use.data_s$cue[tr],use.data_s$choice[tr]] =}\StringTok{ }
+\StringTok{      }\NormalTok{ev[use.data_s$cue[tr],use.data_s$choice[tr]] +}\StringTok{ }\NormalTok{alpha_tr *}\StringTok{ }\NormalTok{PE;}
+    
+  \NormalTok{\}}
+\NormalTok{\}}
+
+\NormalTok{thresh_s_tr<-}\KeywordTok{f_thresh_s_tr}\NormalTok{(x_s[}\KeywordTok{which}\NormalTok{(par.names==}\StringTok{"thresh"}\NormalTok{)])}
+\NormalTok{tau_s_tr<-}\KeywordTok{f_tau_s_tr}\NormalTok{(x_s[}\KeywordTok{which}\NormalTok{(par.names==}\StringTok{"tau"}\NormalTok{)] )}
+
+\NormalTok{dens.2choice=}
+\StringTok{  }\KeywordTok{log}\NormalTok{(}\KeywordTok{wald.pdf.raw}\NormalTok{(t[idx1],alpha[}\DecValTok{1}\NormalTok{],v[idx1,}\DecValTok{1}\NormalTok{],theta[}\DecValTok{1}\NormalTok{])*}
+\StringTok{        }\NormalTok{(}\DecValTok{1}\NormalTok{-}\KeywordTok{wald.cdf.raw}\NormalTok{(t[idx1],alpha[}\DecValTok{2}\NormalTok{],v[idx1,}\DecValTok{2}\NormalTok{],theta[}\DecValTok{2}\NormalTok{]))) +}\StringTok{ }
+\StringTok{  }\KeywordTok{log}\NormalTok{(}\KeywordTok{wald.pdf.raw}\NormalTok{(t[idx2],alpha[}\DecValTok{2}\NormalTok{],v[idx2,}\DecValTok{2}\NormalTok{],theta[}\DecValTok{2}\NormalTok{])*}
+\StringTok{        }\NormalTok{(}\DecValTok{1}\NormalTok{-}\KeywordTok{wald.cdf.raw}\NormalTok{(t[idx2],alpha[}\DecValTok{1}\NormalTok{],v[idx2,}\DecValTok{1}\NormalTok{],theta[}\DecValTok{1}\NormalTok{])))}
+
+\NormalTok{dens=dens+dens.2choice}
+\end{Highlighting}
+\end{Shaded}
+
+Using these two functions, the likelihood of the data at the individual
+run level was assessed. Then, likelihood of the group \(\alpha\),
+\(thresh\), and \(\tau\) parameters can be measured based on the model
+priors.
+
+\subsection{Results}\label{results}
+
+\begin{verbatim}
+## Loading required package: ggplot2
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: StanHeaders
+\end{verbatim}
+
+\begin{verbatim}
+## rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+\end{verbatim}
+
+\begin{verbatim}
+## For execution on a local, multicore CPU with excess RAM we recommend calling
+## options(mc.cores = parallel::detectCores()).
+## To avoid recompilation of unchanged Stan programs, we recommend calling
+## rstan_options(auto_write = TRUE)
+\end{verbatim}
+
+\begin{verbatim}
+## This is loo version 2.0.0.
+## **NOTE: As of version 2.0.0 loo defaults to 1 core but we recommend using as many as possible. Use the 'cores' argument or set options(mc.cores = NUM_CORES) for an entire session. Visit mc-stan.org/loo/news for details on other changes.
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{verbatim}
+## Type 'citation("pROC")' for a citation.
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'pROC'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     cov, smooth, var
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'data.table'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:dplyr':
+## 
+##     between, first, last
+\end{verbatim}
+
+\subsubsection{Diagnostics}\label{diagnostics}
+
+Traditional diagnostic measures like \(\hat{R}\) can be difficult in
+DE-MCMC, so in order to diagnose the performance of chains here, I
+simply present visual evidence of chain convergence. For group
+\(\alpha\), \(k\), and \(\tau\) values, chains seem to have converged
+nicely at the iteration where I began sampling.
+
+\includegraphics{MCMC_final_report_files/figure-latex/graph_diagnostic_data_1-1.pdf}
+
+\includegraphics{MCMC_final_report_files/figure-latex/graph_diagnostic_data_2-1.pdf}
+
+\includegraphics{MCMC_final_report_files/figure-latex/graph_diagnostic_data_3-1.pdf}
+
+We can also look at the distribution of posterior samples for each
+parameter across each group. The graph below shows \(\mu\) parameter
+distributions fro \(\alpha\), \(\tau\), and \(thresh\) values.
+
+\includegraphics{MCMC_final_report_files/figure-latex/h_m3_reward_run2_graphing_distributions-1.pdf}
+
+\includegraphics{MCMC_final_report_files/figure-latex/h_m3_reward_run2_graphing_distributions_sigma-1.pdf}
+
+Overall, we can see that group parameters appear to have converged.
+Chains are distributed equally across the space, and distributions for
+all chains are similar. In order to verify the method has converged
+nicely, we should also take a look at individual-level parameters.
+
+I also examined 10 subjects selected sequentially along the list of
+subjects.
+
+\includegraphics{MCMC_final_report_files/figure-latex/graph_diagnostic_data_subs-1.pdf}
+
+\includegraphics{MCMC_final_report_files/figure-latex/graph_diagnostic_data_subs_graph-1.pdf}
+
+\includegraphics{MCMC_final_report_files/figure-latex/graph_diagnostic_data_subs_graph_sigma-1.pdf}
+Subject-level distributions were not as clean as group-level
+distributions but cconsidering the group level distributions are what
+we're most interested in, these seem to converge to an acceptable
+degree.
+
+\subsubsection{Comparing groups}\label{comparing-groups}
+
+There does appear to be some discrepancy between the estimates for alpha
+\(\mu\) values for both the reward and punishment groups. In particular,
+the starkest difference appears between Meth and No Meth.
+
+\includegraphics{MCMC_final_report_files/figure-latex/ggplot_res_graph_by_motivation_stat-1.pdf}
+
+We can examine the difference between the Meth and NoMeth groups using
+the following graph.
+
+\includegraphics{MCMC_final_report_files/figure-latex/MethMinusNoMethByMotivation-1.pdf}
+
+The graph in the top column shows that the 95\% HDI for the alpha
+parameter for the reward-motivated runs appears to be somewhat less for
+the Risky Meth compared to the Risky No Meth group. There are no other
+group differences apparent.
+
+\includegraphics{MCMC_final_report_files/figure-latex/MethMinusNoMethAcrossMotivations-1.pdf}
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{95\% Highest Density Interval for Punishment
+Condition}\tabularnewline
+\toprule
+Comparison & alpha & tau & thresh\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Comparison & alpha & tau & thresh\tabularnewline
+\midrule
+\endhead
+RiskyMeth - RiskyNoMeth & {[}-2.53, 0.30{]} & {[}-0.38, 0.26{]} &
+{[}-0.23, 0.35{]}\tabularnewline
+RiskyMeth - SafeNoMeth & {[}-2.07, 0.76{]} & {[}-0.31, 0.38{]} &
+{[}-0.31, 0.32{]}\tabularnewline
+RiskyNoMeth - SafeNoMeth & {[}-1.29, 2.11{]} & {[}-0.17, 0.35{]} &
+{[}-0.28, 0.19{]}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{95\% Highest Density Interval for Reward
+Condition}\tabularnewline
+\toprule
+Comparison & alpha & tau & thresh\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Comparison & alpha & tau & thresh\tabularnewline
+\midrule
+\endhead
+RiskyMeth - RiskyNoMeth & {[}-2.81, -0.0074{]} & {[}-0.36, 0.24{]} &
+{[}-0.24, 0.32{]}\tabularnewline
+RiskyMeth - SafeNoMeth & {[}-2.34, 0.79{]} & {[}-0.30, 0.36{]} &
+{[}-0.28, 0.31{]}\tabularnewline
+RiskyNoMeth - SafeNoMeth & {[}-0.64, 1.73{]} & {[}-0.16, 0.35{]} &
+{[}-0.27, 0.20{]}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{95\% Highest Density Interval for all condition}\tabularnewline
+\toprule
+Comparison & alpha & tau & thresh\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Comparison & alpha & tau & thresh\tabularnewline
+\midrule
+\endhead
+RiskyMeth - RiskyNoMeth & {[}-2.68, 0.19{]} & {[}-0.37, 0.25{]} &
+{[}-0.24, 0.34{]}\tabularnewline
+RiskyMeth - SafeNoMeth & {[}-2.22, 0.79{]} & {[}-0.31, 0.36{]} &
+{[}-0.29, 0.32{]}\tabularnewline
+RiskyNoMeth - SafeNoMeth & {[}-1.05, 1.96{]} & {[}-0.16, 0.35{]} &
+{[}-0.28, 0.19{]}\tabularnewline
+\bottomrule
+\end{longtable}
+
+Looking at the group differences across motivations, we can see that the
+95\% highest density interval encompasses zero, meaning that in a null
+hypothesis significance test we would be unable to reject a null
+hypothesis of no difference between groups.
+
+However, because we started with a prior of no difference, a
+distribution of this character is credible evidence that the Risky Meth
+group learned the task more slowly than the Risky No Meth group.
+
+\includegraphics{MCMC_final_report_files/figure-latex/h_m3_reward_run2 graphing_chains-1.pdf}
+
+\subsection{Discussion}\label{discussion}
+
+Overall, there is weak evidence presented here of a greater learning
+rate among the sexually risky, non-meth-using group compared to the
+sexually risky, meth-using group.
+
+\subsection{Attempt at a three level
+model}\label{attempt-at-a-three-level-model}
+
+It's uncertain how much we would gain from a three-level model. In the
+two-level model, we do apply appropriate partial pooling of variance
+across subjects. Effectively, by gathering 4 runs instead of 1, we
+increase the sample size by a factor of four. With approximately 30
+subjects in each group already, this might not gain much extra power.
+However, a three-level model would certainly be more elegant and
+parsimonious. Considering the considerable variation I observed in the
+previous section across the four runs, particularly in the Risky Sex
+Meth group, a three level model that contains an overall parameter might
+be instructive.
+
+\subsubsection{Method}\label{method-1}
+
+The three level model places run-level parameters at the first level,
+subject-level parameters at the second level, and group-level parameters
+at the third level. Every parameter is simply some measure of learning
+rate (\(\alpha\)), threshold (\(thresh\) or \(k\)), or non-decision-time
+(\(\tau\)).
+
+In a two-level model, for each of those three parameters, we estimate
+each parameter once per run. At the second level, we estimate a \(\mu\)
+and a \(\sigma\) hyper-parameter for each first-level parameter,
+yielding 6 second-level parameters overall: \(\alpha_{\mu}\),
+\(\alpha_{\sigma}\), \(k_{\mu}\), \(k_{\sigma}\), \(\tau_{\mu}\), and
+\(\tau_{\sigma}\).
+
+Priors for the second-level hyper-parameters need to be specified. We
+could estimate all of these as hyper-parameters themselves, or we could
+make some simplifying assumptions to reduce the number of
+hyperparameters at the third level. For instance, \(\alpha_{\sigma}\)
+denotes the variance of the \(\alpha\) parameter across runs for a
+particular subject. That variance could itself vary across subjects, or
+we might make a simplifying assumption that all subjects have the same
+run-level variance, or we could make a more moderate simplification by
+assuming that all subjects within each group have the same run-level
+variance. With a three-level model, we \emph{also} have the choice of
+assuming whether the variance of subjects within groups is fixed across
+groups or whether it varies.
+
+I modeled group-level \(\mu\) and \(\sigma\) values to express the mean
+and variance of the three parameters across subjects. However, I did not
+model any group-level run variance. All across-run, within-subject
+variances were modeled separately for each subject from weakly
+informative priors.
+
+For both level 2 and level 3, \(\mu\) priors were set to
+\(\alpha=-3, thresh=log(2), \tau=log(0.6\times min(rt))\), where the
+prior for non-decision time \(\tau\) was calculated based on the minimum
+reaction time across all subjects.
+
+WHAT ARE THE DISTRIBUTIONS USED FOR THESE, THOUGH? NORMAL, OR SOMETHING
+ELSE?
+
+\subsubsection{Results}\label{results-1}
+
+Unfortunately, diagnostics for the three level model indicated a lack of
+convergence--see the three level model section.
+
+I began by attempting to run an analysis with just 15 subjects.
+Run-level data often did not properly converge, and didn't produce
+useful distributions. This might matter less, except that subject-level
+data estimating parameters across a subject's runs also frequently
+failed to converge on a solution across chains. This was true even when
+I extended the analysis to a large number of iterations, up to 10,000
+iterations.
+
+When analyzing the data with 15 selected subjects, group-level chains
+did converge nicely, but didn't differ much from the prior distribution.
+However this is to be expected with such a small number of subjects.
+
+I also ran the analysis with a full group of subjects and 16000
+iterations. At time of publication, the full output from our analysis is
+available via our server
+\href{http://msm.fmri.cn/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T121720.pdf}{here}.
+At the elevel 1 run-level, chains sometimes fail to converge, but
+generally show convergence on a set of values. Often, one or two chains
+of the total set of 24 do not properly initialize. At the level 2
+subject level, again, chains often failed to converge. At the level 3
+group level, we \emph{do} generally get proper convergence and adequate
+chain distribution at least for the \(\mu\) values, although \(\sigma\)
+values someitmes showed poor convergence.
+
+\begin{verbatim}
+## [1]   24    3  146    4 2001
+\end{verbatim}
+
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-1.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-2.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-3.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-4.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-5.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-6.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-7.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-8.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-9.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-10.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-11.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-12.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_firstset-13.pdf}
+
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-1.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-2.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-3.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-4.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-5.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-6.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-7.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-8.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-9.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-10.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-11.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-12.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-13.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-14.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-15.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-16.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-17.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-18.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-19.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-20.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-21.pdf}
+\includegraphics{MCMC_final_report_files/figure-latex/main_h_m5j_3l_model_graph_secondset-22.pdf}
+
+\subsubsection{Discussion}\label{discussion-1}
+
+Modeling subject-level sigma values without attempting to enforce any
+constraint over these values at the higher level may be the reason why
+our data was not able to properly converge.
+
+
+\end{document}

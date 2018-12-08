@@ -7,7 +7,7 @@ library(corrplot)
 library(Matrix)
 require(lme4)
 nonResponseTimeAsNA<-TRUE
-source("rl_behav_analysis_learning_setup.R")
+source("rl_behav_analysis_learning_setup_amendment_2.R")
 
 rl.all.subjects.dt<-data.table(rl.all.subjects.list)
 
@@ -160,3 +160,5 @@ hist(rl.all.subjects.list[reaction_time<0.2,reaction_time],breaks = 100)
 #We have 8000 trials where the response is recorded as incorrect but their reaction time is 0.
 table(rl.all.subjects.list$correct)
 #need to work out why these were coded as incorrect when they were really non-responses!
+
+#I think I can't publish this without an attempt to control for both subject and run-level factors.

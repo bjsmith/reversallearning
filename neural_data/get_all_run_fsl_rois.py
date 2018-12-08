@@ -23,21 +23,29 @@ self_onset_file_version='20180220T031755'
 action_timestamp=datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%dT%H%M%S')
 
 
-#roi_event_data_dir='/Users/benjaminsmith/Dropbox/joint-modeling/data/freesurfer-testing-local/roi_event_data'
 roi_data_version = '20180720'
 
 #server
+
 # roi_data_dir = '/expdata/bensmith/joint-modeling/data/msm/freesurfer/reversallearning/segstats_out/'
 # roi_event_data_dir='/expdata/bensmith/joint-modeling/data/msm/freesurfer/reversallearning/roi_event_data'
 # self_onset_dir='/expdata/bensmith/joint-modeling/data/msm//reversallearning/runfiles'
 # run_id_map_path=
-#local
-roi_data_dir='/Users/benjaminsmith/Dropbox/joint-modeling/data/fsl_roi_local/'
-roi_event_data_dir='/Users/benjaminsmith/Dropbox/joint-modeling/data/fsl_roi_event_data'
-run_id_map_path='/Users/benjaminsmith/Dropbox/joint-modeling/data/freesurfer-testing-local/run_id_key.csv'
-self_onset_dir='/Users/benjaminsmith/Dropbox/joint-modeling/data/freesurfer-testing-local/runfiles'
+
+roi_data_dir='/expdata/bensmith/joint-modeling/data/msm/reversallearning/roits/'
+roi_event_data_dir='/expdata/bensmith/joint-modeling/data/msm/reversallearning/roi_event_data/fsl_roi_event_data'
+run_id_map_path='/expdata/bensmith/joint-modeling/data/msm/freesurfer/functional_preprocessed/run_id_key.csv'
+self_onset_dir='/expdata/bensmith/joint-modeling/data/msm/reversallearning/runfiles'
 motion_param_dir = "/expdata/xfgavin/MSM"
 motion_param_file = 'mc/prefiltered_func_data_mcf.par'
+
+#local
+#roi_data_dir='/Users/benjaminsmith/Dropbox/joint-modeling/data/fsl_roi_local/'
+#roi_event_data_dir='/Users/benjaminsmith/Dropbox/joint-modeling/data/fsl_roi_event_data'
+#run_id_map_path='/Users/benjaminsmith/Dropbox/joint-modeling/data/freesurfer-testing-local/run_id_key.csv'
+#self_onset_dir='/Users/benjaminsmith/Dropbox/joint-modeling/data/freesurfer-testing-local/runfiles'
+#motion_param_dir = "/expdata/xfgavin/MSM"
+#motion_param_file = 'mc/prefiltered_func_data_mcf.par'
 
 # #this is a table containing all the names of all the freesurfer items.
 # freesurfer_LUT_table_path="/Users/benjaminsmith/Dropbox/joint-modeling/data/freesurfer-testing-local/FreeSurferColorLUT.txt"
@@ -131,8 +139,8 @@ for idx, row in run_id_map.iterrows():
         #it's not exactly like that though because it is a pandas dt and not a nifti object so
         #we might or might not be able to use the same functions. Let's see.
 
-        motion_param_path = motion_param_dir + "sub", sid, "/analysis/ReversalLearning_", m_short, "_run", runid, "_pre.feat/" + motion_param_file
-
+        motion_param_path = motion_param_dir + "/sub" + str(sid) + "/analysis/ReversalLearning_" + m_short + "_run" + str(runid) + "_pre.feat/" + motion_param_file
+        #print motion_param_path
         motion_params = pandas.read_table(motion_param_path, names=["Motion" + str(i) for i in range(1, 7)],
                                           delim_whitespace=True)
         onsets_convolved=pandas.concat([onsets_convolved, motion_params],axis=1)

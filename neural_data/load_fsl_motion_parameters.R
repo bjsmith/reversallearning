@@ -2,7 +2,6 @@ load_fsl_motion_params<-function(){
   motion_param_list<-vector("list",(400-100)*2*2)
   iter<-0
   for (sid in 100:400){
-    
     for (rid in 1:2){
       for(motivation in c("Reward","Punish")){
         cat(". ")
@@ -15,6 +14,7 @@ load_fsl_motion_params<-function(){
           motion_param_dt$SubID<-sid
           motion_param_dt$runid<-rid
           motion_param_dt$motivation<-tolower(motivation)
+          motion_param_dt$ts
           motion_param_list[[iter]]<-motion_param_dt
         }
       }

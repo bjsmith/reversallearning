@@ -28,7 +28,7 @@ lba_rl_single_joint<-stan_model(paste0('stanlba/stanfiles/incremental/',model.na
 cat("compiled.\n")
 
 regions<-get_dmn_regions()
-ll=334;ul=396
+ll=105;ul=200
 for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     for(m in unique(rawdata[subid==sid & runid==r,Motivation])){#m<-"punishment"

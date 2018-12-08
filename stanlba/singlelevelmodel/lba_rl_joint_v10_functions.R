@@ -1,4 +1,5 @@
 select_rawdata_cols_for_run<-function(rawdata,sid,r,m){
+  stop("this function is broken. do not use it. It doesn't order events correctly.")
   return(rawdata[subid==sid & Motivation==m & runid==r,
                  c("reaction_time","outcome","cue","choice","cor_res_Counterbalanced",
                    colnames(rawdata)[grepl("ROI_",colnames(rawdata))]),with=FALSE])

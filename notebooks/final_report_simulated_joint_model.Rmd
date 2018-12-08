@@ -1,0 +1,97 @@
+---
+title: "final_report_simulated_joint_model"
+output:
+  html_document: 
+    keep_md: yes
+    self_contained: no
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+Specifies size of the data to generate:
+
+```{r cars, include=FALSE}
+library(rstan)
+library(reshape2)
+library(data.table)
+library(ggplot2)
+
+set.seed(123)
+sim_data <- list(x = rpois(30, 5), N = 30, R = 4) 
+
+get_dist_dt<-function(paramname){
+  #to_array_hist(fit_lkj10,"L_Sigma",breaks=10000,lowerOnly = TRUE)
+fit_dist<-rstan::extract(fit_lkj10)
+#length(fit_dist)
+fit_dist_rbindlist<-vector("list",prod((dim(fit_dist[[paramname]])[2:3])))
+for (y in 1:dim(fit_dist[[paramname]])[2]){
+  for(z in 1:dim(fit_dist[[paramname]])[3]){
+    if(y>=z){
+      blankval<-min(which(unlist(lapply(fit_dist_rbindlist,is.null))))
+      fit_dist_rbindlist[[blankval]]<- data.table(r=y,c=z, Val=fit_dist[[paramname]][,y,z])
+    }
+  }
+}
+fit_dist_dt<-rbindlist(fit_dist_rbindlist)
+return(fit_dist_dt)
+}
+
+```
+
+## The simulated data:
+
+You can also embed plots, for example:
+
+```{r pressure, include=FALSE}
+fit_lkj10 <- stan(file='/expdata/bensmith/joint-modeling/code/msm/reversallearning/lkj10.stan', 
+                       data = sim_data,
+                       warmup = 500, 
+                       iter = 1500,
+                       chains = 10)
+
+
+
+
+fit_dist_dt<-get_dist_dt("L_Sigma")
+
+```
+
+```{r pressure2, echo=FALSE}
+
+ggplot(fit_dist_dt,aes(Val))+
+  geom_histogram(bins=100)+
+  xlim(-2,2)+coord_cartesian(ylim=c(0,450))+
+  facet_grid(r~c)+labs(title="Joint model matrix prior distribution, main tests")
+
+```
+
+
+
+
+```{r lkj7, include=FALSE}
+fit_lkj7 <- stan(file='/expdata/bensmith/joint-modeling/code/msm/reversallearning/lkj7.stan', 
+                       data = sim_data,
+                       warmup = 500, 
+                       iter = 1500,
+                       chains = 10)
+
+```
+
+```{r lkj7_fit, echo=FALSE}
+
+fit_dist_dt_lkj7<-get_dist_dt("L_Omega")
+```
+
+```{r lkj7_plot, echo=FALSE}
+
+ggplot(fit_dist_dt_lkj7,aes(Val))+
+  geom_histogram(bins=100)+
+  xlim(-2,2)+coord_cartesian(ylim=c(0,700))+
+  facet_grid(r~c)+labs(title="Joint model matrix prior distribution, strict correlation joint model")
+
+```

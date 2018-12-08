@@ -8,10 +8,10 @@ out = rlba(300,1,.5,c(3,2,1),1,.5)
 rt = cbind(out$rt,out$resp)
 len = length(rt[,1])
 #run the Stan model
-fit <- stan(file='lba_single.stan', 
+fit <- stan(file='lba_single_adapted.stan', 
             data = list(RT=rt,LENGTH=len,NUM_CHOICES=3),
-            warmup = 500, 
-            iter = 1000,
+            warmup = 200, 
+            iter = 250,
             chains = 3)
 
 #model summary

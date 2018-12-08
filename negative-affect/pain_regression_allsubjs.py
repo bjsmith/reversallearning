@@ -176,9 +176,9 @@ class RLPain:
                         #attach the subject and run ID to the output and concatenate.
 
     def get_motion_regressors(self,sid,rid,motivation):
-
-        motion_param_path = self.motion_param_dir + "sub",sid,"/analysis/ReversalLearning_",motivation,"_run",rid,"_pre.feat/" + self.motion_param_file
-
+      
+        motion_param_path = self.motion_param_dir + "sub" + str(sid)+"/analysis/ReversalLearning_"+motivation[0:6]+"_run"+str(rid)+"_pre.feat/" + self.motion_param_file
+        print "getting motion regressors"
         motion_params = pandas.read_table(motion_param_path,names=["Motion" + str(i) for i in range(1,7)],delim_whitespace=True)
         return motion_params
 

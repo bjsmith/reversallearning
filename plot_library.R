@@ -16,7 +16,7 @@ hyper_param <- function(param.names,group.names,tnmc,n.chains){
   # }
   #make it array of dim
   
-  phi=array(data = NA,
+  phi=array(data = as.numeric(NA),
             dim = c(n.chains,tnmc,length(param.names),length(group.names)),
             dimnames = list(NULL,
                          NULL,
@@ -24,8 +24,16 @@ hyper_param <- function(param.names,group.names,tnmc,n.chains){
                          group.names))
   
   for(q in 1:n.chains){#q<-1
-    phi[q,,,] = as.matrix(read.table(paste(file.location,"/chain",q,"_hyper.txt",sep=""),header=F)) %>%
+    mymat<-read.table(paste(file.location,"/chain",q,"_hyper.txt",sep=""),header=F) %>% as.matrix %>%
       array(dim = c(dim(.)[1],length(param.names),length(group.names),1)) %>% aperm(c(4,1,2,3)) %>% .[,-1,,]
+    
+    if(dim(phi[q,,,])[1]!=dim(mymat)[1]){
+      print(paste(dim(mymat),dim(phi[q,,,])))
+      warning("Different number of lines in input data than expected.")
+    }
+      
+    maxval<-min(dim(phi[q,,,])[1],dim(mymat)[1])
+    phi[q,1:maxval,,] = as.numeric(mymat[1:maxval,,])
     
 
     #we gotta stretch out temp. By convention, it will be lined up with each group together, cycling through params.
@@ -33,6 +41,7 @@ hyper_param <- function(param.names,group.names,tnmc,n.chains){
 
   }
   dimnames(phi)<-list(NULL,NULL,param.names,group.names)
+  #phi<-as.numeric(phi)
   #now, how do we want this?
   #should be:
   #intuitive
@@ -41,6 +50,53 @@ hyper_param <- function(param.names,group.names,tnmc,n.chains){
   #I think we oughtta have a list of items; each item in the list contains properties and a set of chains associated with that particular item.
   
   return(phi)
+}
+
+param_l1 <- function(param.names,tnmc,n.chains,subs){
+  file.location<-paste0(mainDataDir, subDir)
+  #make it array of dim
+  if(length(subs)==1){
+    n.subs<-subs
+    sub.names<-paste0("SUB",1:n.subs)
+  }else{
+    n.subs<-length(subs)
+    sub.names<-as.character(subs)
+  }
+  
+  param=array(data = as.numeric(NA),
+            dim = c(n.chains,tnmc,length(param.names),n.subs),
+            dimnames = list(NULL,
+                            NULL,
+                            param.names,
+                            sub.names))
+  
+  for(q in 1:n.chains){#q<-1
+    for (s in 1:n.subs){#s<-1
+      mymat<-read.table(paste(file.location,"/chain",q,"_sub",s,"_lower.txt",sep=""),header=F) %>% as.matrix #%>%
+        #array(dim = c(dim(.)[1],length(param.names),1)) %>% aperm(c(4,1,2)) %>% .[,-1,,]
+      
+      if(dim(param[q,,,s])[1]!=dim(mymat)[1]){
+        print(paste(dim(mymat),dim(param[q,,,s])))
+        warning("Different number of lines in input data than expected.")
+      }
+      
+      maxval<-min(dim(param[q,,,s])[1],dim(mymat)[1])
+      param[q,1:maxval,,s] = as.numeric(mymat[1:maxval,])
+      
+      #we gotta stretch out temp. By convention, it will be lined up with each group together, cycling through params.
+      #temp_rs<-array(temp,
+    }
+  }
+  dimnames(param)<-list(NULL,NULL,param.names,sub.names)
+  #phi<-as.numeric(phi)
+  #now, how do we want this?
+  #should be:
+  #intuitive
+  #reasonably size-efficient
+  #fast
+  #I think we oughtta have a list of items; each item in the list contains properties and a set of chains associated with that particular item.
+  
+  return(param)
 }
 
 

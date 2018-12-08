@@ -27,10 +27,11 @@ functions{
           
           b_A_tv_ts = (b - A - t*v)/(t*s);
           b_tv_ts = (b - t*v)/(t*s);
-          term_1 = v*Phi_approx(b_A_tv_ts);
+          term_1 = v*Phi(b_A_tv_ts);
           term_2 = s*exp(normal_lpdf(b_A_tv_ts | 0,1)); 
-          term_3 = v*Phi_approx(b_tv_ts);
+          term_3 = v*Phi(b_tv_ts);
           term_4 = s*exp(normal_lpdf(b_tv_ts | 0,1)); 
+          //print("term1: ",term_1,"; term2: ",term_2,"; term3: ",term_3,"; term4: ",term_4,"; 1/A:",(1/A));
           pdf = (1/A)*(-term_1 + term_2 + term_3 - term_4);
           
           return pdf;
@@ -56,12 +57,12 @@ functions{
           term_3 = ts/A     * exp(normal_lpdf(b_A_tv/ts | 0,1)); 
           term_4 = ts/A     * exp(normal_lpdf(b_tv/ts | 0,1)); 
           cdf = 1 + term_1 - term_2 + term_3 - term_4;
-          
+          if(cdf>1) reject("cdf should be less than or equal to 1.");
           return cdf;
           
      }
      
-     real lba_bash_log(real response_time, int response, real k, real A, vector v, real s, real tau, real p){
+     real lba_guess_lpdf(real response_time, int response, real k, real A, vector v, real s, real tau, real p){
           
           real t;
           real b;
@@ -74,40 +75,49 @@ functions{
 
           b = A + k;
           // for (i in 1:rows(RT)){	
-             t = response_time - tau;
-             if(t > 0){			
-                  cdf = 1;
-                  
-                  for(j in 1:num_elements(v)){
-                       if(response == j){
-                            pdf = lba_pdf(t, b, A, v[j], s);
-                       }else{	
-                            cdf = (1-lba_cdf(t, b, A, v[j], s)) * cdf;
-                       }
+           t = response_time - tau;
+           if(t > 0){			
+                cdf = 1;
+                
+                for(j in 1:num_elements(v)){
+                     if(response == j){
+                          pdf = lba_pdf(t, b, A, v[j], s);
+                     }else{	
+                          cdf = (1-lba_cdf(t, b, A, v[j], s)) * cdf;
+                     }
+                }
+                // prob_neg = 1;
+                // for(j in 1:num_elements(v)){
+                //      prob_neg = Phi_approx(-v[j]/s) * prob_neg;    
+                // }
+                for(j in 1:num_elements(v)){
+                     prob_neg_over_v[j] = Phi_approx(-v[j]/s);    
                   }
-                  // prob_neg = 1;
-                  // for(j in 1:num_elements(v)){
-                  //      prob_neg = Phi_approx(-v[j]/s) * prob_neg;    
-                  // }
-                  for(j in 1:num_elements(v)){
-                       prob_neg_over_v[j] = Phi_approx(-v[j]/s);    
-                    }
-                  prob_neg = prod(prob_neg_over_v);
-                  
-                  prob = pdf*cdf;		
-                  prob = prob/(1-prob_neg);	
-                  if(prob < 1e-10){
-                       prob = 1e-10;				
-                  }
-                  
-             }else{
-                  prob = 1e-10;			
-             }		
-
+                prob_neg = prod(prob_neg_over_v);
+                //print("pdf: ",pdf,"; cdf:", cdf, "; 1/(1-prob_neg):",1/(1-prob_neg));
+                prob = pdf*cdf;		
+                prob = prob/(1-prob_neg);	
+                if(prob < 1e-10){
+                     prob = 1e-10;				
+                }
+                
+           }else{
+                prob = 1e-10;			
+           }		
+          //print(log(prob));
           //print([log(prob)+log(1-p), uniform_lpdf(response_time | 0,1)+log(p)]);
-          out = max([log(prob)+log(1-p), uniform_lpdf(response_time | 0,1)+log(p)]);
-          
+          //out = log(prob)+log(1-p) + uniform_lpdf(response_time | 0,1)+log(p);
+          //lba_guess_lpdf()=log(lba()*(1-p) + p*0.5);
+          out = log(prob*(1-p)+0.5*p);
+          //out=log(prob);
           //print("lba lprob:",out)
+          //or something like:
+          // if(prob>0.5*p){
+          //   out = log(prob*(1-p));
+          // }else{
+          //   log=log(p);
+          // }
+          //out = log(prob*(1-(p*prob))+0.5*p);
           return out;		
      }
      
@@ -313,8 +323,9 @@ model {
     //i don't know what to do with non-resposne time...but let's work that out later.
     //MAYBE????
     //response_time[i] ~ uniform(0,1)*p + lba(response[i],k,A,v,s,tau)*(1-p);
-    response_time[i] ~ lba_bash(response[i],k,A,v,s,tau,p);
+    response_time[i] ~ lba_guess_lpdf(response[i],k,A,v,s,tau,p);
   }
+  
   ////////////\begin{joint model machinery}
    
   //transfer the one theta into the theta-delta matrix, transforming it at the same time.

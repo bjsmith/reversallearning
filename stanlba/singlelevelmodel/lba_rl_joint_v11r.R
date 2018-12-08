@@ -54,6 +54,7 @@ sum(frsurf.prcomp$sdev[components.numeric])/sum(frsurf.prcomp$sdev)
 #let's give this a try...how do we get these components back?
 components_to_test<-frsurf.prcomp$x[,components.numeric]
 colnames(components_to_test)<-paste0("fsurf_roi_components_",colnames(components_to_test))
+save(components_to_test,paste0(output_dir,"/lba_rl_jointv11r_colnames.RData"))
 rawdata<-cbind(rawdata,components_to_test)
 #regions<-c("ROI_roi_frontal_medial_cortex","ROI_roi_frontal_orbital_cortex", "ROI_roi_accumbens_l", "ROI_roi_accumbens_r")
 #100,140,218,261,334

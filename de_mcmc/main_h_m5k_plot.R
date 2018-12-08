@@ -9,11 +9,11 @@ plot.priors=FALSE
 #load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5g20180522T175350gn0_3_full.RData")
 #output_h_m5f20180520T183320.RData
 #load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T120720_15subs.RData")
-#load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T121720.RData")
+load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T121720.RData")
 #load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5j20180528T184405_15subs_iterations20000.RData")
-load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5k20180605T122611_15subs.RData")
+#load("/expdata/bensmith/joint-modeling/data/msm/reversallearning/de_mcmc/output_h_m5k20180605T122611_15subs.RData")
 
-
+temp=t(as.matrix(read.table(paste("chain",1,"_hyper_phi_s.txt",sep=""),header=F)))
 start=2 
 start.weights=2
 

@@ -30,18 +30,9 @@ model_lba_rl_joint_v11e<-single_level_model_summarize_fast(
 
 rsdt<-data.table(model_lba_rl_joint_v11e$results_summary)
 
+source("lba_rl_evaluate_functions.R")
 
-#we need to quantify how many runs missed out because we couldn't calculate good values for them.
-all.runs<-rawdata[,.N,.(subid,Motivation,runid)]
-included_runs<-rsdt[,.N,.(sid,motivation,rid)]
-length(unique(included_runs$sid))
-View(included_runs)
-all.subjs<-rawdata[,.N,.(subid)]
-included.subjs<-rsdt[,.N,.(sid)]
-print(paste0(as.character(dim(all.runs)[1]-dim(included_runs)[1]), 
-             " runs missing and ",as.character(dim(all.subjs)[1]-dim(included.subjs)[1])," subjects missing altogether because we couldn't calculate parameters for them. (alternatively, estimation isn't complete yet)"))
 
-#that's an awful lot of runs! We need to get them one by one and work out what's going wrong because I don't think I can proceed without these in the calculations. It could be a substantial bias to the model to just throw out all the data that doesn't fit.
 
 source("freesurfer_region_naming.R")
 length(unique(rsdt$sid))
@@ -51,8 +42,8 @@ theta_names<-c("RPE","EV")
 for (t in 1:2){
   for(i in 3:39){#i<-2
     tesres<-t.test(rsdt[param_name==paste0("Sigma[",t,",",i,"]"),.(SigmaSubjectMean=mean(mean)),.(sid)]$SigmaSubjectMean)
-    testres.dt<-data.table(t(data.table(tesres)))
-    colnames(testres.dt)<-names(tesres)
+    testres.dt<-data.table(t(data.table(unlist(tesres))))
+    colnames(testres.dt)<-names(unlist(tesres))
     testres.dt$Region<-freesurfer_region_naming(regions)[i-2]
     testres.dt$Theta<-theta_names[t]
     ttests[[i-2+(t-1)*37]]<-testres.dt
@@ -61,8 +52,10 @@ for (t in 1:2){
 
 testres.dt<-rbindlist(ttests)
 
-testres.dt$AdjustedPVals<-p.adjust(unlist(testres.dt$p.value),method="fdr")
-testres.dt$CI95Pct<-unlist(lapply(testres.dt$conf.int, function(ci){paste0("[",formatC(ci[1],digits=2),", ",formatC(ci[2],digits=2),"]")}))
+testres.dt$AdjustedPVals<-p.adjust(testres.dt$p.value,method="fdr")
+#testres.dt$CI95Pct<-unlist(lapply(testres.dt$conf.int, function(ci){paste0("[",formatC(ci[1],digits=2),", ",formatC(ci[2],digits=2),"]")}))
+testres.dt$CI95Pct<-unlist(apply(testres.dt,1, function(r){paste0("[",formatC(as.numeric(r[["conf.int1"]]),digits=2),", ",formatC(as.numeric(r[["conf.int2"]]),digits=2),"]")}))
+
 testres.summary.CIs<-tidyr::spread(testres.dt[,.(Region,Theta,CI95Pct)],Theta,CI95Pct)
 testres.summary.AdjustedPVals<-tidyr::spread(testres.dt[,.(Region,Theta,AdjustedPVals)],Theta,AdjustedPVals)
 testres.summary.wide<-merge(testres.summary.CIs,testres.summary.AdjustedPVals,by="Region",suffixes = c("CI95Pct","AdjustedPVals"))
@@ -73,8 +66,8 @@ results<-testres.summary.wide[order(unlist(RPEAdjustedPVals)),.(Region,EVCI95Pct
                                              "RPE_FDRadjustedPValue"=format.pval(unlist(RPEAdjustedPVals),digits = 2)
                                              #,"UnadjustedPVal"=format.pval(unlist(p.value))
 )]
-
-write.csv(results,paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11e_provisional.csv"))
+write.csv(testres.dt,paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11e_raw.csv"))
+write.csv(results,paste0(localsettings$data.dir,"lba_rl/",lba_rl_version,"/lba_rl_single_exp_joint_v11e.csv"))
 View(results)
 
 

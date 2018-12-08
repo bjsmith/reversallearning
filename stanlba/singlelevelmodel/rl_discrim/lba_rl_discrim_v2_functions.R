@@ -1,4 +1,5 @@
 select_rawdata_cols_for_run<-function(rawdata,sid,r,m){
+  stop("this function does not order the data in the correct order and this may invalidate data produced from this")
   return(rawdata[subid==sid & Motivation==m & runid==r,
                  .(reaction_time,outcome,cue,choice,cor_res_Counterbalanced,presentation_n,
                    #ACC

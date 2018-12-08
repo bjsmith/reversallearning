@@ -123,14 +123,14 @@ model_lba_rl_joint_v10e<-single_level_model_summarize_fast(
   model_version=lba_rl_version,
   model_filename="lba_rl_single_exp_joint_v10",
   model_subversion="e")
-length(unique(model_lba_rl_joint_v10$results_summary$sid))
+length(unique(model_lba_rl_joint_v10e$results_summary$sid))
 show_distribution_of_all_sigmas_new(
-  data.table(model_lba_rl_joint_v10[["complete_posterior_list"]]),
+  data.table(model_lba_rl_joint_v10e[["complete_posterior_list"]]),
   Sigma_dims = c(26,1),
   ggplot_args = scale_x_continuous(limits = c(-2,2))
 )
 
-rsdt<-data.table(model_lba_rl_joint_v10$results_summary)
+rsdt<-data.table(model_lba_rl_joint_v10e$results_summary)
 unique(rsdt$param_name)
 
 length(unique(rsdt$sid))

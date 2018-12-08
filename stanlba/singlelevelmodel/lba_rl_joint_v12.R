@@ -8,7 +8,7 @@ source("stanlba/singlelevelmodel/lba_rl_joint_v10_functions.R")
 
 #we have problems running all subjects in a single run.
 #so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
-lba_rl_version<-"joint_20180716_1"
+lba_rl_version<-"joint_20180725_1"
 model.subversion<-""
 single_run_dir<-paste0(localsettings$data.dir,"lba_rl")
 output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")
@@ -34,8 +34,8 @@ regions<-get_dmn_regions()
 #ll=140;ul=217
 #ll=218;ul=260
 #ll=261;ul=334
-#ll=335;ul=400
-ll=106;ul=108
+ll=335;ul=400
+#ll=106;ul=108
 for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     motivations<-unique(rawdata[subid==sid & runid==r,Motivation])
@@ -47,7 +47,7 @@ for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$sub
         model_attempts=0
         warmup=400
         iterations=500
-        warmup=80;iterations=100
+        #warmup=250;iterations=300
         try_this_model=TRUE
         while(try_this_model==TRUE){
           model_attempts<-model_attempts+1
@@ -57,7 +57,7 @@ for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$sub
             expr = {
               withTimeout({
                 sampling(lba_rl_single_joint, 
-                         data = create_standatalist(srm.data = srm.data,theta_count = 2, delta_names = regions),
+                         data = create_standatalist(srm.data = srm.data,theta_count = 2, delta_names = regions,param_A=0.1),
                          warmup = warmup, 
                          iter = iterations,
                          init= get_starting_values(n_chains,thetaDelta_count=length(regions)+2),
@@ -79,7 +79,7 @@ for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$sub
               #ignore "nan" values as long as they're not all NaN
               if (all(is.nan(rhat_vector)))return(FALSE)
               if (all(rhat_vector[!is.nan(rhat_vector)]<=Rhat_general_limit)){
-                if(all(rhat_vector[1:3]<=Rhat_corevals_limit)){
+                if(all(rhat_vector[1:4]<=Rhat_corevals_limit)){
                   return(TRUE)
                 }
               }

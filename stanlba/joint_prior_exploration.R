@@ -1,3 +1,23 @@
+#This version uses generated quantities as recommended by Bob Carpenter to do the work.
+library(rstan)
+source("stanlba/lba_rl_joint_setup.R")
+require(R.utils)
+options(mc.cores = 6)
+source("stanlba/singlelevelmodel/lba_rl_joint_v1_functions.R")
+source("stanlba/singlelevelmodel/lba_rl_joint_v7_functions.R")
+source("stanlba/singlelevelmodel/lba_rl_joint_v10_functions.R")
+
+#we have problems running all subjects in a single run.
+#so let's have this save as we go, and then reload and avoid re-saving if there's already a saved file.
+lba_rl_version<-"joint_20180713_1"
+model.subversion<-"n"
+model.name<-"lba_rl_single_exp_joint_v11_priorsamplejoint5"
+
+sid=106
+r=1
+m="punishment"
+#none of this matters because the data isn't used.
+
 source("stanlba/singlelevelmodel/lba_rl_joint_v2_evaluate_functions.R")
 #so let's compare how the idfferent cholesky and sigma priors create different priors in the sigma matrix;
 
@@ -11,6 +31,7 @@ output_dir<-paste0(single_run_dir,"/",lba_rl_version, "/")
 
 mean_sigma_matrix_list<-vector("list",length(cholesky_priors)*length(sigma_priors))
 iter<-0
+
 for (cholesky_prior in cholesky_priors){
   for(sigma_prior in sigma_priors){
     iter<-iter+1

@@ -1,4 +1,5 @@
-#subversion t: uses just four ROIs, they're freesurfer ROIs, and they are controlled for WM, CSF, ventricles.
+#sub-version s: applies Jonas's suggestion to regress out CSF+WM+Motion. Uses freesurfer ROIs, all dmn regions
+#revival of subversion t: uses freesurfer ROIs, just four critical areas.
 library(rstan)
 source("stanlba/lba_rl_joint_setup.R")
 require(R.utils)
@@ -22,21 +23,24 @@ Rhat_corevals_limit=1.05 # I don't care about this at the moment. I just want to
 Rhat_general_limit=1.1
 
 
+
 results.list<-list()
 
 model.name<-"lba_rl_single_exp_joint_v11"
 cat("Compiling model...")
 lba_rl_single_joint<-stan_model(paste0('stanlba/stanfiles/incremental/',model.name,'.stan'))
 cat("compiled.\n")
-
-regions<-c("con_ROI_ctx_lh_S_suborbital","con_ROI_ctx_rh_S_suborbital", "con_ROI_Left.Accumbens.area", "con_ROI_Right.Accumbens.area")
+colnames(rawdata)
+regions<-c("ROI_ctx_lh_S_suborbital","ROI_ctx_rh_S_suborbital", "ROI_Left.Accumbens.area", "ROI_Right.Accumbens.area")
+#regions<-paste0("con_",get_dmn_regions())
+regions<-paste0("con_",regions)
 #100,140,218,261,334
 #ll=100;ul=139
-ll=140;ul=217
+#ll=140;ul=217
 #ll=218;ul=260
 #ll=261;ul=334
 #ll=335;ul=400
-#ll=100;ul=400
+ll=100;ul=400
 for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     motivations<-unique(rawdata[subid==sid & runid==r,Motivation])

@@ -1,4 +1,4 @@
-#sub-version s: applies Jonas's suggestion to regress out CSF. Uses freesurfer ROIs, all dmn regions.
+#sub-version s: applies Jonas's suggestion to regress out CSF+WM+Motion. Uses freesurfer ROIs, all dmn regions
 library(rstan)
 source("stanlba/lba_rl_joint_setup.R")
 require(R.utils)
@@ -34,12 +34,12 @@ colnames(rawdata)
 regions<-paste0("con_",get_dmn_regions())
 
 #100,140,218,261,334
-ll=100;ul=139
-ll=140;ul=217
-ll=218;ul=260
-ll=261;ul=334
-ll=335;ul=400
-#ll=100;ul=400
+#ll=100;ul=139
+#ll=140;ul=217
+#ll=218;ul=260
+#ll=261;ul=334
+#ll=335;ul=400
+ll=100;ul=400
 for (sid in unique(rawdata$subid)[unique(rawdata$subid)>=ll & unique(rawdata$subid)<=ul]){
   for (r in unique(rawdata[subid==sid,runid])){#r<-1
     motivations<-unique(rawdata[subid==sid & runid==r,Motivation])
