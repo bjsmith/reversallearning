@@ -1,0 +1,62 @@
+---
+title: "final_report_simulated_joint_model"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Specifies size of the data to generate:
+
+```{r cars}
+library(rstan)
+library(reshape2)
+library(ggplot2)
+set.seed(123)
+sim_data <- list(x = rpois(30, 5), N = 30, R = 4) 
+
+mymat<-matrix(c(1,0.8,0.3,0.8,1,0.4,0.3,0.4,1),ncol=3)
+sqrt(mymat * t(mymat))
+
+
+to_mat<-function(fit,val){#fit<-fit_SigmaOmega
+  #val<-"Sigma"
+  fitsum<-summary(fit)$summary
+  print(val)
+  matvals<-fitsum[grepl(paste0("^",val,"\\["),rownames(fitsum)),"mean"]
+  matorder<-sqrt(length(matvals))
+  return(matrix(matvals,nrow=matorder,ncol=matorder))
+  
+}
+
+to_array_hist<-function(fit,val,breaks=100){#fit<-fit_ljk1
+  #val<-"Omega1"
+  fit_dist<-extract(fit)
+  par(mfrow=c(dim(fit_dist[[val]])[2],dim(fit_dist[[val]])[3]))
+  for (r in 1:dim(fit_dist[[val]])[2]){
+    for (c in 1:dim(fit_dist[[val]])[3]){
+      hist(fit_dist[[val]][,r,c],
+           xlim = c(-2,2),
+           breaks=breaks
+           )
+    }
+  }
+}
+```
+
+## The simulated data:
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+fit_SigmaOmega <- stan(file='lkj9.stan', 
+                       data = sim_data,
+                       warmup = 500, 
+                       iter = 1000,
+                       chains = 10)
+
+to_array_hist(fit_SigmaOmega,"L_Omega",breaks=10000)
+to_array_hist(fit_SigmaOmega,"Sigma",breaks=100)
+
+```

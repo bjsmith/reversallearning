@@ -19,6 +19,8 @@ notebooks/cache/*
 notebooks/*.pdf
 notebooks/*.html
 notebooks/*_cache/*
+figure-html/
+bootstrap-3.3.5/
 negative-affect/subject_mask_task_output/*
 *.nii.gz
 core
